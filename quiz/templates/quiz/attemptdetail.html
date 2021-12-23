@@ -1,0 +1,31 @@
+
+<div>
+    {% for question in quiz.questions.all %}
+    <div>
+        <p>
+            {{question.question_text}}
+        </p>
+    </div>
+        {% for answer in question.answers.all %}
+    <div>
+        <p>{{answer.answer_text}}</p>
+    </div>     
+        {% endfor %}
+    {% endfor %}
+</div>
+
+
+<div>
+    <h5>Your Answers</h5>
+    <div>
+        {% for attempt in attempts %}
+            <p>Question:<br>{{attempt.question.question_text}}</p>
+            <p>Your Answer:<br>{{attempt.answer.answer_text}}</p>
+        {% endfor %}
+    </div>
+    <p>
+        scored: {{total_score}} out of {{quiz.questions.all.count}}
+    </p>
+</div>
+
+<a href="{% url 'quizzes' %}"><p>Go back home</p></a>

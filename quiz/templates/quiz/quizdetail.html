@@ -1,0 +1,22 @@
+<div>
+    <div>
+        <p>
+            {{quiz.title}} was created by {{quiz.user}}. <br>
+            {{quiz.description}} <br>
+            It was created on {{quiz.date}} <br>
+            It will be due on {{quiz.due}} <br>
+            You have {{quiz.attempts}} to take the quiz. <br>
+            The time limit is {{quiz.time_limit_mins}} minutes. <br>
+            <a href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
+            <a href="{% url 'quizzes' %}"><p>Go back home</p></a>
+        </p>
+    </div>
+</div>
+<div>
+    <h3>Quiz Attempts:</h3>
+</div>
+<div>
+    {% for attempt in my_attempts %}
+        <a href="{% url 'attempt-detail' quiz.id attempt.id %}">attempt</a>
+    {% endfor %}
+</div>

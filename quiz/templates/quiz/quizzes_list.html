@@ -1,0 +1,25 @@
+<a href="{% url 'logout' %}">Logout</a>
+
+<a href="{% url 'new-quiz' %}">Create Quiz</a>
+
+{% for quiz in quizzes %}
+<div>
+    <div>
+        <p>
+            {{quiz.title}} was created by {{quiz.user}}. <br>
+            {{quiz.description}} <br>
+            It was created on {{quiz.date}} <br>
+            It will be due on {{quiz.due}} <br>
+            You have {{quiz.attempts}} to take the quiz. <br>
+            The time limit is {{quiz.time_limit_mins}} minutes. <br>
+            <a href="{% url 'quiz-detail' quiz.id %}"> View Detail</a>
+            <span>
+            <a href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
+            </span>
+        </p>
+    </div>
+</div>
+<br>
+<br>
+<br>
+{% endfor %}
