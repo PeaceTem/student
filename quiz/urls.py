@@ -4,7 +4,7 @@ from .views import QuizList, RegisterPage, CustomLoginView, NewQuiz, NewQuestion
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
-    path('', QuizList.as_view(), name='quizzes'),
+    path('', QuizList, name='quizzes'),
     path('register/', RegisterPage.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),

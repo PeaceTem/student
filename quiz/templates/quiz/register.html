@@ -1,9 +1,44 @@
-<h1>Register</h1>
+{% extends 'quiz/base.html' %}
+{% load static %}
 
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Register">
-</form>
-
-<p>Already have an account? <a href=" {% url 'login' %} ">Login</a></p>
+{% block title %}
+    Register
+{% endblock title %}
+{% block content %}
+<body>
+    <section>
+        <div class="imgBx">
+            <img src="{% static 'quiz/quiz.jpg' %}">
+        </div>
+        <div class="contentBx">
+            <div class="formBx">
+                <h2>Register</h2>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="inputBx">
+                        <span>Username</span>
+                        <input type="text" name="username" id="id_username">
+                    </div>
+                    <div class="inputBx">
+                        <span>Password</span>
+                        <input type="password" name="password1" id="id_password1">
+                    </div>
+                    <div class="inputBx">
+                        <span>Confirm Password</span>
+                        <input type="password" name="password2" id="id_password2">
+                    </div>
+                    <div class="inputBx">
+                        <input type="submit" value="Sign In">
+                    </div>
+                    <div class="inputBx">
+                        <p>
+                            Don't have an account? <a href="{% url 'login' %} ">Sign Up</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</body>
+{% endblock content %}

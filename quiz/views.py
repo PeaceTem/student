@@ -75,10 +75,15 @@ def quiz_pdf(request):
 
 
 
-class QuizList(ListView):
+"""class QuizList(ListView):
     model = Quizzes
-    context_object_name = 'quizzes'
-
+    context_object_name = 'quizzes'"""
+def QuizList(request):
+    quizzes = Quizzes.objects.all()
+    context={
+        'quizzes': quizzes,
+    }
+    return render(request, 'quiz/quizzes_list.html', context)
 
 # Create your views here.
 class CustomLoginView(LoginView):
@@ -89,13 +94,24 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('quizzes')
 
+"""def RegisterPage(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
 
+            return redirect('login')
+    else:
+        form = UserForm()
+
+    return render(request, 'quiz/register.html', {'form': form})
+"""
 class RegisterPage(FormView):
     template_name = 'quiz/register.html'
     form_class = UserCreationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('quizzes')
-
+    print(UserCreationForm)
     def form_valid(self, form):
         user = form.save()
         # logs the user in after registration
@@ -107,7 +123,6 @@ class RegisterPage(FormView):
         if self.request.user.is_authenticated:
             return redirect('quizzes')
         return super(RegisterPage, self).get(*args, **kwargs)
-
 
 
 def NewQuiz(request):
@@ -200,6 +215,8 @@ def SubmitAttempt(request, quiz_id):
                 attempter.save()
             
         total_score = attempter.score
+        quiz.attempts += 1
+        quiz.save()
 
     context = {
         'quiz': quiz,

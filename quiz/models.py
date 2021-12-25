@@ -30,6 +30,7 @@ class Quizzes(models.Model):
     #allowed_attempts = models.PositiveIntegerField()
     #time_limit_mins = models.PositiveIntegerField()
     questions = models.ManyToManyField(Question)
+    attempts = models.PositiveIntegerField(default=0, null=True, blank=True)
 
 
     def __str__(self):
