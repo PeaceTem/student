@@ -1,22 +1,34 @@
-<div>
-    <div>
-        <p>
-            {{quiz.title}} was created by {{quiz.user}}. <br>
-            {{quiz.description}} <br>
-            It was created on {{quiz.date}} <br>
-            It will be due on {{quiz.due}} <br>
-            You have {{quiz.attempts}} to take the quiz. <br>
-            The time limit is {{quiz.time_limit_mins}} minutes. <br>
-            <a href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
-            <a href="{% url 'quizzes' %}"><p>Go back home</p></a>
-        </p>
-    </div>
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+    Quiz Detail
+{% endblock title %}
+{% block content %}
+
+
+<div class="card-container detail-container">
+        <div class='card'>
+            <p>
+                <div class="title">{{quiz.title|capfirst}}</div>
+                <div class="desc">{{quiz.description|truncatewords:10}}</div> 
+                <div class="create">created by {{quiz.user|capfirst}}</div>
+                <div class="date">It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
+                <div class="attempt">
+                    {% if quiz.attempts < 2 %}
+                        {{quiz.attempts}} attempt
+                    {% else %}
+                        {{quiz.attempts}} attempts
+                    {% endif %}
+                </div>
+                <div class="link-row">
+                    <span>
+                        <a class="link" href="{% url 'quizzes' %}"><p>Go back home</p></a>
+                    </span>
+                    <span>
+                        <a class="link" href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
+                    </span>
+                </div>
+            </p>
+        </div>
 </div>
-<div>
-    <h3>Quiz Attempts:</h3>
-</div>
-<div>
-    {% for attempt in my_attempts %}
-        <a href="{% url 'attempt-detail' quiz.id attempt.id %}">attempt</a>
-    {% endfor %}
-</div>
+{% endblock content %}

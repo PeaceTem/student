@@ -1,30 +1,38 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+    Quiz List
+{% endblock title %}
+{% block content %}
 <a href="{% url 'logout' %}">Logout</a>
 
 <a href="{% url 'new-quiz' %}">Create Quiz</a>
 
-{% for quiz in quizzes %}
-<div>
-    <div class='card'>
-        <p>
-            <div>{{quiz.title|capfirst}}</div>
-            <div>created by {{quiz.user|capfirst}}</div>
-            <div>{{quiz.description|truncatewords:10}}</div> 
-            <div>It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
-            <div>
-                {% if quiz.attempts < 2 %}
-                    {{quiz.attempts}} attempt
-                {% else %}
-                    {{quiz.attempts}} attempts
-                {% endif %}
-            </div>
-            <a href="{% url 'quiz-detail' quiz.id %}"> View Detail</a>
-            <span>
-            <a href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
-            </span>
-        </p>
-    </div>
+<div class="card-container">
+    {% for quiz in quizzes %}
+        <div class='card'>
+            <p>
+                <div class="title">{{quiz.title|capfirst}}</div>
+                <div class="desc">{{quiz.description|truncatewords:10}}</div> 
+                <div class="create">created by {{quiz.user|capfirst}}</div>
+                <div class="date">It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
+                <div class="attempt">
+                    {% if quiz.attempts < 2 %}
+                        {{quiz.attempts}} attempt
+                    {% else %}
+                        {{quiz.attempts}} attempts
+                    {% endif %}
+                </div>
+                <div class="link-row">
+                    <span>
+                        <a class="link" href="{% url 'quiz-detail' quiz.id %}"> View Detail</a>
+                    </span>
+                    <span>
+                        <a class="link" href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
+                    </span>
+                </div>
+            </p>
+        </div>
+    {% endfor %}
 </div>
-<br>
-<br>
-<br>
-{% endfor %}
+{% endblock content %}
