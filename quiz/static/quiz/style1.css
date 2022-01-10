@@ -4,6 +4,7 @@ padding:0;
 box-sizing: border-box;
 font-family: 'Courier New', Courier, monospace;
 background: #eee;
+font-weight: 700;
 }
 
 section{
@@ -119,19 +120,20 @@ color: #ff4584;
 
 
 
-@media (max-width){
-    
-}
 
 /* Quiz List CSS
 */
 
 .card-container{
-    display:flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 2em;
     position:relative;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 90%;
+    margin: 10px 40px;
+
 }
 
 .card{
@@ -139,11 +141,11 @@ color: #ff4584;
     grid-template-columns: 1fr;
     background: #fff;
     border-top: 4px solid #ff4584;
-    padding: 10px 50px 0px 10px;
+    padding: 4px 50px 0px 4px;
     border-radius: 10px;
     box-shadow: 1px 4px 10px #607d8b;
-    max-width: 200px;
-    min-width: 200px;
+    max-width: 90%;
+    width: 250px;
     margin: 10px auto;
     grid-row-gap: 10px; 
 }
@@ -189,4 +191,157 @@ color: #ff4584;
     height: 50vh;
     top: 50%;
     left: 50%;
+}
+
+
+li, a, button{
+    text-decoration: none;
+
+}
+
+header{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 10%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 1px 4px 10px #607d8b;
+    margin: 40px 4px;
+    position: sticky;
+    top: 10px;
+    left: 0;
+    z-index: 10;
+}
+
+
+.logo{
+    cursor: pointer;
+    margin-right: auto;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 20px;
+    padding-left: 4px;
+}
+
+.nav_links{
+    list-style: none;
+}
+
+.nav_links li{
+    display: inline-block;
+    padding: 0px 20px;
+
+}
+
+.nav_links li a{
+    transition: all 0.3s ease 0s;
+}
+
+.nav_links li a:hover{
+    color: #0088a9;
+
+}
+
+button{
+    padding: 9px 25px;
+    background: #ff4584;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+    margin-left: auto;
+    color: #fff;
+}
+
+button:hover{
+    background: #e24b7e;
+
+
+}
+
+
+
+
+
+.question-card-container{
+    display: grid;
+    position:relative;
+    top: 10px;
+    left: 0;
+    max-width: 700px;
+    width: 90%;
+    grid-template-columns:1fr;
+
+}
+.question-box{
+    margin-bottom: 10px;
+    padding: 5px;
+    border-top:20px solid #f53677;
+    background: #fff;
+
+}
+.question{
+    border-radius: 10px;
+}
+@media (max-width: 768px){
+    section div.imgBx{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }    
+    section div.contentBx{
+        display: flex;
+        justify-content:center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+
+    }
+    section div.contentBx .formBx{
+        width: 100%;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        margin: 50px;
+
+    }
+    section div.contentBx .formBx h2{
+        color: #607d8b;
+        text-align: center;
+        margin: 30px 0 10px 0;
+        font-weight: 500;
+    }
+
+    .card-container{
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 1em;
+        margin: 10px 30px;
+        margin-right: auto;
+        width: 90%;
+
+    }
+
+}
+
+@media (max-width: 500px){
+    .card-container{
+        grid-template-columns: 1fr;
+        grid-gap: 1em;
+        margin: 10px 20px;
+        margin-right: auto;
+        width: 95%;
+
+    }
+}
+
+.correct-answer{
+    color: rgb(55, 133, 55);
+}
+.wrong-answer{
+    color: rgb(226, 81, 105);
+
 }

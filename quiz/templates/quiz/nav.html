@@ -1,0 +1,16 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+
+{% block content %}
+<header>
+    <div class="logo">Cold Quiz</div>
+    <nav>
+        <ul class="nav_links">
+            <li><a href="#">About</a></li>
+
+        </ul>
+    </nav>
+    <a href="{% url 'new-quiz' %}" class="cpa"><button>Create Quiz</button></a>
+</header>
+
+{% endblock content %}

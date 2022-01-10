@@ -4,9 +4,9 @@
     Quiz List
 {% endblock title %}
 {% block content %}
-<a href="{% url 'logout' %}">Logout</a>
+{% include 'quiz/nav.html' %}
 
-<a href="{% url 'new-quiz' %}">Create Quiz</a>
+<a href="{% url 'logout' %}">Logout</a>
 
 <div class="card-container">
     {% for quiz in quizzes %}

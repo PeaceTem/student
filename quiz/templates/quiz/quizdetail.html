@@ -5,12 +5,12 @@
 {% endblock title %}
 {% block content %}
 
-
+{% include 'quiz/nav.html' %}
 <div class="card-container detail-container">
         <div class='card'>
             <p>
                 <div class="title">{{quiz.title|capfirst}}</div>
-                <div class="desc">{{quiz.description|truncatewords:10}}</div> 
+                <div class="desc">{{quiz.description}}</div> 
                 <div class="create">created by {{quiz.user|capfirst}}</div>
                 <div class="date">It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
                 <div class="attempt">
@@ -27,6 +27,11 @@
                     <span>
                         <a class="link" href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
                     </span>
+                    {% if quiz.user == user %}
+                    <span>
+                        <a class="link" href="{% url 'new-question' quiz.id %}"><p>Add questions</p></a>
+                    </span>
+                    {% endif %}
                 </div>
             </p>
         </div>

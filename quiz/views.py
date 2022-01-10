@@ -78,6 +78,8 @@ def quiz_pdf(request):
 """class QuizList(ListView):
     model = Quizzes
     context_object_name = 'quizzes'"""
+
+
 def QuizList(request):
     quizzes = Quizzes.objects.all()
     context={
@@ -111,7 +113,7 @@ class RegisterPage(FormView):
     form_class = UserCreationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('quizzes')
-    print(UserCreationForm)
+    
     def form_valid(self, form):
         user = form.save()
         # logs the user in after registration
@@ -146,6 +148,8 @@ def NewQuiz(request):
 def NewQuestion(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
+    if user != quiz.user:
+        return HttpResponseForbidden
     if request.method=='POST':
         form = NewQuestionForm(request.POST)
         if form.is_valid():
@@ -178,10 +182,11 @@ def QuizDetail(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
     my_attempts = Attempter.objects.filter(quiz=quiz, user=user)
-
+    
     context = {
         'quiz': quiz,
         'my_attempts': my_attempts,
+        'user': user,
     }
     return render(request, 'quiz/quizdetail.html', context)
 
@@ -196,7 +201,7 @@ def TakeQuiz(request, quiz_id):
 def SubmitAttempt(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
-    earned_points = 0
+    total_score = 0
     if request.method == 'POST':
         questions = request.POST.getlist('question')
         answers = request.POST.getlist('answer')
@@ -209,18 +214,20 @@ def SubmitAttempt(request, quiz_id):
             Attempt.objects.create(quiz=quiz, attempter=attempter, question=question, answer=answer)
             attempt = Attempt.objects.get(quiz=quiz, attempter=attempter, question=question, answer=answer)
             attempts.append(attempt)
+            total_score += question.points
             if answer.is_correct == True:
 
                 attempter.score += question.points
                 attempter.save()
             
-        total_score = attempter.score
+        user_score = attempter.score
         quiz.attempts += 1
         quiz.save()
 
     context = {
         'quiz': quiz,
         'attempts': attempts,
+        'user_score': user_score,
         'total_score': total_score,
     }
 

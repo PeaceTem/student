@@ -1,37 +1,36 @@
-<div>
-    <div>
-        <p>
-            {{quiz.title}} was created by {{quiz.user}}. <br>
-            {{quiz.description}} <br>
-            It was created on {{quiz.date}} <br>
-            It will be due on {{quiz.due}} <br>
-            You have {{quiz.attempts}} to take the quiz. <br>
-            The time limit is {{quiz.time_limit_mins}} minutes. <br>
-            <a href="{% url 'quizzes' %}"><p>Go back homes</p></a>
-        </p>
-    </div>
-</div>
-<div>
-    <h3>Quiz Attempts:</h3>
-</div>
-<div>
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+    Take Quiz
+{% endblock title %}
+{% block content %}
+<div class="question-card-container">
+
     <form action="{% url 'submit-quiz' quiz.id %}" method="post">
         {% csrf_token %}
+        <ol>
         {% for question in quiz.questions.all %}
+        <div class="question-box">
+        <li class="question">
             <div>
-                <br>
                 <p>
                     {{question.question_text}}
                 </p>
                     <input type="hidden" name="question" value="{{question.id}}">
             </div>
+        </li>
             {% for answer in question.answers.all %}
                 <div>
                     <input type="checkbox" name="answer" value="{{answer.id}}">
                     <span>{{answer.answer_text}}</span>
                 </div>     
             {% endfor %}
+        </div>
+
         {% endfor %}
+    </ol>
         <input type="submit" value="Submit">
     </form>
 </div>
+
+{% endblock content %}

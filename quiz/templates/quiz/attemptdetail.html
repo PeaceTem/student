@@ -1,31 +1,32 @@
-
-<div>
-    {% for question in quiz.questions.all %}
-    <div>
-        <p>
-            {{question.question_text}}
-        </p>
-    </div>
-        {% for answer in question.answers.all %}
-    <div>
-        <p>{{answer.answer_text}}</p>
-    </div>     
-        {% endfor %}
-    {% endfor %}
-</div>
-
-
-<div>
-    <h5>Your Answers</h5>
-    <div>
-        {% for attempt in attempts %}
-            <p>Question:<br>{{attempt.question.question_text}}</p>
-            <p>Your Answer:<br>{{attempt.answer.answer_text}}</p>
-        {% endfor %}
-    </div>
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+    Quiz Result
+{% endblock title %}
+{% block content %}
+<div class="question-card-container">
     <p>
-        scored: {{total_score}} out of {{quiz.questions.all.count}}
+        You scored: {{user_score}} out of {{total_score}}
     </p>
+    <h5>Your Answers</h5>
+        {% for attempt in attempts %}
+    <div class="question-box">
+
+            <p>Question:<br>{{attempt.question.question_text}}</p>
+            <div
+            {% if attempt.answer.is_correct is True %} 
+                class="correct-answer"
+            {% else %}
+                class="wrong-answer"
+            {% endif %}
+            >
+            <p>Your Answer:<br>{{attempt.answer.answer_text}}</p>
+            </div>
+            
+        {% endfor %}
+    </div>
+    
 </div>
 
 <a href="{% url 'quizzes' %}"><p>Go back home</p></a>
+{% endblock content %}
