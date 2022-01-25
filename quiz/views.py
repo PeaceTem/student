@@ -145,6 +145,7 @@ def NewQuiz(request):
     }
     return render(request, 'quiz/newquiz.html', context)
 
+
 def NewQuestion(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
@@ -222,6 +223,8 @@ def SubmitAttempt(request, quiz_id):
             
         user_score = attempter.score
         quiz.attempts += 1
+        quiz.total_average_score += (user_score/total_score) * 100
+        quiz.average_score = quiz.total_average_score / quiz.attempts 
         quiz.save()
 
     context = {

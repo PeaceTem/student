@@ -6,11 +6,17 @@
     <div class="logo">Cold Quiz</div>
     <nav>
         <ul class="nav_links">
-            <li><a href="#">About</a></li>
+            <li>
+                <a href="{% url 'quiz:logout' %}">Logout</a>
+            </li>
+            <li>
+                <a href="{% url 'diaries' %}">Diary</a>
+            </li><li>
+                <a href="{% url 'tasks' %}">Todo-list</a>
+            </li>
 
         </ul>
     </nav>
-    <a href="{% url 'new-quiz' %}" class="cpa"><button>Create Quiz</button></a>
+    <a href="{% url 'quiz:new-quiz' %}" class="cpa"><button>Create Quiz</button></a>
 </header>
-
 {% endblock content %}

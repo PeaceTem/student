@@ -1,5 +1,5 @@
 import string
-
+# create the algorithm to rank objects
 letter = ['5','6','7','d','e','f','g','h','i','o','p','q','r','s','t','u','8','9','a','b','c','v','w','k','l','m','n','U','T','3','4','S','R','Q','P','O','N','M','L','K','J','I','H','G','F','E','D','x','y','z','Z','Y','B','A','0','1','2','X','W','V','j','C']
 #create a function that will convert the django id to a string of character
 def getDigit(id : int):

@@ -1,0 +1,9 @@
+<h1>Task: {{task}}</h1>
+<a href=" {% url 'tasks' %} ">Go Back</a>
+<p>This task was created by <b>{{task.user}}</b> </p>
+<h3> {{task.description}} </h3>
+{% if task.complete %}
+    <p>This task has been completed</p>
+{% else %}
+    <p>This task has never been completed.</p>
+{% endif %}

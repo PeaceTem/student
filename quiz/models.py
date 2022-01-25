@@ -28,8 +28,14 @@ class Quizzes(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     questions = models.ManyToManyField(Question)
     attempts = models.PositiveIntegerField(default=0, null=True, blank=True)
+    total_average_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    average_score = models.FloatField(default=0, null=True, blank=True)
 
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'Quizzes'
 
+        
     def __str__(self):
         return f"{self.title}"
 
@@ -55,3 +61,11 @@ class Attempt(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     bio = models.TextField(max_length=1000)
+    date_of_birth = models.DateField(null=True, blank=True)
+    quizAttempted = models.ForeignKey(Quizzes, on_delete=models.CASCADE, related_name="quizAttempted", null=True, blank=True)
+    quizCreated = models.ForeignKey(Quizzes, on_delete=models.CASCADE, related_name="quizCreated", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}"
+
+    

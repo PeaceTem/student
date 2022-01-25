@@ -6,34 +6,44 @@
 {% block content %}
 
 {% include 'quiz/nav.html' %}
-<div class="card-container detail-container">
-        <div class='card'>
+<div>
+        <div >
             <p>
-                <div class="title">{{quiz.title|capfirst}}</div>
-                <div class="desc">{{quiz.description}}</div> 
-                <div class="create">created by {{quiz.user|capfirst}}</div>
-                <div class="date">It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
-                <div class="attempt">
+                <div >{{quiz.title|capfirst}}</div>
+                <div >{{quiz.description | safe}}</div> 
+                <div >created by {{quiz.user|capfirst}}</div>
+                <div >It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
+                <div >
                     {% if quiz.attempts < 2 %}
                         {{quiz.attempts}} attempt
                     {% else %}
                         {{quiz.attempts}} attempts
                     {% endif %}
                 </div>
-                <div class="link-row">
+                <div>
                     <span>
-                        <a class="link" href="{% url 'quizzes' %}"><p>Go back home</p></a>
+                        <a href="{% url 'quiz:quizzes' %}"><p>Go back home</p></a>
                     </span>
                     <span>
-                        <a class="link" href="{% url 'take-quiz' quiz.id %}">Take Quiz</a>
+                        <a href="{% url 'quiz:take-quiz' quiz.id %}">Take Quiz</a>
                     </span>
                     {% if quiz.user == user %}
                     <span>
-                        <a class="link" href="{% url 'new-question' quiz.id %}"><p>Add questions</p></a>
+                        <a href="{% url 'quiz:new-question' quiz.id %}"><p>Add questions</p></a>
                     </span>
                     {% endif %}
                 </div>
             </p>
         </div>
 </div>
+<div class="copy-link-container">
+    <div class="label">
+        Joining link
+    </div>
+    <div class="copy-text">
+        <input type="text" class="text" value="">
+        <button>copy</button>
+    </div>
+</div>
+<script src="{% static 'quiz/copy.js' %}" type="text/javascript"></script>
 {% endblock content %}

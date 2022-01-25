@@ -1,0 +1,42 @@
+{% extends 'diary/base.html' %}
+{% block title %}
+<title>Diary | {{diary.user}}</title>
+{% endblock title %}
+
+{% block content %}
+<a class ='center-text' href="{% url 'diary-create' %}">Write a new story about yourself</a>
+
+{% for diary in diaries %}
+<div class="article">
+    <article>
+        <h3>Title: {{diary.title}}</h3>
+        <p>{{diary.post|truncatewords:20 | safe}}</p>
+        <span>
+            <b>Written by: {{diary.author}}</b>
+            <b>Created on: {{diary.date_created}}</b>
+            <b>Updated on: {{diary.date_updated}}</b>
+        </span>
+        <table>
+            <tr>
+                <td>
+                    <a href="{% url 'diary-update' diary.id %}">Update this story.</a>
+                </td>
+                <td>
+                    <a class='end-text' href="{% url 'diary-detail' diary.id %}">View this story.</a>
+                </td>
+            </tr>
+        </table>
+    </article>
+</div>
+{% endfor %}
+<!--
+    <pagination class="div">
+    <span class="steps-links">
+        {% if diaries.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{diaries.previous_page_number}}">previous</a>
+        {% endif %}
+    </span>
+</pagination>
+-->
+{% endblock content %}

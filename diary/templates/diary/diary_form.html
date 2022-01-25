@@ -1,0 +1,13 @@
+{% extends 'diary/base.html' %}
+{% block title %}
+    Form
+{% endblock title %}
+{% block content %}
+<a href="{% url 'diaries' %}">Go Back To The Diary Page</a>
+<form action="" method="post">
+    {% csrf_token %}
+    {{form.media}}
+    {{form.as_p}}
+    <input type="submit" value="Create Diary">
+</form>
+{% endblock content %}

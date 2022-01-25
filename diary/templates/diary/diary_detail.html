@@ -1,0 +1,18 @@
+{% extends 'diary/base.html' %}
+{% block title %}
+    Detail
+{% endblock title %}
+{% block content %}
+<article class='article'>
+    <div class="detail">
+        <h3>Title: {{diary.title}}</h3>
+        <p>{{diary.post}}</p>
+        <span>
+            <b>Written by: {{diary.author}}</b>
+            <b>Created on: {{diary.date_created}}</b>
+            <b>Updated on: {{diary.date_updated}}</b>
+        </span>
+    </div>
+</article>
+<h3 ><a class='link' href="{% url 'diaries' %}">Go Back To The Diary List</a></h3>
+{% endblock content %}
