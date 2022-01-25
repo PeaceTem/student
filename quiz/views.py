@@ -81,6 +81,9 @@ def quiz_pdf(request):
 
 
 def QuizList(request):
+    user = request.user
+    # if !user.is_authenticated:
+    #     return redirect('register')
     quizzes = Quizzes.objects.all()
     context={
         'quizzes': quizzes,
@@ -94,7 +97,7 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     
     def get_success_url(self):
-        return reverse_lazy('quizzes')
+        return reverse_lazy('quiz:quizzes')
 
 """def RegisterPage(request):
     if request.method == 'POST':
@@ -112,7 +115,7 @@ class RegisterPage(FormView):
     template_name = 'quiz/register.html'
     form_class = UserCreationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('quizzes')
+    success_url = reverse_lazy('quiz:quizzes')
     
     def form_valid(self, form):
         user = form.save()
@@ -123,7 +126,7 @@ class RegisterPage(FormView):
 
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            return redirect('quizzes')
+            return redirect('quiz:quizzes')
         return super(RegisterPage, self).get(*args, **kwargs)
 
 
@@ -135,7 +138,7 @@ def NewQuiz(request):
             title= form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
             quiz = Quizzes.objects.create(user=user, title=title, description=description)
-            return redirect('new-question', quiz_id=quiz.id)
+            return redirect('quiz:new-question', quiz_id=quiz.id)
 
     else:
         form = NewQuizForm()
@@ -167,7 +170,7 @@ def NewQuestion(request, quiz_id):
                 question.save()
                 quiz.questions.add(question)
                 quiz.save()
-            return redirect('new-question', quiz_id=quiz.id)
+            return redirect('quiz:new-question', quiz_id=quiz.id)
 
     else:
         form = NewQuestionForm()
