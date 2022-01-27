@@ -18,72 +18,10 @@ from django.contrib.auth import login
 
 from .models import Quizzes, Answer, Question, Attempter, Attempt
 
-"""# pdf generator 
-from django.http import FileResponse
-import io
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
-
-# create the views function for pdf generator
-def quiz_pdf(request):
-    # Create a bytestream buffer
-    buf = io.BytesIO()
-    # create a canvas
-    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    # creatin a text object
-    textob = c.beginText()
-    textob.setTextOrigin(inch, inch)
-    textob.setFont('Helvetica', 14)
-
-    # Add some lines of text
-    lines = [
-        "This is line 1",
-        "This is line 2",
-        "This is line 3",
-        "This is line 4",
-        "This is line 5"
-    ]
-
-    # get real cleaned_data
-    quizzes = Quiz.objects.all()
-
-    lines = []
-
-    for quiz in quizzes:
-        lines.append(quiz.user)
-        lines.append(quiz.title)
-        lines.append(quiz.description)
-        lines.append(quiz.date)
-        lines.append(quiz.due)
-        lines.append(quiz.allowed_attempts)
-        lines.append(quiz.time_limit_mins)
-        lines.append(" ")
-
-    # loop 
-    for line in lines:
-        textob.textLine(line)
-
-    # finish up
-    c.drawText(textob)
-    c.showPage()
-    c.save()
-    buf.seek(0)
-
-    # Return Something
-    return FileResponse(buf, as_attachment=True, filename="quiz.pdf")"""
-
-
-
-"""class QuizList(ListView):
-    model = Quizzes
-    context_object_name = 'quizzes'"""
 
 
 def QuizList(request):
     user = request.user
-    # if !user.is_authenticated:
-    #     return redirect('register')
     quizzes = Quizzes.objects.all()
     context={
         'quizzes': quizzes,
@@ -99,24 +37,13 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('quiz:quizzes')
 
-"""def RegisterPage(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
 
-            return redirect('login')
-    else:
-        form = UserForm()
-
-    return render(request, 'quiz/register.html', {'form': form})
-"""
 class RegisterPage(FormView):
     template_name = 'quiz/register.html'
     form_class = UserCreationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('quiz:quizzes')
-    
+    # form_invalid
     def form_valid(self, form):
         user = form.save()
         # logs the user in after registration
@@ -238,4 +165,51 @@ def SubmitAttempt(request, quiz_id):
     }
 
     return render(request, 'quiz/attemptdetail.html', context)
+
+
+
+# pdf generator 
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+# create the views function for pdf generator
+def QuizPdf(request, quiz_id):
+    # Create a bytestream buffer
+    buf = io.BytesIO()
+    # create a canvas
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    # create a text object
+    textob = c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFont('Helvetica', 14)
+
+    # Add some lines of text
+
+    # get real cleaned_data
+    quiz = get_object_or_404(Quizzes, id=quiz_id)
+
+
+    lines = []
+
+    lines.append(str(quiz.user))
+    lines.append(str(quiz.title))
+    lines.append(str(quiz.description))
+    lines.append(str(quiz.date))
+    lines.append(" ")
+
+    # loop 
+    for line in lines:
+        textob.textLine(line)
+
+    # finish up
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    # Return Something
+    return FileResponse(buf, as_attachment=True, filename=f"quiz/{quiz_id}.pdf")
 

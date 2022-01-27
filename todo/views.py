@@ -38,7 +38,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description', 'complete']
-    success_url = reverse_lazy('tasks')# the task is the url name that we initialise
+    success_url = reverse_lazy('todo:tasks')# the task is the url name that we initialise
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -48,10 +48,10 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
     fields = ['title', 'description', 'complete']
-    success_url = reverse_lazy('tasks')
+    success_url = reverse_lazy('todo:tasks')
 
 class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'task'
-    success_url= reverse_lazy('tasks')
+    success_url= reverse_lazy('todo:tasks')
 

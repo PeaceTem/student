@@ -32,10 +32,10 @@ class DiaryDetail(DetailView):
 class DiaryCreate(CreateView):
     model = Diary
     fields = '__all__'
-    success_url = reverse_lazy('diaries')
+    success_url = reverse_lazy('diary:diaries')
 
 
 class DiaryUpdate(UpdateView):
     model = Diary
     fields = '__all__'
-    success_url = reverse_lazy('diaries')
+    success_url = reverse_lazy('diary:diaries')

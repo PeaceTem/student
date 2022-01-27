@@ -5,7 +5,6 @@ from .models import Note
 admin.site.register(Note)
 
 
-# add note to the profile and the diary 
 # user should be able to upload image to their diary
 # their should be teacher mode and students mode for courses that will be created
 # their should be passcode for other user to check one's note
@@ -19,3 +18,6 @@ admin.site.register(Note)
 # social media app
 # add pagination
 # ranking apps
+# login required to the views that need it.
+# add font awesome to the required fields of the code
+# add update and delete both quiz and question 

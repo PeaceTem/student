@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'quiz.apps.QuizConfig',
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
+    'core.apps.CoreConfig',
     'ckeditor',
 ]
 

@@ -288,6 +288,8 @@ button:hover{
 .question{
     border-radius: 10px;
 }
+
+
 @media (max-width: 768px){
     section div.imgBx{
         position: absolute;
@@ -308,7 +310,7 @@ button:hover{
     section div.contentBx .formBx{
         width: 100%;
         padding: 40px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 1);
         margin: 50px;
 
     }
@@ -351,10 +353,10 @@ button:hover{
 
 /* copy link */
 
-.copy-link-container{
-    /* transform: translate(50%, 50%); */
+/* .copy-link-container{
+    transform: translate(50%, 50%);
 
-}
+} */
 
 .label{
     padding: 10px;
@@ -392,7 +394,7 @@ button:hover{
 }
 
 .copy-text button:active {
-    backkground: #809ce2;
+    background: #809ce2;
 }
 
 .copy-text button:before{

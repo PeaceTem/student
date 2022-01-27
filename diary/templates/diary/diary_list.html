@@ -1,10 +1,10 @@
 {% extends 'diary/base.html' %}
 {% block title %}
-<title>Diary | {{diary.user}}</title>
+    {{diary.user}}
 {% endblock title %}
 
 {% block content %}
-<a class ='center-text' href="{% url 'diary-create' %}">Write a new story about yourself</a>
+<a class ='center-text' href="{% url 'diary:diary-create' %}">Write a new story about yourself</a>
 
 {% for diary in diaries %}
 <div class="article">
@@ -19,10 +19,10 @@
         <table>
             <tr>
                 <td>
-                    <a href="{% url 'diary-update' diary.id %}">Update this story.</a>
+                    <a href="{% url 'diary:diary-update' diary.id %}">Update this story.</a>
                 </td>
                 <td>
-                    <a class='end-text' href="{% url 'diary-detail' diary.id %}">View this story.</a>
+                    <a class='end-text' href="{% url 'diary:diary-detail' diary.id %}">View this story.</a>
                 </td>
             </tr>
         </table>

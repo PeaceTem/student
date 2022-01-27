@@ -27,6 +27,6 @@
     </div>
     
 </div>
-
-<a href="{% url 'quiz:quizzes' %}"><p>Go back home</p></a>
+<a href="{% url 'quiz:quiz-pdf' quiz.id %}">Download PDF</a>
+<a href="{% url 'quiz:quizzes' %}">Go back home</a>
 {% endblock content %}

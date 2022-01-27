@@ -1,6 +1,7 @@
 from django.urls import path 
 from .views import DiaryList, DiaryCreate, DiaryUpdate, DiaryDetail
 
+app_name = 'diary'
 
 
 urlpatterns = [
