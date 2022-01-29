@@ -29,7 +29,9 @@ class Quizzes(models.Model):
     questions = models.ManyToManyField(Question)
     attempts = models.PositiveIntegerField(default=0, null=True, blank=True)
     total_average_score = models.PositiveIntegerField(default=0, null=True, blank=True)
-    average_score = models.FloatField(default=0, null=True, blank=True)
+    # average_score = models.FloatField(default=0, null=True, blank=True)
+    average_score = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, null=True, blank=True)
+
 
     class Meta:
         ordering = ['-date', 'attempts']

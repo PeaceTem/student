@@ -18,7 +18,11 @@
                 </p>
                     <input type="hidden" name="question" value="{{question.id}}">
                     <p>
-                        {{question.points}} points
+                        {% if question.points < 2 %}
+                            {{question.points}} point
+                        {% else %}
+                            {{question.points}} points
+                        {% endif %}
                     </p>
             </div>
         </li>

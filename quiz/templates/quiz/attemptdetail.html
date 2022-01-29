@@ -14,7 +14,11 @@
 
             <p>Question:<br>{{attempt.question.question_text}}</p>
             <p>
-                {{attempt.question.points}} points
+                {% if attempt.question.points < 2 %}
+                            {{attempt.question.points}} point
+                        {% else %}
+                            {{attempt.question.points}} points
+                        {% endif %}
             </p>
             <div
             {% if attempt.answer.is_correct is True %} 

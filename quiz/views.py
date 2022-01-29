@@ -234,7 +234,7 @@ def QuizPdf(request, quiz_id):
 
     lines = []
 
-    lines.append('This quiz was created by' + str(quiz.user))
+    lines.append('This quiz was created by ' + str(quiz.user))
     lines.append(str(quiz.title))
     lines.append(str(quiz.description))
     lines.append(" ")
