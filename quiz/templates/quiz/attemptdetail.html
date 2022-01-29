@@ -13,6 +13,9 @@
     <div class="question-box">
 
             <p>Question:<br>{{attempt.question.question_text}}</p>
+            <p>
+                {{attempt.question.points}} points
+            </p>
             <div
             {% if attempt.answer.is_correct is True %} 
                 class="correct-answer"

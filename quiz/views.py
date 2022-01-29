@@ -8,7 +8,7 @@ from .forms import NewQuizForm, NewQuestionForm, NewAnswerForm
 
 from django.views.generic.list import ListView
 
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.views import LoginView
@@ -19,44 +19,37 @@ from django.contrib.auth import login
 from .models import Quizzes, Answer, Question, Attempter, Attempt
 
 
-
+# the quiz list view
+@login_required(login_url='login')
 def QuizList(request):
     user = request.user
     quizzes = Quizzes.objects.all()
+
+    # if request.method == 'POST':
+        # if form.is_valid():
+    search_input= request.GET.get('search-area') or ''
+    print(search_input)
+    if search_input:
+        quizzes = Quizzes.objects.filter(title__icontains=search_input)
+
+        context={
+            'quizzes': quizzes,
+            'search_input': search_input,
+        }
+        return render(request, 'quiz/quizzes_list.html', context)
+
     context={
         'quizzes': quizzes,
     }
     return render(request, 'quiz/quizzes_list.html', context)
 
-# Create your views here.
-class CustomLoginView(LoginView):
-    template_name = 'quiz/login.html'
-    fields = '__all__'
-    redirect_authenticated_user = True
-    
-    def get_success_url(self):
-        return reverse_lazy('quiz:quizzes')
 
 
-class RegisterPage(FormView):
-    template_name = 'quiz/register.html'
-    form_class = UserCreationForm
-    redirect_authenticated_user = True
-    success_url = reverse_lazy('quiz:quizzes')
-    # form_invalid
-    def form_valid(self, form):
-        user = form.save()
-        # logs the user in after registration
-        if user is not None:
-            login(self.request, user)
-        return super(RegisterPage, self).form_valid(form)
-
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('quiz:quizzes')
-        return super(RegisterPage, self).get(*args, **kwargs)
 
 
+
+# create a new quiz
+@login_required(login_url='login')
 def NewQuiz(request):
     user = request.user
     if request.method == 'POST':
@@ -76,11 +69,47 @@ def NewQuiz(request):
     return render(request, 'quiz/newquiz.html', context)
 
 
+
+# create an update quiz view
+@login_required(login_url='login')
+def UpdateQuiz(request, quiz_id):
+    quiz = get_object_or_404(Quizzes, id=quiz_id)
+    # quiz = Quizzes.objects.get(id=quiz_id)
+    form = NewQuizForm(instance=quiz)
+
+    if request.method == 'POST':
+        form = NewQuizForm(request.POST, instance=quiz)
+        if form.is_valid():
+            form.save()
+            return redirect('quiz:quiz-detail', quiz_id=quiz.id)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'quiz/newquiz.html', context)
+
+
+
+# create the quiz delete view
+@login_required(login_url='login')
+def DeleteQuiz(request, quiz_id):
+    quiz = get_object_or_404(Quizzes, id=quiz_id)
+    if request.method == 'POST':
+        quiz.delete()
+        return redirect('quiz:quizzes')
+    
+    return render(request, 'quiz/quiz_delete.html', {'obj': quiz})
+
+# create a new question
+@login_required(login_url='login')
 def NewQuestion(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
+
     if user != quiz.user:
         return HttpResponseForbidden
+    
     if request.method=='POST':
         form = NewQuestionForm(request.POST)
         if form.is_valid():
@@ -101,6 +130,7 @@ def NewQuestion(request, quiz_id):
 
     else:
         form = NewQuestionForm()
+    
     context = {
         'form': form,
     }
@@ -109,6 +139,8 @@ def NewQuestion(request, quiz_id):
 
 
 
+
+# the details of a quiz
 def QuizDetail(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
@@ -121,18 +153,25 @@ def QuizDetail(request, quiz_id):
     }
     return render(request, 'quiz/quizdetail.html', context)
 
+
+
+# the real test view
 def TakeQuiz(request, quiz_id):
     quiz = get_object_or_404(Quizzes, id=quiz_id)
+
     context = {
         'quiz': quiz,
     }
     return render(request, 'quiz/takequiz.html', context)
 
 
+
+# the result view
 def SubmitAttempt(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quizzes, id=quiz_id)
     total_score = 0
+
     if request.method == 'POST':
         questions = request.POST.getlist('question')
         answers = request.POST.getlist('answer')
@@ -175,6 +214,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
+
 # create the views function for pdf generator
 def QuizPdf(request, quiz_id):
     # Create a bytestream buffer
@@ -194,11 +234,30 @@ def QuizPdf(request, quiz_id):
 
     lines = []
 
-    lines.append(str(quiz.user))
+    lines.append('This quiz was created by' + str(quiz.user))
     lines.append(str(quiz.title))
     lines.append(str(quiz.description))
-    lines.append(str(quiz.date))
     lines.append(" ")
+    lines.append(f'Visit www.resersi.com/quiz/{quiz_id} to create and take quiz.')
+    lines.append(" ")
+
+
+    numberToAlpha = {
+    '1':'a',
+    '2':'b',
+    '3':'c',
+    '4':'d',
+    '5':'e'
+    }
+
+    for question_index, question in enumerate(quiz.questions.all()):
+        lines.append('(' + str(question_index + 1) + ') ' + str(question.question_text))
+
+        for answer_index, answer in enumerate(question.answers.all()):
+            lines.append('    (' + numberToAlpha[str(answer_index + 1)] + ')   ' + str(answer.answer_text))
+        lines.append(" ")
+            
+
 
     # loop 
     for line in lines:
@@ -211,5 +270,6 @@ def QuizPdf(request, quiz_id):
     buf.seek(0)
 
     # Return Something
-    return FileResponse(buf, as_attachment=True, filename=f"quiz/{quiz_id}.pdf")
+    return FileResponse(buf, as_attachment=True, filename=f"quiz/{quiz.title}.pdf")
+
 

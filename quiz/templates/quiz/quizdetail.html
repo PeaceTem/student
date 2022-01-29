@@ -29,6 +29,12 @@
                     </span>
                     {% if quiz.user == user %}
                     <span>
+                        <a href="{% url 'quiz:update-quiz' quiz.id %}"><p>Edit</p></a>
+                    </span>
+                    <span>
+                        <a href="{% url 'quiz:delete-quiz' quiz.id %}"><p>Delete</p></a>
+                    </span>
+                    <span>
                         <a href="{% url 'quiz:new-question' quiz.id %}"><p>Add questions</p></a>
                     </span>
                     {% endif %}

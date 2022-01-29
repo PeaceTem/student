@@ -32,7 +32,7 @@ class Quizzes(models.Model):
     average_score = models.FloatField(default=0, null=True, blank=True)
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['-date', 'attempts']
         verbose_name_plural = 'Quizzes'
 
         

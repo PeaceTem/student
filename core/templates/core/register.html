@@ -1,7 +1,8 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
+
 {% block title %}
-    Login
+    Register
 {% endblock title %}
 {% block content %}
 <body>
@@ -11,7 +12,16 @@
         </div>
         <div class="contentBx">
             <div class="formBx">
-                <h2>Login</h2>
+                <h2>Register</h2>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class='{{message.tags}}'{% endif %}>
+                        {{message}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
                 <form action="" method="post">
                     {% csrf_token %}
                     
@@ -21,19 +31,23 @@
                     </div>
                     <div class="inputBx">
                         <span>Password</span>
-                        <input type="password" name="password" id="id_password">
+                        <input type="password" name="password1" id="id_password1">
                     </div>
                     <div class="inputBx">
-                        <input type="submit" value="Sign In">
+                        <span>Confirm Password</span>
+                        <input type="password" name="password2" id="id_password2">
+                    </div>
+                    <div class="inputBx">
+                        <input type="submit" value="Sign Up">
                     </div>
                     <div class="inputBx">
                         <p>
-                            Don't have an account? <a href="{% url 'register' %} ">Sign Up</a>
+                            Already have an account? <a href="{% url 'login' %} ">Sign In</a>
                         </p>
                     </div>
                 </form>
             </div>
         </div>
-    </section>
+    </section>  
 </body>
 {% endblock content %}

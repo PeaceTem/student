@@ -17,6 +17,9 @@
                     {{question.question_text}}
                 </p>
                     <input type="hidden" name="question" value="{{question.id}}">
+                    <p>
+                        {{question.points}} points
+                    </p>
             </div>
         </li>
             {% for answer in question.answers.all %}
