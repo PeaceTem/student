@@ -4,6 +4,8 @@
     Take Quiz
 {% endblock title %}
 {% block content %}
+{% include 'messages.html' %}
+
 <div class="question-card-container">
 
     <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post">

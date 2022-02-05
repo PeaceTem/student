@@ -40,4 +40,4 @@ def finalConvert(id : int):
     return convert(id) + productConvert(product) + summationConvert(summation)
 
 
-print(finalConvert(23))
+# print(finalConvert(23))

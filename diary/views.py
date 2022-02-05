@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Diary
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -9,34 +9,71 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from .forms import NewDiaryForm
 # Create your views here.
+@login_required(login_url='login')
+def DiaryList(request):
+    diaries = Diary.objects.filter(user=request.user)
+    count = diaries.count()
 
-class DiaryList(ListView):
-    model = Diary
-    #paginate_by = 2
-    context_object_name = 'diaries'
+    context={
+        'diaries': diaries,
+        'count': count,
+    }
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['diaries'] = context['diaries'].filter(user=self.request.user)
-        context['count'] = context['diaries'].filter(user=self.request.user).count()
+    return render(request, 'diary/diary_list.html', context)
+
+
+
+@login_required(login_url='login')
+def DiaryDetail(request, pk):
+    diary= get_object_or_404(Diary, id=pk)
+    context={
+        'diary': diary,
+    }
+    return render(request, 'diary/diary_detail.html', context)
+
+@login_required(login_url='login')
+def DiaryCreate(request):
+    user = request.user
+    form = NewDiaryForm()
+
+    if request.method == 'POST':
+        form = NewDiaryForm(request.POST)
+        if form.is_valid():
+            title= form.cleaned_data.get('title')
+            post=form.cleaned_data.get('post')
+            Diary.objects.create(user=user, title=title, post=post)
+            return redirect('diary:diaries')
         
-        return context
-        
+    context={
+        'form': form,
+    }
 
-class DiaryDetail(DetailView):
-    model = Diary
-    context_object_name = 'diary'
-
-
-class DiaryCreate(CreateView):
-    model = Diary
-    fields = '__all__'
-    success_url = reverse_lazy('diary:diaries')
+    return render(request, 'diary/diary_form.html', context)
 
 
-class DiaryUpdate(UpdateView):
-    model = Diary
-    fields = '__all__'
-    success_url = reverse_lazy('diary:diaries')
+
+@login_required(login_url='login')
+def DiaryUpdate(request, pk):
+    diary=get_object_or_404(Diary, id=pk)
+    if request.user != diary.user:
+        return HttpResponseForbidden
     
+    form = NewDiaryForm(instance=diary)
+    if request.method == 'POST':
+        form = NewDiaryForm(request.POST, instance=diary)
+        if form.is_valid():
+            form.save()
+            return redirect('diary:diaries')
+
+    context={
+        'form': form,
+        'diary': diary,
+    }
+    return render(request, 'diary/diary_update.html', context)
+
+

@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -6,40 +5,28 @@ from django.http import HttpResponseForbidden
 # function based views
 from .forms import NewQuizForm, NewQuestionForm, NewAnswerForm
 
-from django.views.generic.list import ListView
-
-from django.views.generic.edit import FormView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import login
-
 from .models import Quizzes, Answer, Question, Attempter, Attempt
-
+from django.core.paginator import Paginator
 
 # the quiz list view
 @login_required(login_url='login')
 def QuizList(request):
     user = request.user
-    quizzes = Quizzes.objects.all()
+    quizzes = Quizzes.objects.all()# shuffle with .order_by('?')
 
-    # if request.method == 'POST':
-        # if form.is_valid():
+
     search_input= request.GET.get('search-area') or ''
-    print(search_input)
     if search_input:
         quizzes = Quizzes.objects.filter(title__icontains=search_input)
 
-        context={
-            'quizzes': quizzes,
-            'search_input': search_input,
-        }
-        return render(request, 'quiz/quizzes_list.html', context)
+    # create pagination
+    p = Paginator(quizzes, 1)
+    page = request.GET.get('page')
+    quizzes = p.get_page(page)
 
     context={
-        'quizzes': quizzes,
+        'search_input': search_input,
+        'page_obj': quizzes,
     }
     return render(request, 'quiz/quizzes_list.html', context)
 
@@ -75,7 +62,11 @@ def NewQuiz(request):
 def UpdateQuiz(request, quiz_id):
     quiz = get_object_or_404(Quizzes, id=quiz_id)
     # quiz = Quizzes.objects.get(id=quiz_id)
+    if request.user != quiz.user:
+        return HttpResponseForbidden()
+    
     form = NewQuizForm(instance=quiz)
+    print(form)
 
     if request.method == 'POST':
         form = NewQuizForm(request.POST, instance=quiz)
@@ -85,9 +76,10 @@ def UpdateQuiz(request, quiz_id):
 
     context = {
         'form': form,
+        'quiz': quiz,
     }
 
-    return render(request, 'quiz/newquiz.html', context)
+    return render(request, 'quiz/updatequiz.html', context)
 
 
 
@@ -108,7 +100,7 @@ def NewQuestion(request, quiz_id):
     quiz = get_object_or_404(Quizzes, id=quiz_id)
 
     if user != quiz.user:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
     
     if request.method=='POST':
         form = NewQuestionForm(request.POST)
@@ -271,5 +263,38 @@ def QuizPdf(request, quiz_id):
 
     # Return Something
     return FileResponse(buf, as_attachment=True, filename=f"quiz/{quiz.title}.pdf")
+
+
+# xhtml2pdf
+
+from django.http import HttpResponse
+
+from django.views.generic import View
+
+from .utils import render_to_pdf
+from django.template.loader import get_template
+
+from diary.models import Diary
+
+class GeneratePDF(View):
+    def get(self, request, quiz_id, *args, **kwargs):
+        # template = get_template('quiz/takequiz.html')
+        quiz = get_object_or_404(Quizzes, id=quiz_id)
+
+        context = {
+            'quiz': quiz,
+        }
+        # html = template.render(context)
+        pdf = render_to_pdf('quiz/takequiz.html', context)
+
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            filename = f"quiz_{quiz.title}.pdf"
+            # content = f"inline; filename={filename}"
+            content = f"attachment; filename={filename}"
+            response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Not Found!")
+
 
 

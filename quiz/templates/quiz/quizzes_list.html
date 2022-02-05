@@ -4,6 +4,8 @@
     Quiz List
 {% endblock title %}
 {% block content %}
+{% include 'messages.html' %}
+
 {% include 'quiz/nav.html' %}
 
 
@@ -19,7 +21,7 @@
     
 </div>
 <div class="card-container">
-    {% for quiz in quizzes %}
+    {% for quiz in page_obj %}
         <div class='card'>
             <p>
                 <div class="title">{{quiz.title|capfirst}}</div>
@@ -42,7 +44,7 @@
                     <span>
                         <a class="link" href="{% url 'quiz:quiz-detail' quiz.id %}"> View Detail</a>
                     </span>
-                    <span>
+                 <span>
                         <a class="link" href="{% url 'quiz:take-quiz' quiz.id %}">Take Quiz</a>
                     </span>
                 </div>
@@ -50,4 +52,7 @@
         </div>
     {% endfor %}
 </div>
+
+{% include 'core/pagination.html' %}
+
 {% endblock content %}

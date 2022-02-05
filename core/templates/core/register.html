@@ -1,6 +1,6 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
-
+ 
 {% block title %}
     Register
 {% endblock title %}
@@ -13,15 +13,7 @@
         <div class="contentBx">
             <div class="formBx">
                 <h2>Register</h2>
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li {% if message.tags %} class='{{message.tags}}'{% endif %}>
-                        {{message}}
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                {% include 'messages.html' %}
                 <form action="" method="post">
                     {% csrf_token %}
                     

@@ -4,6 +4,7 @@
     Quiz Result
 {% endblock title %}
 {% block content %}
+{% include 'messages.html' %}
 <div class="question-card-container">
     <p>
         You scored: {{user_score}} out of {{total_score}}

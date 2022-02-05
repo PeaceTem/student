@@ -1,18 +1,20 @@
 {% extends 'diary/base.html' %}
 {% block title %}
-    {{diary.user}}
+{{request.user.username}}
 {% endblock title %}
 
 {% block content %}
+{% include 'messages.html' %}
 <a class ='center-text' href="{% url 'diary:diary-create' %}">Write a new story about yourself</a>
 
 {% for diary in diaries %}
 <div class="article">
     <article>
+        <!-- <img src="{{diary.photo.url}}" alt=""> -->
         <h3>Title: {{diary.title}}</h3>
         <p>{{diary.post|truncatewords:20 | safe}}</p>
         <span>
-            <b>Written by: {{diary.author}}</b>
+            <b>Written by: {{diary.user}}</b>
             <b>Created on: {{diary.date_created}}</b>
             <b>Updated on: {{diary.date_updated}}</b>
         </span>

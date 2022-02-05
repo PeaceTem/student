@@ -3,16 +3,17 @@
     Detail
 {% endblock title %}
 {% block content %}
+{% include 'messages.html' %}
 <article class='article'>
     <div class="detail">
         <h3>Title: {{diary.title}}</h3>
-        <p>{{diary.post}}</p>
+        <p>{{diary.post | safe}}</p>
         <span>
-            <b>Written by: {{diary.author}}</b>
+            <b>Written by: {{diary.user}}</b>
             <b>Created on: {{diary.date_created}}</b>
             <b>Updated on: {{diary.date_updated}}</b>
         </span>
     </div>
 </article>
-<h3 ><a class='link' href="{% url 'diaries' %}">Go Back To The Diary List</a></h3>
+<h3 ><a class='link' href="{% url 'diary:diaries' %}">Go Back To The Diary List</a></h3>
 {% endblock content %}

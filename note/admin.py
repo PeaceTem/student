@@ -18,6 +18,4 @@ admin.site.register(Note)
 # social media app
 # add pagination
 # ranking apps
-# login required to the views that need it.
 # add font awesome to the required fields of the code
-# add update and delete both quiz and question 

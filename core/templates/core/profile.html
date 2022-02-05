@@ -1,0 +1,66 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+    Profile
+{% endblock title %}
+{% block content %}
+<div class="profile-box">
+    <div class="imgBx">
+        {% if profile.picture %}
+        <img src="{{profile.picture.url}}" alt="profile picture for {{profile.user.username}}">
+        {% else %}
+        <img src="{% static 'quiz/quiz.jpg' %}" alt="default profile picture for {{profile.user.username}}">
+        {% endif %}
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Username</h5>
+        <p>{{profile.user.username}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Firstname</h5>
+        <p>{{profile.first_name}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Lastname</h5>
+        <p>{{profile.last_name}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Middlename</h5>
+        <p>{{profile.middle_name}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Email</h5>
+        <p>{{profile.email}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Bio</h5>
+        <p>{{profile.bio}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Date Of Birth</h5>
+        <p>{{profile.date_of_birth}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">State Of Residence</h5>
+        <p>{{profile.state_of_residence}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">State Of Origin</h5>
+        <p>{{profile.state_of_origin}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Nationality</h5>
+        <p>{{profile.nationality}}</p>
+    </div>
+    <div class="userBx">
+        <h5 class="heading">Date Joined</h5>
+        <p>{{profile.date_joined}}</p>
+    </div><div class="userBx">
+        <h5 class="heading">Streak</h5>
+        <p>{{profile.streak}}</p>
+    </div>
+    <div class="link">
+        <a href="{% url 'edit_profile' %}">Edit</a>
+    </div>
+</div>
+{% endblock content %}

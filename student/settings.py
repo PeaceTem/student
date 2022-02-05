@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 import django_heroku
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*)-7+49c&d(cdsili)1xr4dzaq*82a)^ip!w@*y$xd8s46d$!c'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool, default=True)
 
 ALLOWED_HOSTS = ["https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1"]
 
@@ -41,7 +42,7 @@ INSTALLED_APPS = [
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
     'core.apps.CoreConfig',
-    'ckeditor',
+    'referral.apps.ReferralConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,12 +55,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# root url
 ROOT_URLCONF = 'student.urls'
 
+# templates configuration
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,6 +75,8 @@ TEMPLATES = [
     },
 ]
 
+
+# wsgi web configuration
 WSGI_APPLICATION = 'student.wsgi.application'
 
 
@@ -123,18 +128,40 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
+STATIC_URL = '/static/' # remove the /
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'quiz' / 'static',
+    BASE_DIR / 'core' / 'static',
+    BASE_DIR / 'todo' / 'static',
+    BASE_DIR / 'diary' / 'static',
 
 ]
 
+# media files configuration
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+
+
+# login credentials
 LOGIN_REDIRECT_URL = 'quizzes'
 LOGIN_URL = 'login'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# django hosting configuration
 django_heroku.settings(locals())
+
+
+#SMTP Configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'olumidejonathan10@gmail.com'
+EMAIL_HOST_PASSWORD = 'triumphant'

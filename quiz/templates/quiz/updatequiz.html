@@ -1,0 +1,42 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}
+   Create Quiz 
+{% endblock title %}
+{% block content %}
+{% include 'messages.html' %}
+
+    <section>
+        <div class="imgBx">
+            <img src="{% static 'quiz/quiz.jpg' %}">
+        </div>
+        <div class="contentBx">
+            <div class="formBx">
+                <h2>Create Quiz</h2>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="inputBx">
+                        <span>Title</span>
+                        <input type="text" name="title" id="id_title" value="{{quiz.title}}">
+                    </div>
+                    <div class="inputBx">
+                        <span>Description</span>
+                        <input type="text" name="description" id="id_description" value="{{quiz.description}}">
+                    </div>
+                    <div class="inputBx">
+                        <input type="submit" value="Create">
+                    </div>
+                    <div class="inputBx">
+                        <p>
+                            <a href="{% url 'quiz:quizzes' %}"><p>Go back home</p></a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+
+{% endblock content %}

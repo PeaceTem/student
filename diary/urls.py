@@ -5,8 +5,8 @@ app_name = 'diary'
 
 
 urlpatterns = [
-    path('', DiaryList.as_view(), name='diaries'),
-    path('diary-create/', DiaryCreate.as_view(), name='diary-create'),
-    path('diary-update/<str:pk>', DiaryUpdate.as_view(), name='diary-update'),
-    path('diary-detail/<str:pk>', DiaryDetail.as_view(), name='diary-detail'),
+    path('', DiaryList, name='diaries'),
+    path('diary-create/', DiaryCreate, name='diary-create'),
+    path('diary-update/<str:pk>', DiaryUpdate, name='diary-update'),
+    path('diary-detail/<str:pk>', DiaryDetail, name='diary-detail'),
 ]
