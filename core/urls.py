@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CustomLoginView, RegisterPage, ProfilePage, ProfileCreationPage
+from .views import main_view, my_recommendations_view, CustomLoginView, RegisterPage, ProfilePage, ProfileCreationPage
 from django.contrib.auth import views as auth_views
 
 
@@ -8,6 +8,9 @@ urlpatterns = [
     path('register/', RegisterPage.as_view(), name='register'),
     path('login/', CustomLoginView, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('referral/<str:ref_code>/', main_view, name='main_view'),
+    path('profiles/', my_recommendations_view, name='my_recs_view'),
+
 
     #reset password
     path('reset_password/', auth_views.PasswordResetView.as_view(),

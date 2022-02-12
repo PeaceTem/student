@@ -1,0 +1,37 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block css %} "{% static 'css/navbar.css' %}" {% endblock css %}
+
+
+
+{% block content %}
+<body>
+    <header>
+        <div class="top-navigation">
+            <!-- <div class="active-link"></div> -->
+            <a href="#" class="active">Quiz</a>
+            <a href="#">Diary</a>
+            <a href="#">Task</a>
+            <a href="#">Note</a>
+            <a href="#">Shop</a>
+        </div>
+    </header>
+    {% block quizzes %}
+    {% endblock quizzes %}
+    <script src="navbar.js" type="text/javascript"></script>
+</body>
+
+
+{% endblock content %}
+
+<!-- {% block js %} "{% static 'js/navbar.js' %}" {% endblock js %} -->
+
+
+
+
+
+

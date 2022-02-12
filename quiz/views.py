@@ -1,12 +1,99 @@
+
+# important method to deal with models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
-# function based views
+# the forms for each model
 from .forms import NewQuizForm, NewQuestionForm, NewAnswerForm
 
+# the models to be used to create the quiz app
 from .models import Quizzes, Answer, Question, Attempter, Attempt
+
+#Paginator
+
 from django.core.paginator import Paginator
+
+# django messages
+from django.contrib import messages
+
+
+# pdf generator
+
+from django.http import HttpResponse
+
+from django.views.generic import View
+
+# import the utilities needed to create the quiz
+from .utils import render_to_pdf
+from django.template.loader import get_template
+
+from diary.models import Diary
+
+
+# make sure you add the question mode herein
+
+# xhtml2pdf
+
+
+class GeneratePDF(View):
+    def get(self, request, quiz_id, *args, **kwargs):
+        # template = get_template('quiz/takequiz.html')
+        quiz = get_object_or_404(Quizzes, id=quiz_id)
+
+        context = {
+            'quiz': quiz,
+        }
+        # html = template.render(context)
+        pdf = render_to_pdf('quiz/takequiz.html', context)
+
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            filename = f"quiz_{quiz.title}.pdf"
+            # content = f"inline; filename={filename}"
+            content = f"attachment; filename={filename}"
+            response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Not Found!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# the details of a quiz
+def QuizDetail(request, quiz_id):
+    user = request.user
+    quiz = get_object_or_404(Quizzes, id=quiz_id)
+    my_attempts = Attempter.objects.filter(quiz=quiz, user=user)
+    
+    context = {
+        'quiz': quiz,
+        'my_attempts': my_attempts,
+        'user': user,
+    }
+    return render(request, 'quiz/quizdetail.html', context)
+
+
+
+
+
+
+
+
+
 
 # the quiz list view
 @login_required(login_url='login')
@@ -20,7 +107,7 @@ def QuizList(request):
         quizzes = Quizzes.objects.filter(title__icontains=search_input)
 
     # create pagination
-    p = Paginator(quizzes, 1)
+    p = Paginator(quizzes, 200)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
@@ -49,6 +136,8 @@ def NewQuiz(request):
 
     else:
         form = NewQuizForm()
+        messages.info(request, 'Make sure you add an image!')
+        
 
     context = {
         'form': form,
@@ -100,6 +189,7 @@ def NewQuestion(request, quiz_id):
     quiz = get_object_or_404(Quizzes, id=quiz_id)
 
     if user != quiz.user:
+        messages.error(request, "You are not allowed to add questions to this quiz!")
         return HttpResponseForbidden()
     
     if request.method=='POST':
@@ -119,6 +209,10 @@ def NewQuestion(request, quiz_id):
                 quiz.questions.add(question)
                 quiz.save()
             return redirect('quiz:new-question', quiz_id=quiz.id)
+        else:
+            messages.error(request, "An error occurred!")
+            messages.error(request, "Question not created!")
+
 
     else:
         form = NewQuestionForm()
@@ -130,20 +224,6 @@ def NewQuestion(request, quiz_id):
     return render(request, 'quiz/newquestion.html', context)
 
 
-
-
-# the details of a quiz
-def QuizDetail(request, quiz_id):
-    user = request.user
-    quiz = get_object_or_404(Quizzes, id=quiz_id)
-    my_attempts = Attempter.objects.filter(quiz=quiz, user=user)
-    
-    context = {
-        'quiz': quiz,
-        'my_attempts': my_attempts,
-        'user': user,
-    }
-    return render(request, 'quiz/quizdetail.html', context)
 
 
 
@@ -188,6 +268,7 @@ def SubmitAttempt(request, quiz_id):
         quiz.average_score = quiz.total_average_score / quiz.attempts 
         quiz.save()
 
+
     context = {
         'quiz': quiz,
         'attempts': attempts,
@@ -200,101 +281,5 @@ def SubmitAttempt(request, quiz_id):
 
 
 # pdf generator 
-from django.http import FileResponse
-import io
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
-
-
-# create the views function for pdf generator
-def QuizPdf(request, quiz_id):
-    # Create a bytestream buffer
-    buf = io.BytesIO()
-    # create a canvas
-    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    # create a text object
-    textob = c.beginText()
-    textob.setTextOrigin(inch, inch)
-    textob.setFont('Helvetica', 14)
-
-    # Add some lines of text
-
-    # get real cleaned_data
-    quiz = get_object_or_404(Quizzes, id=quiz_id)
-
-
-    lines = []
-
-    lines.append('This quiz was created by ' + str(quiz.user))
-    lines.append(str(quiz.title))
-    lines.append(str(quiz.description))
-    lines.append(" ")
-    lines.append(f'Visit www.resersi.com/quiz/{quiz_id} to create and take quiz.')
-    lines.append(" ")
-
-
-    numberToAlpha = {
-    '1':'a',
-    '2':'b',
-    '3':'c',
-    '4':'d',
-    '5':'e'
-    }
-
-    for question_index, question in enumerate(quiz.questions.all()):
-        lines.append('(' + str(question_index + 1) + ') ' + str(question.question_text))
-
-        for answer_index, answer in enumerate(question.answers.all()):
-            lines.append('    (' + numberToAlpha[str(answer_index + 1)] + ')   ' + str(answer.answer_text))
-        lines.append(" ")
-            
-
-
-    # loop 
-    for line in lines:
-        textob.textLine(line)
-
-    # finish up
-    c.drawText(textob)
-    c.showPage()
-    c.save()
-    buf.seek(0)
-
-    # Return Something
-    return FileResponse(buf, as_attachment=True, filename=f"quiz/{quiz.title}.pdf")
-
-
-# xhtml2pdf
-
-from django.http import HttpResponse
-
-from django.views.generic import View
-
-from .utils import render_to_pdf
-from django.template.loader import get_template
-
-from diary.models import Diary
-
-class GeneratePDF(View):
-    def get(self, request, quiz_id, *args, **kwargs):
-        # template = get_template('quiz/takequiz.html')
-        quiz = get_object_or_404(Quizzes, id=quiz_id)
-
-        context = {
-            'quiz': quiz,
-        }
-        # html = template.render(context)
-        pdf = render_to_pdf('quiz/takequiz.html', context)
-
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            filename = f"quiz_{quiz.title}.pdf"
-            # content = f"inline; filename={filename}"
-            content = f"attachment; filename={filename}"
-            response['Content-Disposition'] = content
-            return response
-        return HttpResponse("Not Found!")
-
 
 

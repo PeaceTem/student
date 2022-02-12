@@ -5,37 +5,34 @@
 {% endblock title %}
 {% block content %}
 {% include 'messages.html' %}
-
-    <section>
-        <div class="imgBx">
-            <img src="{% static 'quiz/quiz.jpg' %}">
-        </div>
-        <div class="contentBx">
-            <div class="formBx">
-                <h2>Create Quiz</h2>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    
-                    <div class="inputBx">
-                        <span>Title</span>
-                        <input type="text" name="title" id="id_title">
-                    </div>
-                    <div class="inputBx">
-                        <span>Description</span>
-                        <input type="text" name="description" id="id_description">
-                    </div>
-                    <div class="inputBx">
-                        <input type="submit" value="Create">
-                    </div>
-                    <div class="inputBx">
-                        <p>
-                            <a href="{% url 'quiz:quizzes' %}"><p>Go back home</p></a>
-                        </p>
-                    </div>
-                </form>
+<link rel="stylesheet" href="{% static 'quiz/css/newquiz.css' %}">
+<section>
+    <div class="contentBx">
+        
+            <h2>Create Quiz</h2>
+            <form action="" method="post">
+                {% csrf_token %}
+                
+                <div class="inputBx">
+                    <div class="field-name">Title</div>
+                    <input type="text" name="title" id="id_title">
+                </div>
+                <div class="inputBx">
+                    <div class="field-name">Description</div>
+                    <textarea name="description" id="" cols="30" rows="7"></textarea>
+                    <!-- <input type="text" name="description" id="id_description"> -->
+                </div>
+            <div class="linkBx">
+                <div class="inputBx">
+                    <input  class="link" type="submit" value="Create" autofocus>
+                </div>
+                <div class="inputBx">
+                    <a class="link" href="{% url 'quiz:quizzes' %}">Go back home</a>
+                </div>
             </div>
-        </div>
-    </section>
+            </form>
+    </div>
+</section>
 
 
 

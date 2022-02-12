@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GeneratePDF, QuizList, NewQuiz, UpdateQuiz, DeleteQuiz, NewQuestion, QuizDetail, TakeQuiz, SubmitAttempt, QuizPdf
+from .views import GeneratePDF, QuizList, NewQuiz, UpdateQuiz, DeleteQuiz, NewQuestion, QuizDetail, TakeQuiz, SubmitAttempt
 
 from django.contrib.auth.views import LogoutView
 
@@ -15,7 +15,5 @@ urlpatterns = [
     path('<quiz_id>/take/submit/', SubmitAttempt, name='submit-quiz'),
     path('<quiz_id>/pdf/', GeneratePDF.as_view(), name='quiz-pdf'),
     # path('<str:pk>/pdf/download/', GeneratePDF.as_view(), name='diary-pdf'),
-
-
 ]
 

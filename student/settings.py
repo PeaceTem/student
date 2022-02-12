@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
     'core.apps.CoreConfig',
-    'referral.apps.ReferralConfig',
+    # 'referral.apps.ReferralConfig',
+    'imagekit',
 ]
 
 MIDDLEWARE = [
@@ -85,8 +86,12 @@ WSGI_APPLICATION = 'student.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('NAME'),
+        'USER': config('USER'),
+        'PASSWORD': config('PASSWORD'), 
+        'HOST': config('HOST'),
+        'PORT': config('PORT', cast=int),
     }
 }
 
