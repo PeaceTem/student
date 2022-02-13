@@ -108,7 +108,7 @@ a.link{
 
 @media(max-width: 700px){
     body{
-        font-size: 12px;
+        font-size: 16px;
     }
     header .top-navigation a{
         height: 100%;
