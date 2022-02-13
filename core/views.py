@@ -91,7 +91,6 @@ class RegisterPage(FormView):
         if self.request.session.get('ref_profile') is not None:
 
             profile_id = self.request.session.get('ref_profile')
-        print('profile_id', profile_id)
         if profile_id is not None:
             # if profile_id in Profile.codes_set.all():
             referrer_profile = Profile.objects.get(id=profile_id)
@@ -115,13 +114,6 @@ class RegisterPage(FormView):
         messages.success(self.request, f"Count yourself lucky to join the community of the people that are going to change world.")
         messages.success(self.request, f"Create or take any quiz.")
         login(self.request, user)
-
-        # if user is not None:
-        #     messages.success(self.request, f"Welcome to the resersi network!")
-        #     messages.success(self.request, f"Count yourself lucky to join the community of the people that are going to change world.")
-        #     messages.success(self.request, f"Create or take any quiz.")
-        #     login(self.request, user)
-        # else:
 
         messages.error(self.request, 'Username or password does not exist')
         return super(RegisterPage, self).form_valid(form)
