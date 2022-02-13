@@ -88,7 +88,9 @@ class RegisterPage(FormView):
         # user = form.save()
         # logs the user in after registration
         # try:
-        profile_id = self.request.session.get('ref_profile')
+        if self.request.session.get('ref_profile') is not None:
+
+            profile_id = self.request.session.get('ref_profile')
         print('profile_id', profile_id)
         if profile_id is not None:
             # if profile_id in Profile.codes_set.all():
@@ -126,14 +128,12 @@ class RegisterPage(FormView):
 
 
     def get(self, request, *args, **kwargs):
-        print('session', self.request.session['ref_profile'])
         if self.request.user.is_authenticated:
             messages.success(self.request, f"{self.request.user.username}, you've already registered!")
             return redirect('quiz:quizzes')
         
-        
-        profile_id = self.request.session.get('ref_profile')
-        print('profile_id', profile_id)
+        if self.request.session.get('ref_profile') is not None:
+            profile_id = self.request.session.get('ref_profile')
         return super(RegisterPage, self).get(request, *args, **kwargs)
 
 
