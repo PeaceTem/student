@@ -91,18 +91,18 @@ class RegisterPage(FormView):
         if self.request.session.get('ref_profile') is not None:
 
             profile_id = self.request.session.get('ref_profile')
-        if profile_id is not None:
-            # if profile_id in Profile.codes_set.all():
-            referrer_profile = Profile.objects.get(id=profile_id)
-            instance = form.save()
-            registered_user = User.objects.get(id=instance.id)
-            registered_profile = Profile.objects.get(user=registered_user)
-            registered_profile.referrer = referrer_profile.user
-            registered_profile.save()
-            referrer_profile.coins += 10
-            referrer_profile.save()
-                # return redirect('quiz:quizzes')
-        # except:
+            if profile_id is not None:
+                # if profile_id in Profile.codes_set.all():
+                referrer_profile = Profile.objects.get(id=profile_id)
+                instance = form.save()
+                registered_user = User.objects.get(id=instance.id)
+                registered_profile = Profile.objects.get(user=registered_user)
+                registered_profile.referrer = referrer_profile.user
+                registered_profile.save()
+                referrer_profile.coins += 10
+                referrer_profile.save()
+                    # return redirect('quiz:quizzes')
+            # except:
         else:
             form.save()
             # user = form.save()
