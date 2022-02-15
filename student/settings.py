@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     # 'referral.apps.ReferralConfig',
     'imagekit',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -162,8 +163,9 @@ django_heroku.settings(locals())
 #SMTP Configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = '587'
 EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'olumidejonathan10@gmail.com'
 EMAIL_HOST_PASSWORD = 'triumphant'

@@ -6,6 +6,6 @@ class NewDiaryForm(forms.ModelForm):
     
     class Meta:
         model = Diary
-        fields = ['title', 'post']
+        fields = ['title', 'post',]
 
     

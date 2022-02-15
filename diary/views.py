@@ -13,6 +13,31 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from .forms import NewDiaryForm
+
+from django.core.mail import send_mail
+
+
+def contact(request):
+    if request.method == 'POST':
+        message_name = request.POST.get('message_name')
+        message_email = request.POST.get('message_email')
+        message = request.POST.get('message')
+
+        # send an email
+        send_mail(
+            message_name, #the subject
+            message, # message
+            message_email, # the sender
+            ['oakande458@stu.ui.edu.ng'] # receiver,
+        )
+
+        return render(request, 'diary/contact.html', {'message_name': message_name})
+
+    else:
+        return render(request, 'diary/contact.html', {})
+
+
+
 # Create your views here.
 @login_required(login_url='login')
 def DiaryList(request):

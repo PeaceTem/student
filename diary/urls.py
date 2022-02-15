@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import DiaryList, DiaryCreate, DiaryUpdate, DiaryDetail
+from .views import contact, DiaryList, DiaryCreate, DiaryUpdate, DiaryDetail
 
 app_name = 'diary'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('diary-create/', DiaryCreate, name='diary-create'),
     path('diary-update/<str:pk>', DiaryUpdate, name='diary-update'),
     path('diary-detail/<str:pk>', DiaryDetail, name='diary-detail'),
+    path('contact', contact, name='contact'),
 ]
