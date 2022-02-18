@@ -15,16 +15,6 @@
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}
-    <!--
-        <div>
-        {{form.question_text}}
-        <label for="question_text">Question ?</label>
-    </div>
-    <div>
-        {{form.points}}
-        <label for="points">Points in the question: </label>
-    </div>
-    -->
     <div>
     <label for="answer_text">Answer 1</label>
     <input type="text" name="answer_text" id="id_answer_text" >

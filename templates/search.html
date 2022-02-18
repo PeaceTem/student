@@ -1,12 +1,15 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<head>
-    <link rel="stylesheet" href="{% static 'css/search.css' %}">
-</head>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock css %}
+
+{% block content %}
 <form action="" method="get">
 
     <div class="search">
-        <div class="icon">S</div>
+        <div class="icon">s</div>
         <div class="input">
             <input  id="mysearch" type="text" placeholder='title' name='search-area' value='{{search_input}}'>
         </div>
@@ -16,12 +19,4 @@
 </form>
 
     <script src="{% static 'js/search.js' %}" type="text/javascript"></script>
-
-    <!-- <div class="search-bar">
-        <div class="search-bar">
-            <input  id="mysearch" type="text" placeholder='title' name='search-area' value='{{search_input}}'>
-            <span>
-                <input type="submit" value="search">
-            </span>
-    </div>
-     -->
+{% endblock content %}

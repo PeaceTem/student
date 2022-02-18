@@ -1,9 +1,8 @@
 
 
 .card-container{
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
+    display: block;
+    margin-top: 4px;
     margin: 0 auto;
     width: 900px;
     max-width:95vw;
@@ -11,16 +10,13 @@
 }
 
 .card{
-    margin: 30px 0 0 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    margin-top: 10px;
+    display: block;
     position: relative;
-    border-top: 3px solid var(--link-button-background-color);
+    border-top: 3px solid var(--theme-color);
     background: #fff;
-    box-shadow: 3px 3px 3px rgb(156, 163, 226);
+    box-shadow: 3px 3px 7px #999, -3px -3px 7px #999;
     border-radius: 4px;
-    height: 200px;
 }
 
 
@@ -30,23 +26,30 @@
     align-items:center;
     justify-content:center;
     flex-direction: column;
+    position: relative;
 }
 
 .card .contentBx > div{
     margin: 5px 2px 5px 2px;
 }
 
-
+.card .contentBx div.title-block{
+    border-bottom:1px solid#999;
+    width: 100%;  
+}
 .card .contentBx .title{
-    color: var(--link-button-background-color);
+    color: var(--theme-color);
+    position: relative;
     font-weight: bold;
     font-size: 25px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    flex-grow: space-between;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    
 }
 
 .card .contentBx .creator{
     display: inline-flex;
+    /* position: absolute; */
     align-items: center;
     justify-content:space-between;
     

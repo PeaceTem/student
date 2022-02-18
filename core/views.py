@@ -175,6 +175,19 @@ def ProfileCreationPage(request):
 
 
 
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+
+
+class PasswordsChangeView(LoginRequiredMixin, PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('password_success')
+    template_name='core/change_password.html'
+
+def password_success(request):
+    return render(request, 'core/password_success.html', {})
 
 
 

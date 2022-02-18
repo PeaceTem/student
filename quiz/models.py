@@ -2,14 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
-#from ckeditor.fields import RichTextField
+from ckeditor.fields import RichTextField
 # Create your models here.
 class Category(models.Model):
     title = models.CharField(max_length=50)
     registered_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     relevance = models.IntegerField(default=0)
-    number_of_quizzes = models.IntegerField(default=0)
-    number_times_taken = models.IntegerField(default=0)
+    number_of_quizzes = models.PositiveIntegerField(default=0)
+    number_times_taken = models.PositiveIntegerField(default=0)
     date_registered = models.DateTimeField(auto_now_add=True)
 
 
@@ -18,7 +18,7 @@ class Category(models.Model):
 
 
 class Answer(models.Model):
-    answer_text = models.CharField(max_length=100)
+    answer_text = RichTextField()
     is_correct = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
@@ -28,7 +28,7 @@ class Answer(models.Model):
 
 
 class Solution(models.Model):
-    solution_text = models.CharField(max_length=900)
+    solution_text = RichTextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -36,13 +36,13 @@ class Solution(models.Model):
 
 
 class Question(models.Model):
-    question_text = models.CharField(max_length=900)
+    question_text = RichTextField()
     answers = models.ManyToManyField(Answer)
     points = models.PositiveIntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     shuffleable = models.BooleanField(default=False)
     solution = models.OneToOneField(Solution, on_delete=models.CASCADE, null=True, blank=True)
-    duration = models.IntegerField(default=15)
+    duration = models.PositiveIntegerField(default=15)
     
 
 
@@ -66,6 +66,8 @@ class Quizzes(models.Model):
     total_average_score = models.PositiveIntegerField(default=0, null=True, blank=True)
     average_score = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, null=True, blank=True)
     public = models.BooleanField(default=True)
+    category = models.ManyToManyField(Category)
+    # picture = models.ImageField(upload_to='quiz/images/', null=True, blank=True)
 
 
     @property

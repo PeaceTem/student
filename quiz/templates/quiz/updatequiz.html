@@ -5,7 +5,6 @@
 {% endblock title %}
 {% block content %}
 {% include 'messages.html' %}
-
     <section>
         <div class="imgBx">
             <img src="{% static 'quiz/quiz.jpg' %}">
@@ -13,8 +12,9 @@
         <div class="contentBx">
             <div class="formBx">
                 <h2>Create Quiz</h2>
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    {{form.media}}
                     
                     <div class="inputBx">
                         <span>Title</span>
@@ -36,7 +36,4 @@
             </div>
         </div>
     </section>
-
-
-
 {% endblock content %}

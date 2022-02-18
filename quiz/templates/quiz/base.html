@@ -1,18 +1,21 @@
+{% extends 'base.html' %}
+
 {% load static %}
+{% block title %}
+<title>ToTheX | {% block quizTitle %}{% endblock quizTitle %}</title>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColdQuiz | {% block title %}{% endblock title %}</title>
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+{% endblock title %}
 
-</head>
-<body>
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+{% block quizCss %}
+
+{% endblock quizCss %}
+{% endblock css %}
 
 {% block content %}
+
 {% endblock content %}
-</body>
 </html>

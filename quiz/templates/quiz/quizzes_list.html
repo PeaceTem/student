@@ -1,23 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'quiz/base.html' %}
 {% load static %}
 
 
-{% block css %} "{% static 'css/navbar.css' %}" {% endblock css %}
+{% block quizCss %} 
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+{% endblock quizCss %}
 
 
 {% block content %}
-<body>
-    <header>
-        <div class="top-navigation">
-            <!-- <div class="active-link"></div> -->
-            <a href="#" class="active link">Quiz</a>
-            <a href="#" class="link">Diary</a>
-            <a href="#" class="link">Task</a>
-            <a href="#" class="link">Note</a>
-            <a href="#" class="link">Shop</a>
-        </div>
-    </header>
-    {% include 'search.html' %}
+{% include 'navbar.html' %}
+
+{% include 'search.html' %}
 
 {% include 'quiz/quiz.html' %}
 
@@ -26,8 +19,6 @@
 <div class="create-quiz">
     <a  class="link" href="{% url 'quiz:new-quiz' %}">plus</a>
 </div>
+
+<script src="{% static 'js/navbar.js' %}"></script>
 {% endblock content %}
-
-{% block js %} "{% static 'js/navbar.js' %}" {% endblock js %}
-
-

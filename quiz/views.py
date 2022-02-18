@@ -28,9 +28,6 @@ from django.views.generic import View
 from .utils import render_to_pdf
 from django.template.loader import get_template
 
-from diary.models import Diary
-
-
 # make sure you add the question mode herein
 
 # xhtml2pdf
@@ -38,13 +35,13 @@ from diary.models import Diary
 
 class GeneratePDF(View):
     def get(self, request, quiz_id, *args, **kwargs):
-        # template = get_template('quiz/takequiz.html')
+        template = get_template('quiz/takequiz.html')
         quiz = get_object_or_404(Quizzes, id=quiz_id)
 
         context = {
             'quiz': quiz,
         }
-        # html = template.render(context)
+        html = template.render(context)
         pdf = render_to_pdf('quiz/takequiz.html', context)
 
         if pdf:
@@ -55,21 +52,6 @@ class GeneratePDF(View):
             response['Content-Disposition'] = content
             return response
         return HttpResponse("Not Found!")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -88,18 +70,11 @@ def QuizDetail(request, quiz_id):
 
 
 
-
-
-
-
-
-
-
 # the quiz list view
 @login_required(login_url='login')
 def QuizList(request):
     user = request.user
-    quizzes = Quizzes.objects.all()# shuffle with .order_by('?')
+    quizzes = Quizzes.objects.all().order_by('?')# shuffle with .order_by('?')
 
 
     search_input= request.GET.get('search-area') or ''
@@ -107,7 +82,7 @@ def QuizList(request):
         quizzes = Quizzes.objects.filter(title__icontains=search_input)
 
     # create pagination
-    p = Paginator(quizzes, 200)
+    p = Paginator(quizzes, 1)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
@@ -116,9 +91,6 @@ def QuizList(request):
         'page_obj': quizzes,
     }
     return render(request, 'quiz/quizzes_list.html', context)
-
-
-
 
 
 
@@ -182,6 +154,8 @@ def DeleteQuiz(request, quiz_id):
     
     return render(request, 'quiz/quiz_delete.html', {'obj': quiz})
 
+
+
 # create a new question
 @login_required(login_url='login')
 def NewQuestion(request, quiz_id):
@@ -222,8 +196,6 @@ def NewQuestion(request, quiz_id):
     }
     
     return render(request, 'quiz/newquestion.html', context)
-
-
 
 
 
@@ -277,9 +249,3 @@ def SubmitAttempt(request, quiz_id):
     }
 
     return render(request, 'quiz/attemptdetail.html', context)
-
-
-
-# pdf generator 
-
-

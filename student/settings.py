@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = ["https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1"]
+ALLOWED_HOSTS = ['13.36.175.89', "https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -38,14 +38,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    #authentication
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.facebook',
+
+    # the main site apps
     'quiz.apps.QuizConfig',
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
     'core.apps.CoreConfig',
     # 'referral.apps.ReferralConfig',
+    # third party apps
+    'crispy_forms',
+    # 'crispy_bootstrap5',
     'imagekit',
     'ckeditor',
 ]
+
+
+
+
+
+# crispy forms
+
+# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -72,6 +97,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -147,9 +173,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 
 # login credentials
-LOGIN_REDIRECT_URL = 'quizzes'
+LOGIN_REDIRECT_URL = 'quiz:quizzes'
 LOGIN_URL = 'login'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 
+ACCOUNT_EMAIL_REQUIRED = True
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+ACCOUNT_SESSION_REMEMBER = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -169,3 +201,51 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'olumidejonathan10@gmail.com'
 EMAIL_HOST_PASSWORD = 'triumphant'
+
+# SOCIAL AUTHENTICATION_BACKENDS
+
+# 
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        # 'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
+        'SCOPE': ['email', 'public_profile'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'name',
+            'name_format',
+            'picture',
+            'short_name'
+        ],
+        'EXCHANGE_TOKEN': True,
+        # 'LOCALE_FUNC': 'path.to.callable',
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v7.0',
+    }
+}
+
+
