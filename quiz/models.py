@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
-from ckeditor.fields import RichTextField
+# from ckeditor.fields import RichTextField
 # Create your models here.
 class Category(models.Model):
     title = models.CharField(max_length=50)
@@ -18,7 +18,7 @@ class Category(models.Model):
 
 
 class Answer(models.Model):
-    answer_text = RichTextField()
+    answer_text = models.TextField(max_length=1000)
     is_correct = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
@@ -28,7 +28,7 @@ class Answer(models.Model):
 
 
 class Solution(models.Model):
-    solution_text = RichTextField()
+    solution_text = models.TextField(max_length=1000)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -36,7 +36,7 @@ class Solution(models.Model):
 
 
 class Question(models.Model):
-    question_text = RichTextField()
+    question_text = models.TextField(max_length=1000)
     answers = models.ManyToManyField(Answer)
     points = models.PositiveIntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -31,18 +31,31 @@ from django.template.loader import get_template
 # make sure you add the question mode herein
 
 # xhtml2pdf
-
+from diary.models import Diary
 
 class GeneratePDF(View):
     def get(self, request, quiz_id, *args, **kwargs):
-        template = get_template('quiz/takequiz.html')
+        # template = get_template('quiz/takequiz.html')
+        template = get_template('diary/diary_list.html')
+
         quiz = get_object_or_404(Quizzes, id=quiz_id)
 
-        context = {
-            'quiz': quiz,
+        diaries = Diary.objects.filter(user=request.user)
+        count = diaries.count()
+
+        context={
+        'diaries': diaries,
+        'count': count,
         }
+
+
+        # context = {
+        #     'quiz': quiz,
+        # }
         html = template.render(context)
-        pdf = render_to_pdf('quiz/takequiz.html', context)
+        # pdf = render_to_pdf('quiz/takequiz.html', context)
+        pdf = render_to_pdf('diary/diary_list.html', context)
+
 
         if pdf:
             response = HttpResponse(pdf, content_type='application/pdf')
@@ -82,7 +95,7 @@ def QuizList(request):
         quizzes = Quizzes.objects.filter(title__icontains=search_input)
 
     # create pagination
-    p = Paginator(quizzes, 1)
+    p = Paginator(quizzes, 5)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
@@ -236,8 +249,13 @@ def SubmitAttempt(request, quiz_id):
             
         user_score = attempter.score
         quiz.attempts += 1
-        quiz.total_average_score += (user_score/total_score) * 100
-        quiz.average_score = quiz.total_average_score / quiz.attempts 
+        if user_score > 0:
+            quiz.total_average_score += (user_score/total_score) * 100
+            quiz.average_score = quiz.total_average_score / quiz.attempts 
+        else:
+            messages.error(request, "You didn't answer any question.")
+            return redirect('quiz:take-quiz', quiz_id = quiz.id)
+
         quiz.save()
 
 

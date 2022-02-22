@@ -1,9 +1,12 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
-{% block title %}
+{% block quizTitle %}
     Take Quiz
-{% endblock title %}
+{% endblock quizTitle %}
+
 {% block content %}
+
+
 {% include 'messages.html' %}
 
 <div class="question-card-container">
@@ -29,9 +32,13 @@
             </div>
         </li>
             {% for answer in question.answers.all %}
-                <div>
-                    <input type="checkbox" name="answer" value="{{answer.id}}">
-                    <span>{{answer.answer_text}}</span>
+                <div class="answerBx">
+                    <input type="checkbox" name="answer" value="{{answer.id}}" class="hideBx">
+                    <label for="{{answer.id}}" class="label-radio">
+                        <div class="displayBx">
+                            <div >{{answer.answer_text}}</div>
+                        </div>
+                    </label>
                 </div>     
             {% endfor %}
         </div>

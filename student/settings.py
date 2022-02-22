@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = ['13.36.175.89', "https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -55,9 +55,6 @@ INSTALLED_APPS = [
     # 'referral.apps.ReferralConfig',
     # third party apps
     'crispy_forms',
-    # 'crispy_bootstrap5',
-    'imagekit',
-    'ckeditor',
 ]
 
 
@@ -106,6 +103,7 @@ TEMPLATES = [
 
 # wsgi web configuration
 WSGI_APPLICATION = 'student.wsgi.application'
+
 
 
 # Database

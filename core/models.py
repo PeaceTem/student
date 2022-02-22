@@ -34,7 +34,7 @@ class Profile(models.Model):
     date_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
     streak = models.IntegerField(default=0, null=True, blank=True)
     coins = models.IntegerField(default=0, null=True, blank=True)
-    code = models.CharField(max_length=20, null=True, blank=True)
+    code = models.CharField(max_length=32, null=True, blank=True)
     referrer = models.ForeignKey(User, on_delete=models.CASCADE,
                                  null=True, blank=True, related_name="referrer")
 

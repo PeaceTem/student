@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
-from ckeditor.fields import RichTextField
+# from ckeditor.fields import RichTextField
 # Create your models here.
 
 
@@ -9,7 +9,7 @@ class Diary(models.Model):
     user = models.ForeignKey(User, default=1, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=100, blank=True, null=True, default='This is the diary title.')
     # photo = models.ImageField(null=True, blank=True)
-    post = RichTextField()
+    post = models.TextField(max_length=1000)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 

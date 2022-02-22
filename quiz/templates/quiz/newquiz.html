@@ -15,32 +15,19 @@
                 {% csrf_token %}
                 {{form.media}}
                 {{form|crispy}}
-<!--                 
-                <div class="inputBx">
-                    <div class="field-name">Title</div>
-                    <input type="text" name="title" id="id_title">
-                </div>
-                <div class="inputBx">
-                    <div class="field-name">Description</div>
-                    <textarea name="description" id="" cols="30" rows="7"></textarea>
-                     <input type="text" name="description" id="id_description">
-                </div>
-                <div class="inputBx">
-                    <div class="field-name">Title</div>
-                    <input type="checkbox"  name="public" id="id_public">
-                </div> -->
+
+
             <div class="linkBx">
                 <div class="inputBx">
-                    <input  class="btn btn-primary" type="submit" value="Create" autofocus>
+                    <input  class="btn btn-primary btn-lg btn-block" type="submit" value="Create" autofocus>
                 </div>
                 <div class="inputBx">
-                    <a class="btn btn-danger" href="{% url 'quiz:quizzes' %}">Cancel</a>
+                    <a class="btn btn-danger btn-lg btn-block" href="{% url 'quiz:quizzes' %}">Cancel</a>
                 </div>
             </div>
             </form>
     </div>
 </section>
-
 
 
 {% endblock content %}

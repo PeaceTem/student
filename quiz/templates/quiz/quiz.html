@@ -11,8 +11,8 @@
 <div class="card-container infinite-container">
     {% for quiz in page_obj %}
         <div class='card infinite-item'>
-            <img src="https://picsum.photos/700" class="img-fluid">
             <div class="contentBx">
+            <img src="https://picsum.photos/700" class="img-fluid">
                 <div class="title-block">
                 <div class="title">{{quiz.title|capfirst}}</div>
                 </div>
@@ -34,8 +34,8 @@
                     </div>
                 </div>
                        <div class="linkBx">
-                        <a class="link" href="{% url 'quiz:quiz-detail' quiz.id %}"> View Detail</a>
-                        <a class="link" href="{% url 'quiz:take-quiz' quiz.id %}">Take Quiz</a>
+                        <a class="link" href="{% url 'quiz:quiz-detail' quiz.id %}"><i class="fa fa-eye" aria-hidden="true"></i><div>View Detail</div></a>
+                        <a class="link" href="{% url 'quiz:take-quiz' quiz.id %}"><i class="fa fa-reply" aria-hidden="true"></i><div>Take Quiz</div></a>
                        </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
     </button>
 </div>
 
-<div class="row">
+<div class="row d-none">
     <div class="col-12">
         {% if page_obj.has_next %}
         <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">next</a>

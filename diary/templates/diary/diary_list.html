@@ -4,7 +4,6 @@
 {% endblock title %}
 
 {% block content %}
-{% include 'messages.html' %}
 <a class ='center-text' href="{% url 'diary:diary-create' %}">Write a new story about yourself</a>
 
 {% for diary in diaries %}

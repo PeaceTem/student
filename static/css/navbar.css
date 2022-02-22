@@ -1,7 +1,7 @@
 :root{
     --card-background-color: #fff;
     --background-color: #dfdfdf;
-    --theme-color:  rgb(241, 25, 25)/* rgb(219, 104, 104) #333edb*/;
+    --theme-color:  #f11919/* rgb(219, 104, 104) #333edb*/;
     --white-theme: #fff;
     --dark-theme: #666;
 }
@@ -35,7 +35,8 @@ header .name h3{
     left: 10px;
     display: flex;
     align-items: flex-start;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    margin-left: 10px;
 }
 
 header .top-navigation{

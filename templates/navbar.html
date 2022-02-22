@@ -7,15 +7,16 @@
 
 {% block content %}
     <header>
+        {% include 'menu.html' %}
         <div class="name">
         <h3>ToTheX</h3>
         </div>
         <div class="top-navigation">
-            <a href="#" class="active">Quiz</a>
-            <a href="#">Diary</a>
-            <a href="#">Task</a>
-            <a href="#">Note</a>
-            <a href="#">Shop</a>
+            <a href="#" class="active"><i class="fa fa-home" aria-hidden="true"></i><div>Quiz</div></a>
+            <a href="#"><i class="fa fa-address-book" aria-hidden="true"></i><div>Diary</div></a>
+            <a href="#"><i class="fa fa-thumb-tack" aria-hidden="true"></i><div>Task</div></a>
+            <a href="#"><i class="fa fa-sticky-note" aria-hidden="true"></i><div>Note</div></a>
+            <a href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i><div>Shop</div></a>
         </div>
     </header>
     <script src="navbar.js" type="text/javascript"></script>
