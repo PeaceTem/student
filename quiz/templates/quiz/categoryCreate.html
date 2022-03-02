@@ -1,0 +1,66 @@
+
+All added categories will be added everytime the  page loads
+
+create button adds categories automatically to the category list
+
+
+
+
+
+<h3>Add Categories</h3>
+<div class="category-create" >
+    <form action="" method="get">
+        <input type="text" name="newCategory" id="">
+        <input type="submit" value="Create Category">
+    </form>    
+
+</div>
+
+
+<form action="" method="get">
+    <div id="categoryBucket">
+
+        {% for category in quiz.categories.all %}
+        <input type='text' id="{{category.title}}" onclick="removeCategory(this.id)" name='addedCategories' value={{category.title}}>
+    {% endfor %}
+    </div>
+
+    <input type="submit" value="add categories">
+</form>
+
+
+<!-- Add infinite scroll to the category with ajax -->
+{% for category in page_obj %}
+<input type="button" onclick="addClassCategory(this.value)" value="{{category.title}}">
+{% endfor %}
+
+
+
+<div>
+    
+<a href="{% url 'quiz:new-question' quiz.id %}">
+    Add more Questions
+</a>
+
+</div>
+
+
+<script>
+    function addClassCategory(obj_name){
+        var bucket = document.getElementById('categoryBucket');
+
+        bucket.innerHTML += `
+                            <div class=items>
+                                <input type='text' name='addedCategories' value=${obj_name}>
+                            </div>
+                            `;
+
+    }
+
+    function removeCategory(index){
+        var elem = document.getElementById(index);
+        elem.parentNode.removeChild(elem);
+    }
+
+
+</script>

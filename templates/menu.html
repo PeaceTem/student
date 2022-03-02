@@ -7,51 +7,67 @@
 
 
 {% block content %}
-<i class="fa fa-chevron-left" aria-hidden="true"></i>
-<div class="back"><i class="fa fa-times" aria-hidden="true"></i></div>
-<div class="menu-icon"><i class="fa fa-bars" aria-hidden="true"></i></div>
-
-<ul>
-        
-    <li class="icon"><i class="fa fa-user" aria-hidden="true"></i>
-        <div>profile</div>
-    </li>
-
-    <li class="icon"><i class="fa fa-cog" aria-hidden="true"></i>
-    <div>settings</div>
-    </li>
-
-    <li class="icon"><i class="fa fa-info-circle" aria-hidden="true"></i>
-        <div>help & feedback</div>
-    </li>
+<body>
     
-    <li class="icon"><i class="fa fa-user-secret" aria-hidden="true"></i>
-        <div>privacy policy</div>
-    </li>
+<div class="navigation">
+    <button id="menu-icon" onclick="showBar()">
+    <div ><i class="fa fa-bars" aria-hidden="true">menu</i></div>
 
-    <li class="icon"><i class="fa fa-gift" aria-hidden="true"></i>
-        <div>Donate</div>
-    </li>
+    </button>
+    <div id="back" onclick="hideBar()"><i class="fa fa-chevron-left" aria-hidden="true">back</i></div>
 
-    <li class="icon"><i class="fa fa-handshake-o" aria-hidden="true"></i>
-        <div>advertise with us</div>
-    </li>
-
-    <li class="icon"><i class="fa fa-check-square-o" aria-hidden="true"></i>
-        <div>terms & conditions</div>
-    </li>  
+</div>
+<section>
+    <ul>
         
-    <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
-        <div>about</div>
-    </li>    
+        <li class="icon"><i class="fa fa-user" aria-hidden="true"></i>
+            <div>profile</div>
+        </li>
+    
+        <li class="icon"><i class="fa fa-cog" aria-hidden="true"></i>
+        <div>settings</div>
+        </li>
+    
+        <li class="icon"><i class="fa fa-info-circle" aria-hidden="true"></i>
+            <div>help & feedback</div>
+        </li>
+        
+        <li class="icon"><i class="fa fa-user-secret" aria-hidden="true"></i>
+            <div>privacy policy</div>
+        </li>
+    
+        <li class="icon"><i class="fa fa-gift" aria-hidden="true"></i>
+            <div>Donate</div>
+        </li>
+    
+        <li class="icon"><i class="fa fa-handshake-o" aria-hidden="true"></i>
+            <div>advertise with us</div>
+        </li>
+    
+        <li class="icon"><i class="fa fa-check-square-o" aria-hidden="true"></i>
+            <div>terms & conditions</div>
+        </li>  
+            
+        <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
+            <div>about</div>
+        </li>    
+    
+    
+        <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
+            <div>feedback</div>
+        </li>    
 
+        <li class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
+            <div>logout</div>
+        </li>    
+    
+    
+    </ul>
+    
 
-    <li class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
-        <div>logout</div>
-    </li>    
+</section>
 
-
-</ul>
-
-<script src="static/js/menu.js"></script>
+</body>
+<script src="{% static 'js/menu.js' %}"></script>
+<!-- <script src="static/js/menu.js"></script> -->
 {% endblock content %}

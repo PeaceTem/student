@@ -1,87 +1,26 @@
-{% extends 'quiz/base.html' %}
-{% load static %}
-
-{% block title %}
-    Create Question
-{% endblock title %}
-{% block content %}
-{% include 'messages.html' %}
 
 <section>
    
 <div class="contentBx">
     <div class="formBx">
         <h2>Create Question</h2>
-<form action="" method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <div>
-    <label for="answer_text">Answer 1</label>
-    <input type="text" name="answer_text" id="id_answer_text" >
-    </div>
-    <div>
-        <label for="">Is this the correct answer ?</label>
-        <select name="is_correct" id="id_is_correct">
-            <option value="" disabled selected>Choose yes or no</option>
-            <option value="True">Yes</option>
-            <option value="False">No</option>
-        </select>
-    </div>
 
-    <div>
-        <label for="answer_text">Answer 2</label>
-        <input type="text" name="answer_text" id="id_answer_text" >
-    </div>
-    <div>
-        <label for="">Is this the correct answer ?</label>
-        <select name="is_correct" id="id_is_correct">
-            <option value="" disabled selected>Choose yes or no</option>
-            <option value="True">Yes</option>
-            <option value="False">No</option>
-        </select>
-    </div>
+<a href="{% url 'quiz:trueOrFalseQuestion' quiz.id %}">Create A True Or False Question</a>
+
+<a href="{% url 'quiz:fourChoicesQuestion' quiz.id %}">Create A Four Choices Question</a>
 
 
-    <div>
-        <label for="answer_text">Answer 3</label>
-        <input type="text" name="answer_text" id="id_answer_text" >
-    </div>
-    <div>
-        <label for="">Is this the correct answer ?</label>
-        <select name="is_correct" id="id_is_correct">
-            <option value="" disabled selected>Choose yes or no</option>
-            <option value="True">Yes</option>
-            <option value="False">No</option>
-        </select>
-    </div>
 
-    <div>
-        <label for="answer_text">Answer 4</label>
-        <input type="text" name="answer_text" id="id_answer_text" >
-    </div>
-    <div>
-        <label for="">Is this the correct answer ?</label>
-        <select name="is_correct" id="id_is_correct">
-            <option value="" disabled selected>Choose yes or no</option>
-            <option value="True">Yes</option>
-            <option value="False">No</option>
-        </select>
-    </div>
-    <div>
-        <span style="color: red; font-weight: bold;">
-            {{form.errors}}
-        </span>
-    </div>
-    <div class="inputBx">
-        <input type="submit" value="Create">
-    </div>
     <div class="inputBx">
         <p>
-            Finished? <a href="{% url 'quiz:quizzes' %} ">finish</a>
+            Finished? <a href="{% url 'quiz:quiz-detail' quiz.id %} ">finish</a>
         </p>
     </div>
-</form>
+
 </div>
 </div>
 </section>
-{% endblock content %}
+
+<script>
+
+</script>

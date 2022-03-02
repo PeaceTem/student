@@ -1,8 +1,10 @@
 from django.contrib import admin
-from .models import Answer, Question, Quizzes, Attempter, Attempt
+from .models import Quiz, FourChoicesQuestion, TrueOrFalseQuestion, Category, Attempter, Attempt
+
 # Register your models here.
-admin.site.register(Answer)
-admin.site.register(Question)
-admin.site.register(Quizzes)
+admin.site.register(Quiz)
+admin.site.register(FourChoicesQuestion)
+admin.site.register(TrueOrFalseQuestion)
+admin.site.register(Category)
 admin.site.register(Attempter)
 admin.site.register(Attempt)

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
 
     # the main site apps
+    'analysis.apps.AnalysisConfig',
     'quiz.apps.QuizConfig',
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
@@ -55,11 +56,45 @@ INSTALLED_APPS = [
     # 'referral.apps.ReferralConfig',
     # third party apps
     'crispy_forms',
+
+
+    #progressive web app
+    'pwa',
 ]
 
+# PROGRESSIVE WEB APP
+PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static/js' / 'serviceworker.js'
 
-
-
+PWA_APP_NAME = 'tothex'
+PWA_APP_DESCRIPTION = "ToTheX PWA"
+PWA_APP_THEME_COLOR = '#f11919'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/quiz/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+	{
+		'src': 'static/images/tothex_160.png',
+		'sizes': '160x160'
+	}
+]
+PWA_APP_ICONS_APPLE = [
+	{
+		'src': 'static/images/tothex_160.png',
+		'sizes': '160x160'
+	}
+]
+PWA_APP_SPLASH_SCREEN = [
+	{
+		'src': 'static/images/tothex_192.png',
+		'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+	}
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
+PWA_DEBUG_MODE = False
 
 # crispy forms
 
@@ -150,12 +185,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/' # remove the /
+STATIC_URL = 'static/' # remove the /
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'quiz' / 'static',

@@ -1,8 +1,18 @@
+
+{% extends 'core/form.html' %}
+{% load crispy_forms_tags %}
+
+
 <h3>Profile form</h3>
 
+
+{% block main %}
 <form action="" method="post" enctype="multipart/form-data">
+
     {% csrf_token %}
     {{form.media}}
-    {{form.as_ul}}
-    <input type="submit" value="Submit">
-</form>
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+{% endblock %}

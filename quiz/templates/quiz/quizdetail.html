@@ -30,7 +30,7 @@
                     </span>
                     {% if quiz.user == user %}
                     <span>
-                        <a href="{% url 'quiz:update-quiz' quiz.id %}"><p>Edit</p></a>
+                        <a href="{% url 'quiz:quiz-update' quiz.id %}"><p>Edit</p></a>
                     </span>
                     <span>
                         <a href="{% url 'quiz:delete-quiz' quiz.id %}"><p>Delete</p></a>
@@ -54,3 +54,6 @@
 </div>
 <script src="{% static 'quiz/copy.js' %}" type="text/javascript"></script>
 {% endblock content %}
+
+
+Change this detail page. Make it look like the detail page on pinterest

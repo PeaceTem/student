@@ -1,0 +1,25 @@
+
+<a href="{% url 'quiz-create' %}">create a new quiz</a>
+<br>
+<br>
+<br>
+
+{% for quiz in quizzes %}
+    {{quiz.user.username}}
+    {{quiz.title}}
+    {{quiz.description}}
+    {{quiz.date}}
+    {{quiz.date_updated}}
+    <br>
+    <br>
+    <br>
+    <a href="{% url 'quiz-detail' quiz.id %}">view quiz</a>
+    <br>
+    <a href="{% url 'quiz-update' quiz.id %}">update quiz</a>
+    <br>
+    <br>
+    <a href="{% url 'take-quiz' quiz.id %}">take quiz</a>
+    <br>
+
+
+{% endfor %}

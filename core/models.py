@@ -1,18 +1,25 @@
+
+
+
 from django.db import models
 from django.contrib.auth.models import User
 
 
-from quiz.models import Quizzes
+from quiz.models import Quiz, Attempt
 from diary.models import Diary
 from todo.models import Task
 
-from datetime import date
+from datetime import date, datetime, time
 
 from .utils import generate_ref_code
 # from quiz.idpk import finalConvert
 from django.utils.text import slugify
+from django.utils import timezone
+import pytz
 
 # Create your models here.
+
+
 class Profile(models.Model):
     SEX =(
         ('male', 'male'),
@@ -29,11 +36,9 @@ class Profile(models.Model):
     state_of_residence = models.CharField(max_length=100, null=True, blank=True)
     state_of_origin = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, null=True, blank=True)
-    slug = models.SlugField(default='', blank=True, null=True)
-    date_joined = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    date_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
-    streak = models.IntegerField(default=0, null=True, blank=True)
-    coins = models.IntegerField(default=0, null=True, blank=True)
+    slug = models.SlugField(default='')
+    # streak = models.IntegerField(default=0)
+    coins = models.IntegerField(default=1000)
     code = models.CharField(max_length=32, null=True, blank=True)
     referrer = models.ForeignKey(User, on_delete=models.CASCADE,
                                  null=True, blank=True, related_name="referrer")
@@ -93,4 +98,54 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}"
+
+
+
+
+
+# create the streak in the app views and validate it thereafter
+class Streak(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    active = models.BooleanField(default=False)
+    usedDate = models.DateField(auto_now=True, null=True, blank=True)
+    length = models.PositiveIntegerField(default=0)
+    question = models.PositiveIntegerField(default=0)
+    def __str__(self):
+        return f"{self.profile.user.username} | {self.length} | {str(self.active)}"
+# datetime.datetime.now().astimezone(pytz.timezone('US/Mountain'))
+    # @property
+    def validateStreak(self, *args, **kwargs):
+        duration = date.today() - self.usedDate
+        print('first duration', duration)
+        durationHours = duration.seconds//3600
+        print('Hours', durationHours)
+        duration = duration.days
+        print('duration', duration)
+        if duration == 0:
+
+            self.question += 1
+
+            if self.question == 2 and self.active == False:
+                self.length += 1
+                self.active = True
+                self.profile.coins += 10
+                self.profile.save()
+                print('It is working with the coins')
+            super().save(*args, **kwargs)
+
+        elif duration > 0:
+            self.question = 0
+            self.active = False
+            super().save(*args, **kwargs)
+
+
+        # return self.length
+
+
+    def save(self, *args, **kwargs):
+        # self.date = datetime.combine(datetime.now.(), datetime.min.time(), tzinfo=pytz.UTC)
+        self.usedDate = date.today()
+        print('local date demo', self.usedDate)
+        super().save(*args, **kwargs)
+
 

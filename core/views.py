@@ -15,9 +15,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 from .models import Profile
-from .forms import ProfileCreationForm
+from .forms import ProfileCreationForm, LoginForm
 # # Create your views here.
 # messages.error, warning, success, info, debug
+
+
+def Home(request):
+    return render(request, 'core/home.html', {})
 
 def main_view(request, *args, **kwargs):
     code = str(kwargs.get('ref_code'))
@@ -61,9 +65,9 @@ def CustomLoginView(request):
         else:
             messages.error(request, 'Username or password does not exist')
 
-
+    form = LoginForm()
     context={
-
+        'form': form,
     }
     return render(request, 'core/login.html',context)
 

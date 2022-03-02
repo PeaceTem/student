@@ -1,0 +1,102 @@
+
+<div class="question-card-container">
+    <p>
+        You scored: {{user_score}} out of {{quiz.totalScore}}
+    </p>
+
+</div>
+<a href="{% url 'quiz:quizzes' %}">Go back home</a>
+
+
+<div class="question-card-container">
+
+        
+        {% for question, answer in questionsList %}
+        <div class="question-box">
+        <ol>
+
+            {% if question.form == 'fourChoicesQuestion' %}
+        <li class="question">
+
+            <div>
+                    {{question.question_text}}
+                    <p>
+                        {% if question.points < 2 %}
+                            {{question.points}} point
+                        {% else %}
+                            {{question.points}} points
+                        {% endif %}
+                    </p>
+                    <ol style="list-style:upper-alpha;">
+                        <li>
+                            <div class="answer">
+                                {{question.answer1}}
+                            </div>
+                        </li>
+                       
+                        <li>
+                            <div class="answer">
+                                {{question.answer2}}
+            
+                                </div>
+                        </li>
+                     
+                        <li>
+                            <div class="answer">
+                                {{question.answer3}}
+               
+                                   </div>
+                        </li>
+   
+                        <li>
+                            <div class="answer">
+                                {{question.answer4}}
+             
+                                 </div>
+                        </li>
+                        Your Answer:
+                        {{answer}}
+                    </ol>
+                  
+               
+            </div>
+        </li>
+            {% elif question.form == 'trueOrFalseQuestion' %}
+            <li class="question">
+
+                <div>
+                        {{question.question_text}}
+                        <p>
+                            {% if question.points < 2 %}
+                                {{question.points}} point
+                            {% else %}
+                                {{question.points}} points
+                            {% endif %}
+                        </p>
+                        <ol style="list-style:upper-alpha;">
+                            <li>
+                                <div class="answer">
+                                    {{question.answer1}}
+                                </div>
+                            </li>
+                           
+                            <li>
+                                <div class="answer">
+                                    {{question.answer2}}
+                                    </div>
+                            </li>
+                            Your Answer:
+                            {{answer}}
+                        </ol>
+                      
+                   
+                </div>
+            </li>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+    </ol>
+</div>
+
+

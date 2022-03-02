@@ -1,28 +1,37 @@
 from django import forms
-# from ckeditor.widgets import CKeditorWidget
-from .models import Quizzes, Question, Answer, Category
 
+
+from django import forms
+from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion
 class NewQuizForm(forms.ModelForm):
-    title = forms.CharField(widget=forms.TextInput(), required=True)
-    public = forms.BooleanField()
 
     class Meta:
-        model = Quizzes
-        fields = ('title', 'description','public',)
+        model = Quiz
+        fields = '__all__'
+        exclude = ('user','date', 'date_updated', 'categories', 'fourChoicesQuestions', 'trueOrFalseQuestions', 'lastQuestionIndex', 'questionLength', 'totalScore', 'attempts','gross_average_score','average_score', 'public',)
+      
 
-class NewQuestionForm(forms.ModelForm):
-    # question_text = forms.
-    class Meta:
-        model = Question
-        fields = ('question_text', 'points')
-
-class NewAnswerForm(forms.ModelForm):
-    class Meta:
-        model = Answer
-        fields = ('answer_text', 'is_correct')
-        
 
 class NewCategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ('title',)
+
+
+class NewFourChoicesQuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = FourChoicesQuestion
+        fields = '__all__'
+        exclude = ('user',  'index', 'form')
+
+
+
+class NewTrueOrFalseQuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = TrueOrFalseQuestion
+        fields = '__all__'
+        exclude = ('user', 'index', 'form','answer1', 'answer2',)
+
+
