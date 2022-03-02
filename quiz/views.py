@@ -146,7 +146,7 @@ def QuizList(request):
     # quizzes.insert(0, ad)
 
     # create pagination
-    p = Paginator(quizzes, 100)
+    p = Paginator(quizzes, 1)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
