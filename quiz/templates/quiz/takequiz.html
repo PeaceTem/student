@@ -1,9 +1,8 @@
 
 
 
-
 <div class="question-card-container">
-    <form action="{% url 'submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <ol>
         {% for question in questions %}

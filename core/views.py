@@ -24,17 +24,20 @@ def Home(request):
     return render(request, 'core/home.html', {})
 
 def main_view(request, *args, **kwargs):
+    user = request.user or ''
+    # if user:
+    #     return redirect('quiz:quizzes')
+
     code = str(kwargs.get('ref_code'))
+    print('This is the code', code)
     try:
         profile = get_object_or_404(Profile, code=code)
         request.session['ref_profile'] = profile.id
-        print('id', profile.id)
-        print('session', request.session['ref_profile'])
-        # redirect('register')
+        print('This is the token', request.session['ref_profile'])
+
     except:
-        # redirect('register')
         pass
-    print(request.session.get_expiry_date())
+    print('This is the expiry date', request.session.get_expiry_date())
     return render(request, 'core/main.html', {})
 
 
@@ -95,15 +98,19 @@ class RegisterPage(FormView):
         if self.request.session.get('ref_profile') is not None:
 
             profile_id = self.request.session.get('ref_profile')
+            print(profile_id)
             if profile_id is not None:
                 # if profile_id in Profile.codes_set.all():
                 referrer_profile = Profile.objects.get(id=profile_id)
+                print('This is the referrer profile', referrer_profile)
                 instance = form.save()
                 registered_user = User.objects.get(id=instance.id)
+                print('The registered user', registered_user)
                 registered_profile = Profile.objects.get(user=registered_user)
                 registered_profile.referrer = referrer_profile.user
                 registered_profile.save()
-                referrer_profile.coins += 10
+                referrer_profile.coins += 100
+
                 referrer_profile.save()
                     # return redirect('quiz:quizzes')
             # except:

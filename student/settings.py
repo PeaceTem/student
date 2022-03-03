@@ -65,7 +65,7 @@ INSTALLED_APPS = [
 # PROGRESSIVE WEB APP
 PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static/js' / 'serviceworker.js'
 
-PWA_APP_NAME = 'tothex'
+PWA_APP_NAME = 'ToTheX'
 PWA_APP_DESCRIPTION = "ToTheX PWA"
 PWA_APP_THEME_COLOR = '#f11919'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
@@ -226,13 +226,13 @@ django_heroku.settings(locals())
 
 #SMTP Configuration
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com' 
-EMAIL_PORT = '587'
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST') 
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
 #EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'olumidejonathan10@gmail.com'
-EMAIL_HOST_PASSWORD = 'triumphant'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # SOCIAL AUTHENTICATION_BACKENDS
 

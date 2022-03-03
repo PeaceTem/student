@@ -17,6 +17,7 @@ from django.utils.text import slugify
 from django.utils import timezone
 import pytz
 
+
 # Create your models here.
 
 
@@ -110,11 +111,16 @@ class Streak(models.Model):
     usedDate = models.DateField(auto_now=True, null=True, blank=True)
     length = models.PositiveIntegerField(default=0)
     question = models.PositiveIntegerField(default=0)
+    freeze = models.BooleanField(default=False)
+
+
     def __str__(self):
         return f"{self.profile.user.username} | {self.length} | {str(self.active)}"
-# datetime.datetime.now().astimezone(pytz.timezone('US/Mountain'))
-    # @property
+
+# alert users whenever they earn a streak
+
     def validateStreak(self, *args, **kwargs):
+
         duration = date.today() - self.usedDate
         print('first duration', duration)
         durationHours = duration.seconds//3600
@@ -125,17 +131,39 @@ class Streak(models.Model):
 
             self.question += 1
 
-            if self.question == 2 and self.active == False:
+            if self.question == 20 and self.active == False:
                 self.length += 1
                 self.active = True
                 self.profile.coins += 10
                 self.profile.save()
-                print('It is working with the coins')
+
+            elif self.question == 50 and self.active == True:
+                self.profile.coins += 10
+                self.profile.save()
+            
+            elif self.question == 100 and self.active == True:
+                self.profile.coins += 30
+                self.profile.save()
+                
             super().save(*args, **kwargs)
 
-        elif duration > 0:
+        # add streak freeze product in the wallet
+        # users can pay us dollars to buy anything
+        elif duration == 1:
             self.question = 0
             self.active = False
+
+            super().save(*args, **kwargs)
+
+        elif duration > 1:
+            self.question = 0
+            self.active = False
+
+            if self.freeze:
+                self.freeze = False
+            else:
+                self.length = 0
+
             super().save(*args, **kwargs)
 
 
@@ -147,5 +175,6 @@ class Streak(models.Model):
         self.usedDate = date.today()
         print('local date demo', self.usedDate)
         super().save(*args, **kwargs)
+
 
 

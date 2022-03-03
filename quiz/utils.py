@@ -1,3 +1,12 @@
+
+
+
+def sortKey(e):
+    return e[0]
+
+
+
+
 from io import BytesIO
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -17,7 +26,3 @@ def render_to_pdf(template_src, context_dict={}):
 # "ISO-8859-1"
 
 
-
-
-def sortKey(e):
-    return e[0]

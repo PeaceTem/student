@@ -38,7 +38,7 @@ from django.views.generic import View
 # import the utilities needed to create the quiz
 from .utils import render_to_pdf
 from django.template.loader import get_template
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # make sure you add the question mode herein
 
 # xhtml2pdf
@@ -49,31 +49,36 @@ from diary.models import Diary
 Create a page for only users that are not logged in to taste the fun of the app before signing up
 """
 
-@login_required(login_url='login')
-class GeneratePDF(View):
-    def get(self, request, quiz_id, *args, **kwargs):
-        user = self.request.user
-        # template = get_template('quiz/takequiz.html')
-        template = get_template('diary/diary_list.html')
+class GeneratePDF(LoginRequiredMixin, View):
 
+    def get(self, request, quiz_id, **kwargs):
+        user = self.request.user
+        template = get_template('quiz/takequiz.html')
         quiz = get_object_or_404(Quiz, id=quiz_id)
 
-        diaries = Diary.objects.filter(user=request.user)
-        count = diaries.count()
+        preQuestions = []
+        preQuestions += quiz.fourChoicesQuestions.all()
+        preQuestions += quiz.trueOrFalseQuestions.all()
+        questionsList = []
+        for question in preQuestions:
+            questionsList.append(tuple((question.index, question)))
 
-        context={
-        'diaries': diaries,
-        'count': count,
+
+        questionsList.sort(key=sortKey)
+        questions = []
+        for question in questionsList:
+            questions.append(question[1])
+        if request.method == 'GET':
+            if quiz.shuffleable == True:
+                shuffle(questions)
+
+        context = {
+            'quiz': quiz,
+            'questions': questions,
         }
 
-
-        # context = {
-        #     'quiz': quiz,
-        # }
         html = template.render(context)
-        # pdf = render_to_pdf('quiz/takequiz.html', context)
-        pdf = render_to_pdf('diary/diary_list.html', context)
-
+        pdf = render_to_pdf('quiz/takequiz.html', context)
 
         if pdf:
             response = HttpResponse(pdf, content_type='application/pdf')
@@ -492,9 +497,9 @@ def TakeQuiz(request, quiz_id):
     questions = []
     for question in questionsList:
         questions.append(question[1])
-    if request.method == 'GET':
-        if quiz.shuffleable == True:
-            shuffle(questions)
+    
+    if quiz.shuffleable == True:
+        shuffle(questions)
 
 
     pagecounter = PageCounter.objects.get(id=1)
@@ -547,6 +552,8 @@ def SubmitQuiz(request, quiz_id):
   
         for answer in answers:
             combination = tuple(answer.split('|'))
+
+
             
             if combination[0] == 'fourChoicesQuestion':
                 question = FourChoicesQuestion.objects.get(id=combination[1])
@@ -558,9 +565,7 @@ def SubmitQuiz(request, quiz_id):
                     attempter.save()
                     streak.validateStreak()
                     streak.save()
-
-
-
+                   
             elif combination[0] == 'trueOrFalseQuestion':
                 question = TrueOrFalseQuestion.objects.get(id=combination[1])
                 answer = question.getAnswer(combination[2])
@@ -572,7 +577,10 @@ def SubmitQuiz(request, quiz_id):
                     streak.validateStreak()
                     streak.save()
                     # try to remove the save method
-
+                    """
+                    Create a function that will handle all the referral stuff
+                    # """
+                    
 
         user_score = attempter.score
         total_score = quiz.totalScore
@@ -606,3 +614,5 @@ def SubmitQuiz(request, quiz_id):
         }
 
     return render(request, 'quiz/submitQuiz.html', context)
+
+

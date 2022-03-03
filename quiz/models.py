@@ -165,7 +165,9 @@ class Quiz(models.Model):
     categories = models.ManyToManyField(Category,
         related_name='categories', related_query_name='categories')
     #duration and each quiz is in minutes, and it overrides the duration of all the questions
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, blank=True, null=True)
+    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, null=True, blank=True)
+    draft = models.BooleanField(default=False)
+    releasedDate = models.DateTimeField(null=True, blank=True)
 
 
 
@@ -204,6 +206,10 @@ class Quiz(models.Model):
         
     def __str__(self):
         return f"{self.title}"
+
+
+
+
 
 
 """
