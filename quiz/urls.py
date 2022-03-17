@@ -1,36 +1,48 @@
 from django.urls import path
 
-from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
- FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)
+
+from . import views
+
 
 
 app_name = 'quiz'
 
  
 urlpatterns = [
-    path('', QuizList, name='quizzes'),
-    path('detail/<str:quiz_id>/', QuizDetail, name='quiz-detail'),
-    path('create-quiz/', QuizCreate, name='quiz-create'),
-    path('edit-quiz/<str:quiz_id>/', QuizUpdate, name='quiz-update'),
-    path('delete-quiz/<quiz_id>', DeleteQuiz, name='delete-quiz'),
+    path('', views.QuizList, name='quizzes'),
+    path('detail/<str:quiz_id>/<str:ref_code>', views.QuizDetail, name='quiz-detail'),
+    path('create-quiz/', views.QuizCreate, name='quiz-create'),
+    path('edit-quiz/<str:quiz_id>/', views.QuizUpdate, name='quiz-update'),
+    path('delete-quiz/<quiz_id>', views.DeleteQuiz, name='delete-quiz'),
+
+    #like post
+    path('like/', views.PostLike, name ='post-like'),
 
     #category
-    path('create_category/<str:quiz_id>/', CategoryCreate, name='category-create'),
+    path('create_category/<str:quiz_id>/', views.CategoryCreate, name='category-create'),
 
     #question
-    path('<str:quiz_id>/new-question/', QuestionCreate, name='new-question'),
+    path('<str:quiz_id>/new-question/', views.QuestionCreate, name='new-question'),
 
-    path('<str:quiz_id>/create-question/four-choices/', FourChoicesQuestionCreate, name='fourChoicesQuestion'),
-    path('<str:quiz_id>/edit-question/four-choices/<str:question_id>/', FourChoicesQuestionUpdate, name='edit-fourChoicesQuestion'),
+    path('<str:quiz_id>/create-question/four-choices/', views.FourChoicesQuestionCreate, name='fourChoicesQuestion'),
+    path('<str:quiz_id>/edit-question/four-choices/<str:question_id>/', views.FourChoicesQuestionUpdate, name='edit-fourChoicesQuestion'),
 
 
-    path('<str:quiz_id>/create-question/true-or-false/', TrueOrFalseQuestionCreate, name='trueOrFalseQuestion'),
-    path('<str:quiz_id>/edit-question/true-or-false/<str:question_id>/', TrueOrFalseQuestionUpdate, name='edit-trueOrFalseQuestion'),
+    path('<str:quiz_id>/create-question/true-or-false/', views.TrueOrFalseQuestionCreate, name='trueOrFalseQuestion'),
+    path('<str:quiz_id>/edit-question/true-or-false/<str:question_id>/', views.TrueOrFalseQuestionUpdate, name='edit-trueOrFalseQuestion'),
     #takequiz
 
-    path('<str:quiz_id>/take/', TakeQuiz, name='take-quiz'),
-    path('<str:quiz_id>/submit/', SubmitQuiz, name='submit-quiz'),
+    path('<str:quiz_id>/take/', views.TakeQuiz, name='take-quiz'),
+    path('<str:quiz_id>/submit/', views.SubmitQuiz, name='submit-quiz'),
 
     #pdf generation
-    path('<str:quiz_id>/pdf/', GeneratePDF.as_view(), name='quiz-pdf'),
+    path('<str:quiz_id>/pdf/', views.GeneratePDF.as_view(), name='quiz-pdf'),
 ]
+
+
+
+
+
+# from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
+#  FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)
+

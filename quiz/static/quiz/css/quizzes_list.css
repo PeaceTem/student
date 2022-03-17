@@ -38,8 +38,15 @@
     width: 100%;  
 }
 .card .contentBx .title{
-    color: var(--theme-color);
+    color: #fff;
+    background : #7d25f1;
+    min-height: 100px;
+    width: 100%;
+    padding: 10px;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-weight: bold;
     font-size: 25px;
     font-family: Arial, Helvetica, sans-serif;

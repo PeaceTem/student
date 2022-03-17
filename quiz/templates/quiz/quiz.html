@@ -8,11 +8,15 @@
 {% include 'messages.html' %}
 
 
+<embed src="{% static 'music/Calm-and-Peaceful.mp3' %}" type="audio/mp3" loop="true" width="2" autostart="true" height="0">
+
+    <audio src="{% static 'music/Calm-and-Peaceful.mp3' %}" autostart='true' contols></audio>
+
 <div class="card-container infinite-container">
     {% for quiz in page_obj %}
         <div class='card infinite-item'>
             <div class="contentBx">
-            <img src="https://picsum.photos/700" class="img-fluid">
+                <!-- use aspect-ratio for the background of the title. -->
                 <div class="title-block">
                 <div class="title">{{quiz.title|capfirst}}</div>
                 </div>
@@ -32,9 +36,20 @@
                     <div class="average">
                         {{quiz.average_score}}%
                     </div>
+
                 </div>
                        <div class="linkBx">
-                        <a class="link" href="{% url 'quiz:quiz-detail' quiz.id %}"><i class="fa fa-eye" aria-hidden="true"></i><div>View Detail</div></a>
+                        <form action="{% url 'quiz:post-like' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="quiz_id" value="{{quiz.id}}">
+                            {% if not request.user in quiz.likes.all %}
+                                <button type="submit">Like</button>
+                            {% else %}
+                                <button type="submit">UnLike</button>
+                            {% endif %}
+                        </form>
+                        <span>{{quiz.likes.all.count}} likes</span>
+                        <a class="link" href="{% url 'quiz:quiz-detail' quiz.id None %}"><i class="fa fa-eye" aria-hidden="true"></i><div>View Detail</div></a>
                         <a class="link" href="{% url 'quiz:take-quiz' quiz.id %}"><i class="fa fa-reply" aria-hidden="true"></i><div>Take Quiz</div></a>
                        </div>
             </div>
@@ -45,7 +60,6 @@
 <div class="d-flex d-none position-fixed" style="bottom:5vh;left:46vw">
     <button class="btn btn-danger loading">
         <span class="spinner-border spinner-border-sm"></span>
-        Please wait...
     </button>
 </div>
 

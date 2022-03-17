@@ -60,6 +60,9 @@ class UserPageCounter(models.Model):
     trueOrFalseQuestionDeletePage = models.PositiveIntegerField(default=0)
     pdfDownload = models.PositiveIntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.user.username}"
+
 
     class Meta:
         verbose_name_plural = 'UserPageCounter'

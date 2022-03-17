@@ -27,6 +27,7 @@ class Profile(models.Model):
         ('female', 'female'),
     )
     user = models.OneToOneField(User,null=True, blank=True, on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to='images/', null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
@@ -38,11 +39,15 @@ class Profile(models.Model):
     state_of_origin = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(default='')
-    # streak = models.IntegerField(default=0)
     coins = models.IntegerField(default=1000)
+    date_updated = models.DateTimeField(auto_now=True)
     code = models.CharField(max_length=32, null=True, blank=True)
-    referrer = models.ForeignKey(User, on_delete=models.CASCADE,
-                                 null=True, blank=True, related_name="referrer")
+    refercount = models.PositiveIntegerField(default=0)
+
+
+
+    class Meta:
+        ordering = ('-coins',)
 
 
     def get_recommended_profiles(self):
@@ -53,8 +58,8 @@ class Profile(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if self.first_name is not None:
-            self.slug = slugify(self.first_name)
+        if self.slug is None:
+            self.slug = slugify(self.user.username)
         if self.code == None:
             code = generate_ref_code()
             self.code = code
@@ -98,12 +103,17 @@ class Profile(models.Model):
 
 
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user}"
 
 
 
+class Follower(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    followers = models.ManyToManyField(User, blank=True, related_name='followers') 
+    following = models.ManyToManyField(User, blank=True, related_name='following')
 
-
+    def __str__(self):
+        return f"{self.id}"
 # create the streak in the app views and validate it thereafter
 class Streak(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
@@ -112,6 +122,9 @@ class Streak(models.Model):
     length = models.PositiveIntegerField(default=0)
     question = models.PositiveIntegerField(default=0)
     freeze = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-length', '-question', '-freeze', '-id']
 
 
     def __str__(self):
@@ -176,5 +189,19 @@ class Streak(models.Model):
         print('local date demo', self.usedDate)
         super().save(*args, **kwargs)
 
+    
+
+    class Meta:
+        ordering = ['-length', '-question']
 
 
+
+
+
+
+class SessionSecretKey(models.Model):
+    key = models.CharField(max_length=200)
+
+
+    def __str__(self):
+        return f"{self.id}"

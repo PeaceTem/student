@@ -14,30 +14,45 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-from .models import Profile
+from .models import Profile, Follower
 from .forms import ProfileCreationForm, LoginForm
+from quiz.models import Quiz
 # # Create your views here.
 # messages.error, warning, success, info, debug
+ 
+
+from importlib import import_module
+from django.conf import settings
+SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
+
 
 
 def Home(request):
     return render(request, 'core/home.html', {})
 
+"""
+Use try except block to catch errors
+
+Change the streak coins to 5
+
+Add a leaderboard about the longest running streak
+"""
 def main_view(request, *args, **kwargs):
     user = request.user or ''
-    # if user:
-    #     return redirect('quiz:quizzes')
+    if user:
+        return redirect('quiz:quizzes')
+
 
     code = str(kwargs.get('ref_code'))
     print('This is the code', code)
     try:
         profile = get_object_or_404(Profile, code=code)
-        request.session['ref_profile'] = profile.id
-        print('This is the token', request.session['ref_profile'])
-
+        profile.coins += 50
+        profile.refercount += 1
+        profile.save()
+        print('This is the profile', profile)
     except:
         pass
-    print('This is the expiry date', request.session.get_expiry_date())
     return render(request, 'core/main.html', {})
 
 
@@ -63,6 +78,10 @@ def CustomLoginView(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            page = request.user.userPageCounter or ''
+            if not page:
+                print('The user was deleted')
+                request.user.delete()
             login(request, user)
             return redirect('quiz:quizzes')
         else:
@@ -92,31 +111,7 @@ class RegisterPage(FormView):
 
         
     def form_valid(self, form):
-        # user = form.save()
-        # logs the user in after registration
-        # try:
-        if self.request.session.get('ref_profile') is not None:
-
-            profile_id = self.request.session.get('ref_profile')
-            print(profile_id)
-            if profile_id is not None:
-                # if profile_id in Profile.codes_set.all():
-                referrer_profile = Profile.objects.get(id=profile_id)
-                print('This is the referrer profile', referrer_profile)
-                instance = form.save()
-                registered_user = User.objects.get(id=instance.id)
-                print('The registered user', registered_user)
-                registered_profile = Profile.objects.get(user=registered_user)
-                registered_profile.referrer = referrer_profile.user
-                registered_profile.save()
-                referrer_profile.coins += 100
-
-                referrer_profile.save()
-                    # return redirect('quiz:quizzes')
-            # except:
-        else:
-            form.save()
-            # user = form.save()
+        form.save()
 
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password1')
@@ -140,7 +135,8 @@ class RegisterPage(FormView):
         return super(RegisterPage, self).get(request, *args, **kwargs)
 
 
-
+# add login required
+@login_required(login_url='login')
 def ProfilePage(request):
     user = request.user
     if not user.is_authenticated:
@@ -149,9 +145,13 @@ def ProfilePage(request):
 
 
     profile = get_object_or_404(Profile, user=user)
-
+    follower = get_object_or_404(Follower, user=user)
+    quizzes = Quiz.objects.filter(user=user)
+    print(quizzes)
     context={
         'profile': profile,
+        'follower' : follower,
+        'quizzes': quizzes,
     }
 
     return render(request, 'core/profile.html', context)
@@ -167,6 +167,7 @@ def ProfileCreationPage(request):
     profile = get_object_or_404(Profile, user=user)
 
     form = ProfileCreationForm(instance=profile)
+    print(form)
 
     if request.method == 'POST':
         form = ProfileCreationForm(request.POST, request.FILES, instance=profile)
@@ -202,4 +203,47 @@ def password_success(request):
 
 
 
+
+def FollowerView(request):
+    user = request.user
+    if request.method == 'POST':
+        following = request.POST.get('following') or None
+        following_user = request.POST.get('following_user') or None
+        following_username = request.POST.get('following_username') or None
+        if user.id is not following:
+            if following:
+                following = Follower.objects.get(user=following)
+                following_user = User.objects.get(username=following_user)#new
+                follower = Follower.objects.get(user=user)#new
+                following.followers.add(user)
+                follower.following.add(following_user)#new
+                following.save()
+                follower.save()#new
+
+        if user != following_user:
+            return redirect('profile:profile', profile_name=following_username)
+
+    return redirect('profile')
+
+
+def UnfollowView(request):
+    user = request.user
+    if request.method == 'POST':
+        following = request.POST.get('following') or None
+        following_user = request.POST.get('following_user') or None
+        following_username = request.POST.get('following_username') or None
+        if user.id is not following:
+            if following:
+                following = Follower.objects.get(user=following)
+                following_user = User.objects.get(username=following_user)#new
+                follower = Follower.objects.get(user=user)#new
+                following.followers.remove(user)
+                follower.following.remove(following_user)#new
+                following.save()
+                follower.save()#new
+
+        if user != following_user:
+            return redirect('profile:profile', profile_name=following_username)
+
+    return redirect('profile')
 

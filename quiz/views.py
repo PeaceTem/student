@@ -2,8 +2,8 @@
 # important method to deal with models
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
-
+from django.http import HttpResponseForbidden, JsonResponse
+from django.forms.models import model_to_dict
 from django.db.models import Q
 
 # the forms for each model
@@ -15,10 +15,12 @@ from .forms import NewQuizForm, NewCategoryForm, NewFourChoicesQuestionForm, New
 from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion, Attempter, Attempt
 from core.models import Streak, Profile
 from analysis.models import UserPageCounter, PageCounter
+# from draft.models import DraftQuiz
+from comment.models import QuizComment, Comment
 
 # Utilities
 from random import shuffle
-from .utils import sortKey
+from .utils import sortKey, quizRandomCoin
 
 
 #Paginator
@@ -78,7 +80,7 @@ class GeneratePDF(LoginRequiredMixin, View):
         }
 
         html = template.render(context)
-        pdf = render_to_pdf('quiz/takequiz.html', context)
+        pdf = render_to_pdf('quiz/quizPdf.html', context)
 
         if pdf:
             response = HttpResponse(pdf, content_type='application/pdf')
@@ -100,13 +102,22 @@ class GeneratePDF(LoginRequiredMixin, View):
 
 
 # the details of a quiz
-@login_required(login_url='login')
 
-def QuizDetail(request, quiz_id):
-    user = request.user
+def QuizDetail(request, quiz_id, *args, **kwargs):
+    user = request.user or None
     quiz = get_object_or_404(Quiz, id=quiz_id)
-
-    
+    if not user:
+        code = str(kwargs.get('ref_code'))
+        print('This is the code', code)
+        try:
+            profile = get_object_or_404(Profile, code=code)
+            profile.coins += 50
+            profile.refercount += 1
+            profile.save()
+            print('This is the profile', profile)
+        except:
+            pass    
+        
     context = {
         'quiz': quiz,
         'user': user,
@@ -136,7 +147,7 @@ def QuizList(request):
     quizzes = Quiz.objects.all()# shuffle with .order_by('?')
     # add split method
 
-# you can add the .exclude method to the queryset
+    # you can add the .exclude method to the queryset
     search_input= request.GET.get('search-area') or ''
     if search_input:
         quizzes = Quiz.objects.none()
@@ -156,6 +167,7 @@ def QuizList(request):
     quizzes = p.get_page(page)
 
     context={
+
         'search_input': search_input,
         'page_obj': quizzes,
     }
@@ -177,11 +189,35 @@ def QuizList(request):
 Add all the documentation here
 """
 @login_required(login_url='login')
+def PostLike(request):
+    user = request.user
+    if request.method == 'POST':
+        print(request)
+        quiz_id = request.POST.get('quiz_id')
+        quiz = Quiz.objects.get(id=quiz_id)
+        print(quiz)
+
+
+        if user in quiz.likes.all():
+            quiz.likes.remove(user)
+            print('removed user')
+        else:
+            quiz.likes.add(user)
+            print('added user')
+
+
+
+    return redirect('quiz:quizzes')
+
+"""
+Add all the documentation here
+"""
+@login_required(login_url='login')
 def QuizCreate(request):
     user = request.user
     form = NewQuizForm()
     if request.method == 'POST':
-        form = NewQuizForm(request.POST, request.FILES)
+        form = NewQuizForm(request.POST)
         if form.is_valid():
             title= form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
@@ -222,7 +258,7 @@ def QuizUpdate(request, quiz_id):
     
     form = NewQuizForm(instance=quiz)
     if request.method == 'POST':
-        form = NewQuizForm(request.POST, request.FILES, instance=quiz)
+        form = NewQuizForm(request.POST, instance=quiz)
         if form.is_valid():
             form.save()
             
@@ -270,7 +306,7 @@ def DeleteQuiz(request, quiz_id):
     return render(request, 'quiz/quiz_delete.html', {'obj': quiz})
 
 
-
+ 
 
 
 """
@@ -299,7 +335,7 @@ def FourChoicesQuestionCreate(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     form = NewFourChoicesQuestionForm()
     if request.method == 'POST':
-        form = NewFourChoicesQuestionForm(request.POST, request.FILES)
+        form = NewFourChoicesQuestionForm(request.POST)
         if form.is_valid():
             question_text= form.cleaned_data.get('question_text')
             answer1=form.cleaned_data.get('answer1')
@@ -346,7 +382,7 @@ def TrueOrFalseQuestionCreate(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     form = NewTrueOrFalseQuestionForm()
     if request.method == 'POST':
-        form = NewTrueOrFalseQuestionForm(request.POST, request.FILES)
+        form = NewTrueOrFalseQuestionForm(request.POST)
         if form.is_valid():
             question_text= form.cleaned_data.get('question_text')
             answer1=form.cleaned_data.get('answer1')
@@ -388,15 +424,22 @@ def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
     question = get_object_or_404(FourChoicesQuestion, id=question_id)
-    form = NewFourChoicesQuestionForm(instance=question)
+    
+    fourChoicesForm = NewFourChoicesQuestionForm(instance=question)
     if request.method == 'POST':
-        form = NewFourChoicesQuestionForm(request.POST, request.FILES, instance=question)
+        quiz.totalScore -= question.points
+        quiz.save()
+        form = NewFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():
-            form.save()
+
+            instance = form.save()
+            quiz.totalScore += instance.points
+            quiz.save()
+
             return redirect('quiz:quiz-detail', quiz_id=quiz.id)
     
     context= {
-        'form': form,
+        'fourChoicesForm': fourChoicesForm,
     }
 
     return render(request, 'quiz/fourChoicesQuestionCreate.html', context)
@@ -408,18 +451,24 @@ def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
     question = get_object_or_404(TrueOrFalseQuestion, id=question_id)
-    form = NewTrueOrFalseQuestionForm(instance=question)
+    ftrueOrFalseForm = NewTrueOrFalseQuestionForm(instance=question)
     if request.method == 'POST':
-        form = NewFourChoicesQuestionForm(request.POST, request.FILES, instance=question)
+        quiz.totalScore -= question.points
+        quiz.save()
+        form = NewFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():
             form.save()
+            instance = form.save()
+            quiz.totalScore += instance.points
+            quiz.save()
             return redirect('quiz:quiz-detail', quiz_id=quiz.id)
     
     context= {
-        'form': form,
+        'trueOrFalseForm': trueOrFalseForm,
     }
 
     return render(request, 'quiz/trueOrFalseQuestionCreate.html', context)
+
 
 
 
@@ -435,6 +484,9 @@ def CategoryCreate(request, quiz_id):
     categories = Category.objects.all()
 
     title = request.GET.get('newCategory') or ''
+    title = title.strip()
+    title = title.split(' ')
+    title = '-'.join(title)
     if title:
 
         try:
@@ -458,15 +510,19 @@ def CategoryCreate(request, quiz_id):
                 quiz.categories.remove(category)
 
         for category in addedCategories:
-            category = Category.objects.get(title__icontains=category)
-            if category is not None:
+            category = Category.objects.get(title__icontains=category) or None
+            if category:
                 if category not in quiz.categories.all():
                     quiz.categories.add(category)
                     quiz.save()
 
+    
+    quizCategories = quiz.categories.all()
+
 
     context= {
         'page_obj': categories,
+        'quizCategories' : quizCategories,
         'quiz': quiz,
 
     }
@@ -483,6 +539,7 @@ Add all the documentation here
 
 def TakeQuiz(request, quiz_id):
     user = request.user
+    profile = Profile.objects.get(user=user)
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
     preQuestions = []
@@ -501,7 +558,12 @@ def TakeQuiz(request, quiz_id):
     if quiz.shuffleable == True:
         shuffle(questions)
 
+    profile.coins -= 1
 
+    """
+    Create a logic to take care of accounts with less than 1 coins
+    Add reward of 1,2,2,2,2,3,3,3,4,4,5
+    """
     pagecounter = PageCounter.objects.get(id=1)
     pagecounter.quizTakenPage += 1
     pagecounter.save()
@@ -587,7 +649,12 @@ def SubmitQuiz(request, quiz_id):
 
         if user_score > 0:
             quiz.attempts += 1
-            quiz.gross_average_score += (user_score/total_score) * 100
+            user_avg_score = (user_score/total_score) * 100 
+            if user_avg_score >= 60:
+                profile.coins += quizRandomCoin()
+                profile.save()
+
+            quiz.gross_average_score += user_avg_score
             quiz.average_score = quiz.gross_average_score / quiz.attempts 
             quiz.save()
             pagecounter = PageCounter.objects.get(id=1)
@@ -601,7 +668,7 @@ def SubmitQuiz(request, quiz_id):
         else:
             
             # messages.error(request, "You didn't answer any question.")
-            return redirect('take-quiz', quiz_id = quiz.id)
+            return redirect('quiz:take-quiz', quiz_id = quiz.id)
 
                    
 

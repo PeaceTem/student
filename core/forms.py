@@ -12,8 +12,9 @@ class LoginForm(forms.Form):
 
     
 class ProfileCreationForm(forms.ModelForm):
-    
+    date_of_birth = forms.DateTimeField(input_formats=['%d/%m/%Y'])
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = ['user', 'quizAttempted', 'quizCreated', 'date_joined', 'date_updated', 'streak', 'diaries', 'tasks', 'code', 'referrer']
+        exclude = ['user', 'date_updated', 'coins', 'streak', 'code', 'referrer']
+

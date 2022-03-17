@@ -1,27 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+ <h3>Add automatic refresh</h3>
+ <a href="javascript:location.reload(true)">Skip</a>
+
+
 
 All added categories will be added everytime the  page loads
 
 create button adds categories automatically to the category list
 
-
-
+<input type="hidden" name="quiz" id="quiz" value="{{quiz.id}}">
 
 
 <h3>Add Categories</h3>
 <div class="category-create" >
-    <form action="" method="get">
-        <input type="text" name="newCategory" id="">
+    <form action="" id="category-form" method="get">
+        <input type="text" name="newCategory" id="newCategory">
         <input type="submit" value="Create Category">
     </form>    
 
 </div>
 
 
-<form action="" method="get">
+<form action="" id="added-category-form" method="get">
     <div id="categoryBucket">
 
-        {% for category in quiz.categories.all %}
-        <input type='text' id="{{category.title}}" onclick="removeCategory(this.id)" name='addedCategories' value={{category.title}}>
+        {% for category in quizCategories %}
+        <input type='text' id="{{category.title}}"  class="addedCategories" onclick="removeCategory(this.id)" name="addedCategories" value={{category.title}}>
     {% endfor %}
     </div>
 
@@ -44,15 +58,13 @@ create button adds categories automatically to the category list
 
 </div>
 
+<script type="text/javascript">
 
-<script>
-    function addClassCategory(obj_name){
+function addClassCategory(obj_name){
         var bucket = document.getElementById('categoryBucket');
 
         bucket.innerHTML += `
-                            <div class=items>
-                                <input type='text' name='addedCategories' value=${obj_name}>
-                            </div>
+                                <input type="text" class = "addedCategories" name="addedCategories" value=${obj_name}>
                             `;
 
     }
@@ -63,4 +75,63 @@ create button adds categories automatically to the category list
     }
 
 
+
+    // $(document).on('submit', '#category-form', function(e){
+    //     console.log('JQuery is working!')
+    //     e.preventDefault();
+        
+    //     $.ajax({
+    //         type: 'GET',
+    //         url : '/quiz/create_category/'+$('#quiz').val(),
+    //         data : {
+    //             newCategory : $('#newCategory').val(),
+    //         },
+    //         success : function(response){
+    //             alert('It works');
+    //             console.log(response)
+
+    //         },
+    //         error : function(){
+    //             alert('It falis silently!')
+    //         }
+
+    //     });
+    //     document.getElementById('newCategory').value = ''
+    // });
+
+
+
+
+
+    // $(document).on('submit', '#added-category-form', function(e){
+    //     console.log('JQuery is working for the two!')
+    //     e.preventDefault();
+        
+    // var categoryList = [];
+    // $(".addedCategories").each(function(){
+    //      categoryList.push($(this).val());
+    // });
+
+    
+    // console.log(categoryList)
+    //     $.ajax({
+    //         type: 'GET',
+    //         url : '/quiz/create_category/'+$('#quiz').val(),
+    //         data : {
+    //             addedCategories : categoryList[0],
+    //         },
+    //         success : function(){
+    //             alert('It works');
+    //         }
+    //     });
+    // });
+
+
+
 </script>
+<script>
+ 
+</script>
+   
+</body>
+</html>

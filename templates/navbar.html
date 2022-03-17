@@ -6,7 +6,6 @@
 {% endblock css %}
 
 {% block content %}
-{% include 'menu.html' %}
     <header>
         
         <div class="name">
@@ -20,7 +19,7 @@
             <a href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i><div>Shop</div></a>
         </div>
     </header>
-    <script src="navbar.js" type="text/javascript"></script>
+    <script src="{% static 'js/navbar.js' %}" type="text/javascript"></script>
 {% endblock content %}
 
 

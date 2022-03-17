@@ -1,0 +1,121 @@
+*{
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    color: #333;
+
+}
+
+.profile-box{
+    margin-top: 50px;
+}
+.profile-box .imgBx{
+    display : flex;
+    border-radius : 50%;
+    align-items: center;
+    justify-content:center;
+    margin-top: 20px;
+}
+
+.profile-box .imgBx img{
+    background-size: cover;
+    position : relative;
+    width : 300px;
+    max-width : 50vw;
+
+}
+
+.name{
+    font-size: 24px;
+    font-weight: 700;
+    display : flex; 
+    justify-content: center;
+    align-items : center;
+
+}
+
+.name > .userBx{
+    display: inline;
+    margin: 3px 5px;
+}
+
+.username{
+    font-size: 12px;
+    font-weight: 500;
+    display : flex; 
+    justify-content: center;
+    align-items : center;
+}
+
+.otherInfo{
+    display: block;
+    text-align: center;
+    margin: auto;
+    color: #333;
+
+
+}
+
+
+.userInfo{  
+    background : #eee;
+    border-radius : 10px;
+    display : block;
+    margin: auto;
+    margin-top: 10px;
+    width : 500px;
+    max-width : 95vw;
+}
+
+.userInfo .heading, .userInfo .content{
+    display : flex;
+    flex-grow: space-between;
+    justify-content : center;
+    align-items : center;
+    color: #333;
+    padding: 10px 2px;
+}
+
+.userInfo .heading{
+    border-bottom : 1px solid #333;
+    display: block;
+    width: 100%;
+
+}
+
+
+.menu-icon{
+    position: sticky;
+    top: 0px;
+    right: 0px;
+    background: #fff;
+    display: block;
+    width: 100%;
+    padding: 4px;
+    text-align: right;
+
+    color: #333;
+
+
+}
+
+
+.link.edit{
+    padding: 4px 10px;
+    background: #f00;
+    margin: 10px;
+    border-radius: 10px;
+    text-align: center;
+    letter-spacing: 3px;
+}
+
+.link.edit a{
+    color: #fff;
+}
+
+
+
+
+
+
+

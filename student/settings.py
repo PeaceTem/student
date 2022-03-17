@@ -46,13 +46,20 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.facebook',
-
+    # add twitter and linkedIn
+    'django_social_share',
     # the main site apps
     'analysis.apps.AnalysisConfig',
     'quiz.apps.QuizConfig',
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
     'core.apps.CoreConfig',
+    'draft.apps.DraftConfig',
+    'leaderboard.apps.LeaderboardConfig',
+    'personalProfile.apps.PersonalprofileConfig',
+    'likes.apps.LikesConfig',
+    'comment.apps.CommentConfig',
+    'question.apps.QuestionConfig',
     # 'referral.apps.ReferralConfig',
     # third party apps
     'crispy_forms',
@@ -189,19 +196,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = 'static/' # remove the /
+STATIC_URL = 'static/' 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'quiz' / 'static',
-    BASE_DIR / 'core' / 'static',
+    BASE_DIR / 'diary'/ 'static',
     BASE_DIR / 'todo' / 'static',
-    BASE_DIR / 'diary' / 'static',
-
+    BASE_DIR / 'core' / 'static',
 ]
 
 # media files configuration
-MEDIA_URL = '/images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # login credentials

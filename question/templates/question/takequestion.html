@@ -1,0 +1,122 @@
+{% load static %}
+
+{% include 'messages.html' %}
+<div class="message"></div>
+<div id="countdownbox"></div>
+<div class="question-card-container">
+    <form action="{% url 'question:submit-question' %}" method="post"  id="questionForm">
+        {% csrf_token %}
+        <ol>
+        {% for question in questions %}
+        <div class="question-box">
+        
+            {% if question.form == 'fourChoicesQuestion' %}
+            <div id="seconds">{{question.duration}}</div><span>seconds</span> 
+
+            <li class="question">
+            <div>
+                    {{question.question_text}}
+              
+                    <div class="answer">
+                        <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}-{{question.id}}-answer1">
+                        <label for="id_answer1">{{question.answer1}}</label>
+                    </div>
+                    
+                    <div class="answer">
+                        <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}-{{question.id}}-answer2">
+                        <label for="id_answer2">{{question.answer2}}</label>
+                    </div>
+
+                    <div class="answer">
+                        <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer3" value="{{question.form}}-{{question.id}}-answer3">
+                        <label for="id_answer3">{{question.answer3}}</label>
+                    </div>
+
+                    <div class="answer">
+                        <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer4" value="{{question.form}}-{{question.id}}-answer4">
+                        <label for="id_answer4">{{question.answer4}}</label>
+                    </div>
+            </div>
+            </li>
+            {% elif question.form == 'trueOrFalseQuestion' %}
+
+            <li class="question">
+<div id="seconds">{{question.duration}}</div><span>seconds</span> 
+
+            <div>
+                    {{question.question_text}}
+                    <div class="answer">
+                        <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}-{{question.id}}-answer1">
+                        <label for="id_answer1">True</label>
+                    </div>
+                    
+                    <div class="answer">
+                        <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}-{{question.id}}-answer2">
+                        <label for="id_answer2">False</label>
+                    </div>
+            </div>
+            </li>            
+            {% endif %}
+        {% endfor %}
+    </ol>
+        <input type="submit"  id="submitButton"  value="Submit">
+    </form>
+</div>
+<form action="{% url 'question:answer-question' %}" method="get">
+    <input id="skipButton" type="submit" value="Skip">
+</form>
+<!-- disable the submit button if the question has not been answered -->
+
+<div  style="display:none;" class='result'></div>
+<a href=""  class="a">Download</a>
+
+<script src="{% static 'question/html2canvas.js' %}"></script>
+
+<script>
+
+    const elm = document.querySelector('.question-card-container');
+    html2canvas(elm).then(function(canvas){
+        document.querySelector('.result').append(canvas);
+        let cvs = document.querySelector('canvas');
+        let a = document.querySelector('.a');
+        a.href = cvs.toDataURL();
+        a.download = 'tothex-{{question.question_text}}.png'
+    })
+
+
+
+
+    function validateAnswer(option, target){
+        let answers = document.getElementsByClassName(option);
+
+        for(var i = 0; i < answers.length; i++){
+        if (answers[i].checked == 1){
+            answers[i].checked = 0;
+        };  
+
+        }
+        document.getElementById(target).checked = true;
+        
+    }
+
+
+
+
+    let seconds = document.getElementById('seconds').textContent;
+
+    const countdownbox = document.getElementById('countdownbox');
+    const quiz = document.getElementById('questionForm');
+    
+    setInterval(()=>{
+        seconds -= 1;
+        let minutesLeft = Math.floor(seconds/60);
+        let secondsLeft = seconds%60;
+
+        if (seconds <= 0){
+            let skip = document.getElementById('skipButton');
+            skip.click();
+        }
+        countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
+    }, 1000)
+
+</script>

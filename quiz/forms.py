@@ -3,6 +3,7 @@ from django import forms
 
 from django import forms
 from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion
+
 class NewQuizForm(forms.ModelForm):
 
     class Meta:

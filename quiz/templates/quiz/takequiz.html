@@ -1,16 +1,19 @@
-
-
-
+<div id="minute">{{quiz.duration}}</div><span>minutes</span> 
+<div id="countdownbox"></div>
 <div class="question-card-container">
-    <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data" id="quizForm">
         {% csrf_token %}
         <ol>
         {% for question in questions %}
         <div class="question-box">
         
             {% if question.form == 'fourChoicesQuestion' %}
+
             <li class="question">
             <div>
+                {% if question.thumbnail %}
+                <img src="{{question.thumbnail.url}}" alt="{{question.question_text}}">
+                {% endif %}
                 <input type="hidden" name="points" value="{{question.points}}">
                     {{question.question_text}}
                     <p>
@@ -44,6 +47,9 @@
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
             <div>
+            {% if question.thumbnail %}
+            <img src="{{question.thumbnail.url}}" alt="{{question.question_text}}">
+            {% endif %}
                 <input type="hidden" name="points" value="{{question.points}}">
                     {{question.question_text}}
                     <p>
@@ -67,7 +73,7 @@
             {% endif %}
         {% endfor %}
     </ol>
-        <input type="submit" value="Submit">
+        <input id="submitButton" type="submit" value="Submit">
     </form>
 </div>
 
@@ -84,5 +90,25 @@
         document.getElementById(target).checked = true;
         
     }
+
+    const minutes = document.getElementById('minute').textContent;
+
+    const countdownbox = document.getElementById('countdownbox');
+    let seconds = minutes * 60;
+    const quiz = document.getElementById('quizForm');
+    
+    setInterval(()=>{
+        seconds -= 1;
+        let minutesLeft = Math.floor(seconds/60);
+        let secondsLeft = seconds%60;
+
+        countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
+        if (seconds == 0){
+            print(seconds);
+            // document.getElementById('quizForm').submit();
+            document.getElementById('submitButton').click();
+            // Change this to click
+        }
+    }, 1000)
 
 </script>

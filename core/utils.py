@@ -4,6 +4,15 @@ def generate_ref_code():
     code = str(uuid.uuid4()).replace("-", "")
     return code
 
+
+
+"""
+
+
+
+Create the referral function here
+"""
+
 # duration = datetime.now(timezone.utc).astimezone() - self.date
         # duration = date.today() - self.date
 

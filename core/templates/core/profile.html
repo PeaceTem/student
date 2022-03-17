@@ -1,9 +1,22 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
+{% load social_share %}
 {% block title %}
-    Profile
+
 {% endblock title %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% include 'messages.html' %}
+<div class="menu-icon">
+    <span>ready</span>
+    <i> menu</i>
+</div>
+{% post_to_facebook object_or_url "<p style='color: green;'>facebook</p>" %}
+
+{% post_to_facebook 'Profile: {{profile.user.username}}, Check my profile to see the cool stuffs I have been up to.' object_or_url 'Post to Facebook' %}
+
+{% post_to_twitter 'Profile: {{profile.user.username}}, Check my profile to see the cool stuffs I have been up to.' object_or_url 'Post to Twitter' %}
 <div class="profile-box">
     <div class="imgBx">
         {% if profile.picture %}
@@ -12,55 +25,108 @@
         <img src="{% static 'quiz/quiz.jpg' %}" alt="default profile picture for {{profile.user.username}}">
         {% endif %}
     </div>
+
+<div class="name">
     <div class="userBx">
-        <h5 class="heading">Username</h5>
-        <p>{{profile.user.username}}</p>
+        {{profile.first_name}}
     </div>
     <div class="userBx">
-        <h5 class="heading">Firstname</h5>
-        <p>{{profile.first_name}}</p>
+        {{profile.last_name}}
     </div>
-    <div class="userBx">
-        <h5 class="heading">Lastname</h5>
-        <p>{{profile.last_name}}</p>
+
+</div>
+    
+
+    <div class="username">
+       @{{profile.user.username}}
     </div>
-    <div class="userBx">
-        <h5 class="heading">Middlename</h5>
-        <p>{{profile.middle_name}}</p>
+    <div class="following">
+        {{follower.following.all.count}} followings
+     </div>
+    <div class="followers">
+        {{follower.followers.all.count}} followers
+     </div>
+     {% if request.user != profile.user %}
+        {% if request.user in follower.followers.all %}
+        <form action="{% url 'unfollow' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="following" value="{{follower.user.id}}" readonly>
+            <input type="hidden" name="following_user" value="{{profile.user}}" readonly>
+            <input type="hidden" name="following_username" value="{{profile.user.username}}" readonly>
+
+            <button type='submit' class="btn profile-edit-btn">
+                UnFollow
+            </button>
+        </form>
+        {% else %}
+        <form action="{% url 'follower' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="following" value="{{follower.user.id}}" readonly>
+            <input type="hidden" name="following_user" value="{{profile.user}}" readonly>
+            <input type="hidden" name="following_username" value="{{profile.user.username}}" readonly>
+
+            <button type='submit' class="btn profile-edit-btn">
+                Follow
+            </button>
+        </form>
+        {% endif %}
+     {% endif %}
+<div class="otherInfo">
+    <div class="userInfo">
+        <div class="heading">Bio</div>
+        <div class="content"> {{profile.bio|truncatechars:200}}</div>
+
     </div>
-    <div class="userBx">
-        <h5 class="heading">Email</h5>
-        <p>{{profile.email}}</p>
+
+    <div class="userInfo">
+        <div class="heading">State Of Residence</div>
+        <div class="content"> {{profile.state_of_residence}} </div>
+
     </div>
-    <div class="userBx">
-        <h5 class="heading">Bio</h5>
-        <p>{{profile.bio}}</p>
+
+    <div class="userInfo">
+        <div class="heading">State Of Origin</div>
+        <div class="content"> {{profile.state_of_origin}} </div>
+
+
     </div>
-    <div class="userBx">
-        <h5 class="heading">Date Of Birth</h5>
-        <p>{{profile.date_of_birth}}</p>
+
+    <div class="userInfo">
+        <div class="heading">Nationality</div>
+        <div class="content"> {{profile.nationality}} </div>
     </div>
-    <div class="userBx">
-        <h5 class="heading">State Of Residence</h5>
-        <p>{{profile.state_of_residence}}</p>
+    
+    <div class="userInfo">
+        <div class="heading">Streak</div>
+        <div class="content"> {{profile.streak.length}} days </div> 
     </div>
-    <div class="userBx">
-        <h5 class="heading">State Of Origin</h5>
-        <p>{{profile.state_of_origin}}</p>
-    </div>
-    <div class="userBx">
-        <h5 class="heading">Nationality</h5>
-        <p>{{profile.nationality}}</p>
-    </div>
-    <div class="userBx">
-        <h5 class="heading">Date Joined</h5>
-        <p>{{profile.date_joined}}</p>
-    </div><div class="userBx">
-        <h5 class="heading">Streak</h5>
-        <p>{{profile.streak}}</p>
-    </div>
-    <div class="link">
+</div>
+    
+    <div class="edit link">
         <a href="{% url 'edit_profile' %}">Edit</a>
     </div>
 </div>
+
+add the delete and the update button
+
+<div class="quizzes">
+    {% for quiz in quizzes %}
+        <div class="quizItem">
+            {{quiz.title}}
+        </div>
+     {% if request.user == profile.user %}
+
+        <div class="private-links">
+            <a href="{% url 'quiz:delete-quiz' quiz.id %}">Delete</a>
+            <a href="{% url 'quiz:quiz-update' quiz.id %}">Update</a>
+        </div>
+        {% endif %}
+        <div class="public-links">
+            <a href="{% url 'quiz:quiz-detail' quiz.id None %}">Detail</a>
+            <a href="{% url 'quiz:take-quiz' quiz.id %}">Take</a>
+        </div>
+    {% endfor %}
+</div>
+
+
 {% endblock content %}

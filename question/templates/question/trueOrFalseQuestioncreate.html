@@ -1,0 +1,9 @@
+
+<div class="trueOrFalse">
+    <form action="" method="post", enctype="multipart/form-data">
+        {% csrf_token %}
+        {{trueOrFalseForm.as_p}}
+<!-- add display absolute to the create + button -->
+        <input type="submit" value="Create">
+    </form>
+</div>

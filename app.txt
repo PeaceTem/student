@@ -1,0 +1,307 @@
+The algorithm to be used
+
+Each user should an average score, and quiz will be recommended to them based on their average score (avg-20, avg+20)
+each quiz or question will also have average score
+Users should be able to like the quiz or question
+
+
+Each question can only contain 3 categories, but quiz, 5
+
+
+
+Add colored background to the quiz title and the question text. Learn how to resize like facebook and whatsapp
+Add the go live button and save to draft button to the draft quiz and questions
+Finish the question list page
+Add reward to quiz and questions after taking them
+Add the html code for special symbols
+Add followers and links to youtube, like tiktok's
+Research how to change an html page to canvas and to image subsequently
+Add good dashboard to the profile page and remove the vita
+Add One minute chanllenge questions
+Add a ReadMe.md file to each app of the tothex project. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+!DOCTYPE html>
+<html>
+   <head>
+      <title>TUT</title>
+   </head>
+   <body>
+      {% load social_share %}
+      {% post_to_facebook object_or_url "<p style='color: green;'>facebook</p>" %}
+      {% post_to_linkedin object_or_url %}
+      {% post_to_telegram "New Song: " object_or_url %}
+   </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Skip to main content
+ Contribute today to the 𝛑thon PSF Spring Fundraiser and show your love for Python!  Donate Now
+PyPI
+Search PyPI
+Search projects
+Search
+Help Sponsors Log in Register
+django-social-share 2.2.1
+pip install django-social-shareCopy PIP instructions
+Latest version
+Released: Feb 4, 2021
+
+Templatetags for 'tweet this' and 'share on facebook'
+
+Navigation
+ Project description
+ Release history
+ Download files
+Project links
+Homepage
+Statistics
+GitHub statistics:
+ Stars: 193
+ Forks: 67
+ Open issues/PRs: 17
+View statistics for this project via Libraries.io, or by using our public dataset on Google BigQuery
+
+Meta
+License: MIT License (MIT)
+
+Author: Flavio Curella
+
+Maintainers
+Avatar for curella.org from gravatar.com curella.org
+Classifiers
+Development Status
+3 - Alpha
+Environment
+Console
+Framework
+Django
+Intended Audience
+Developers
+Information Technology
+License
+OSI Approved :: MIT License
+Operating System
+OS Independent
+Programming Language
+Python
+Sponsored: Python Software Foundation
+Coiled is a Contributing sponsor of the Python Software Foundation.
+PSF Sponsor · Served ethically
+Project description
+https://github.com/fcurella/django-social-share/workflows/Python%20build/badge.svg https://coveralls.io/repos/github/fcurella/django-social-share/badge.svg?branch=master
+Provides templatetags for:
+
+‘Tweet This’
+‘Share this on Facebook’
+‘Share on Google+’
+‘Share on LinkedIn’
+‘Share on Telegram’
+‘Share on WhatsApp’
+‘mailto://’.
+‘Save to Pinterest’
+Plain HTML templates are provided for your convenience, but you can override them to provide your own look and feel.
+
+Installation
+$ pip install django-social-share
+Add the app to INSTALLED_APPS:
+
+INSTALLED_APPS += ['django_social_share']
+You will also have to add django.template.context_processors.request to your context_processors list. This way the templatetags will use the correct scheme and hostname:
+
+TEMPLATES=[
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+            ],
+        }
+    },
+]
+Note in most cases sharing will not work if you are using localhost or your domain is otherwise not accessible from the public internet. For testing local development, you can use a service like ngrok, and set your Site instance’s domain to the hostname provided by ngrok.
+
+Usage
+{% post_to_facebook <object_or_url> <link_text> <link_class> %}
+
+{% post_to_gplus <object_or_url> <link_text> <link_class> %}
+
+{% post_to_twitter <text_to_post> <object_or_url> <link_text> <link_class> %}
+
+{% post_to_linkedin <object_or_url> <link_class> %}
+
+{% send_email <subject> <text_to_post> <object_or_url> <link_text> <link_class> %}
+
+{% post_to_reddit <text_to_post> <object_or_url> <link_text> <link_class> %}
+
+{% post_to_telegram <text_to_post> <object_or_url> <link_text>  <link_class> %}
+
+{% post_to_whatsapp <object_or_url> <link_text> <link_class> %}
+
+{% save_to_pinterest <object_or_url>  <link_class> %}
+
+{% add_pinterest_script %}
+<text_to_post> may contain any valid Django Template code. Note that Facebook does not support this anymore.
+
+<object_or_url> is optional (except Telegram). If you pass a django model instance, it will use its get_absolute_url method. Additionally, if you have django_bitly installed, it will use its shortUrl on Twitter.
+
+<link_text> is also optional. It defines the text used for the a element. Defaults to ‘Post to Facebook’ and ‘Post to Twitter’.
+
+<subject> may contain any valid Django Template code.
+
+{% post_to_twitter_url <text_to_post> <object_or_url> %}
+Will add a tweet_url variable to the context, containing the URL for the Twitter sharer popup.
+
+{% post_to_facebook_url <object_or_url> %}
+Will add a facebook_url variable to the context, containing the URL for the Facebook sharer popup.
+
+{% post_to_gplus_url <object_or_url> %}
+Will add a gplus_url variable to the context, containing the URL for the Google+ sharer popup.
+
+{% send_email_url <subject> <text_to_post> <object_or_url> <link_text> %}
+Will add a mailto_url variable to the context, containing the URL for the mailto anchor.
+
+{% post_to_reddit_url <text> <object_or_url> %}
+Will add a reddit_url variable to the context, containing the URL for the Reddit poster page.
+
+{% post_to_telegram <text> <object_or_url> %}
+Will add a telegram_url variable to the context, containing the URL for the Telegram sharer popup.
+
+{% post_to_whatsapp_url <object_or_url> %}
+Will add a whatsapp_url variable to the context, containing the URL for the WhatsApp sharer.
+
+{% save_to_pinterest_url <object_or_url> %}
+Will add a pinterest_url variable to the context, containing the URL for the Pinterest sharer.
+
+Example:
+
+{% load social_share %}
+
+{% post_to_facebook object_or_url "Post to Facebook!" %}
+{% post_to_twitter "New Song: {{object.title}}. Check it out!" object_or_url "Post to Twitter" %}
+{% post_to_gplus object_or_url "Post to Google+!" %}
+{% post_to_linkedin object_or_url %}
+{% send_email object.title "New Song: {{object.title}}. Check it out!" object_or_url "Share via email" %}
+{% post_to_reddit "New Song: {{object.title}}" <object_or_url> %}
+{% post_to_telegram "New Song: {{object.title}}" <object_or_url> %}
+{% post_to_whatsapp object_or_url "Share via WhatsApp" %}
+{% save_to_pinterest object_or_url %}
+{% add_pinterest_script %} // Required for save_to_pinterest. Add to the end of body tag.
+Templates
+Templates are in:
+
+django_social_share/templatetags/post_to_twitter.html
+django_social_share/templatetags/post_to_facebook.html
+django_social_share/templatetags/post_to_gplus.html
+django_social_share/templatetags/send_email.html
+django_social_share/templatetags/post_to_linkedin.html
+django_social_share/templatetags/post_to_reddit.html.
+django_social_share/templatetags/post_to_telegram.html.
+django_social_share/templatetags/post_to_whatsapp.html.
+django_social_share/templatetags/save_to_pinterest.html.
+django_social_share/templatetags/pinterest_script.html.
+You can override them to suit your mileage.
+
+
+Help
+Installing packages
+Uploading packages
+User guide
+FAQs
+About PyPI
+PyPI on Twitter
+Infrastructure dashboard
+Package index name retention
+Our sponsors
+Contributing to PyPI
+Bugs and feedback
+Contribute on GitHub
+Translate PyPI
+Development credits
+Using PyPI
+Code of conduct
+Report security issue
+Privacy policy
+Terms of use
+Status: All Systems Operational
+
+Developed and maintained by the Python community, for the Python community.
+Donate today!
+
+© 2022 Python Software Foundation
+Site map
+
+ English español français 日本語 português (Brasil) українська Ελληνικά Deutsch 中文 (简体) 中文 (繁體) русский עברית esperanto
+AWS
+AWS
+Cloud computing
+ Datadog
+Datadog
+Monitoring
+ Facebook / Instagram
+Facebook / Instagram
+PSF Sponsor
+ Fastly
+Fastly
+CDN
+ Google
+Google
+Object Storage and Download Analytics
+ Huawei
+Huawei
+PSF Sponsor
+ Microsoft
+Microsoft
+PSF Sponsor
+ NVIDIA
+NVIDIA
+PSF Sponsor
+ Pingdom
+Pingdom
+Monitoring
+ Salesforce
+Salesforce
+PSF Sponsor
+ Sentry
+Sentry
+Error logging
+ StatusPage
+StatusPage
+Status page

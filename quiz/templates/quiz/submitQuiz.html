@@ -17,6 +17,9 @@
 
             {% if question.form == 'fourChoicesQuestion' %}
         <li class="question">
+            {% if question.thumbnail %}
+            <img src="{{question.thumbnail.url}}" alt="">
+            {% endif %}
 
             <div>
                     {{question.question_text}}
@@ -63,6 +66,9 @@
         </li>
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
+                {% if question.thumbnail %}
+            <img src="{{question.thumbnail.url}}" alt="">
+            {% endif %}
 
                 <div>
                         {{question.question_text}}

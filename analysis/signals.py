@@ -11,5 +11,3 @@ def create_analysis(sender, instance, created, *args, **kwargs):
     if created:
         UserPageCounter.objects.create(user=instance)
 
-
-

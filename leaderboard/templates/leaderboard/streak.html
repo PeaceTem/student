@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for leader in leaders %}
+        <div class="line">
+            <div class="name">{{leader.profile.user.username}}</div>
+            <div class="length">{{leader.length}}</div>
+            <div class="active">
+                {% if leader.active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </div>
+        </div>
+        <a href="{% url 'profile:profile' leader.profile.user.username  %}">See Profile</a>
+
+        <br>
+        <br>
+    {% endfor %}
+</body>
+</html>

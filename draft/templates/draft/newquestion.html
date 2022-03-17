@@ -1,0 +1,25 @@
+
+<section>
+   
+<div class="contentBx">
+    <div class="formBx">
+        <h2>Create Question</h2>
+
+<a href="{% url 'draft:trueOrFalseQuestion' draftquiz.id %}">Create A True Or False Question</a>
+
+<a href="{% url 'draft:fourChoicesQuestion' draftquiz.id %}">Create A Four Choices Question</a>
+
+{% if draft.quiz.fourChoicesQuestions.all.count > 0 or draft.quiz.trueOrFalseQuestions > 0 %}
+    <div class="inputBx">
+        <p>
+            Finished? <a href="{% url 'draft:quiz-convert' draftquiz.id %} ">Go Live</a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+</div>
+</section>
+
+<script>
+
+</script>
