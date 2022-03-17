@@ -12,6 +12,9 @@ def MassProfile(request, profile_name):
         profile = get_object_or_404(Profile, user=user)
         follower = get_object_or_404(Follower, user=user)
         quizzes = Quiz.objects.filter(user=profile.user)
+        trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=profile.user)
+        fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=profile.user)
+
         
     except:
         return redirect('quiz:quizzes')
@@ -20,6 +23,8 @@ def MassProfile(request, profile_name):
         'profile': profile,
         'follower' : follower,
         'quizzes': quizzes,
+        'trueOrFalseQuestions': trueOrFalseQuestions,
+        'fourChoicesQuestions': fourChoicesQuestions,
     }
 
     return render(request, 'core/profile.html', context)

@@ -185,7 +185,7 @@ def FourChoicesQuestionUpdate(request, question_id):
 def TrueOrFalseQuestionUpdate(request, question_id):
     user = request.user
     question = get_object_or_404(QTrueOrFalseQuestion, id=question_id)
-    ftrueOrFalseForm = NewQTrueOrFalseQuestionForm(instance=question)
+    trueOrFalseForm = NewQTrueOrFalseQuestionForm(instance=question)
     if request.method == 'POST':
         form = NewQFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():

@@ -17,6 +17,7 @@ from django.contrib import messages
 from .models import Profile, Follower
 from .forms import ProfileCreationForm, LoginForm
 from quiz.models import Quiz
+from question.models import QTrueOrFalseQuestion, QFourChoicesQuestion
 # # Create your views here.
 # messages.error, warning, success, info, debug
  
@@ -147,11 +148,16 @@ def ProfilePage(request):
     profile = get_object_or_404(Profile, user=user)
     follower = get_object_or_404(Follower, user=user)
     quizzes = Quiz.objects.filter(user=user)
-    print(quizzes)
+    trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=user)
+    fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=user)
+    print(trueOrFalseQuestions)
+
     context={
         'profile': profile,
         'follower' : follower,
         'quizzes': quizzes,
+        'trueOrFalseQuestions': trueOrFalseQuestions,
+        'fourChoicesQuestions': fourChoicesQuestions,
     }
 
     return render(request, 'core/profile.html', context)

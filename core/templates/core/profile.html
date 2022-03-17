@@ -112,7 +112,7 @@ add the delete and the update button
 <div class="quizzes">
     {% for quiz in quizzes %}
         <div class="quizItem">
-            {{quiz.title}}
+            {{quiz.title|truncatechars:20}}
         </div>
      {% if request.user == profile.user %}
 
@@ -125,6 +125,35 @@ add the delete and the update button
             <a href="{% url 'quiz:quiz-detail' quiz.id None %}">Detail</a>
             <a href="{% url 'quiz:take-quiz' quiz.id %}">Take</a>
         </div>
+    {% endfor %}
+</div>
+
+
+<div class="questions">
+    {% for question in trueOrFalseQuestions %}
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
+     {% if request.user == profile.user %}
+
+        <div class="private-links">
+            <a href="{% url 'question:edit-trueOrFalseQuestion' question.id %}">Update</a>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="questions">
+    {% for question in fourChoicesQuestions %}
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
+     {% if request.user == profile.user %}
+
+        <div class="private-links">
+            <a href="{% url 'question:edit-fourChoicesQuestion' question.id %}">Update</a>
+        </div>
+        {% endif %}
     {% endfor %}
 </div>
 
