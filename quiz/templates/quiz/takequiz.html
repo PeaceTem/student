@@ -11,9 +11,6 @@
 
             <li class="question">
             <div>
-                {% if question.thumbnail %}
-                <img src="{{question.thumbnail.url}}" alt="{{question.question_text}}">
-                {% endif %}
                 <input type="hidden" name="points" value="{{question.points}}">
                     {{question.question_text}}
                     <p>
@@ -47,9 +44,6 @@
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
             <div>
-            {% if question.thumbnail %}
-            <img src="{{question.thumbnail.url}}" alt="{{question.question_text}}">
-            {% endif %}
                 <input type="hidden" name="points" value="{{question.points}}">
                     {{question.question_text}}
                     <p>
@@ -78,6 +72,7 @@
 </div>
 
 <script>
+
     function validateAnswer(option, target){
         let answers = document.getElementsByClassName(option);
 
@@ -103,11 +98,11 @@
         let secondsLeft = seconds%60;
 
         countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
-        if (seconds == 0){
+        if (seconds <= 0){
             print(seconds);
-            // document.getElementById('quizForm').submit();
-            document.getElementById('submitButton').click();
-            // Change this to click
+            const finished =  document.getElementById('submitButton');
+            finished.click();
+
         }
     }, 1000)
 

@@ -19,6 +19,10 @@ urlpatterns = [
     path('create-question/true-or-false/', views.TrueOrFalseQuestionCreate, name='trueOrFalseQuestion'),
     path('edit-question/true-or-false/<str:question_id>/', views.TrueOrFalseQuestionUpdate, name='edit-trueOrFalseQuestion'),
 
+    path('category-create/<str:question_id>/', views.CategoryCreate, name='category-create'),
+
+    path('question-delete/<str:question_form>/<str:question_id>/', views.DeleteQuestion, name='delete-question'),
+
     # answer question
     path('take/', views.AnswerQuestion, name='answer-question'),
     path('submit/', views.SubmitQuestion, name='submit-question'),

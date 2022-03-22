@@ -12,7 +12,8 @@ little explanation and link to full details
 
 And then, the all the objects. 
 """
-
+def Leaderboard(request):
+    return render(request, 'leaderboard/leaderboard.html')
 def StreakLeaderBoard(request):
     leaders = Streak.objects.all()[0:1000] or Streak.objects.all()
     # add the get absolute url function to the profile

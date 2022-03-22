@@ -9,19 +9,13 @@
 
 </head>
 <body>
- <h3>Add automatic refresh</h3>
- <a href="javascript:location.reload(true)">Skip</a>
-
-
-
-All added categories will be added everytime the  page loads
-
-create button adds categories automatically to the category list
 
 <input type="hidden" name="quiz" id="quiz" value="{{quiz.id}}">
 
+<div class="head">Step 2 of 3</div>
 
 <h3>Add Categories</h3>
+{% include 'messages.html' %}
 <div class="category-create" >
     <form action="" id="category-form" method="get">
         <input type="text" name="newCategory" id="newCategory">

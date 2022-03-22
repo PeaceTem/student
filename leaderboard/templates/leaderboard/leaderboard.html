@@ -1,0 +1,14 @@
+
+{% extends 'quiz/base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<a href="{% url 'leaderboard:wealth' %}">
+    Top Earners
+</a>
+
+<a href="{% url 'leaderboard:streak' %}">
+    Highest Streak Owners
+</a>
+
+{% endblock content %}

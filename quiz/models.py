@@ -42,14 +42,12 @@ class FourChoicesQuestion(models.Model):
     index = models.PositiveSmallIntegerField(default=1)
     form = models.CharField(max_length=30, default='fourChoicesQuestion')
     question_text = models.TextField(max_length=500)
-    thumbnail = models.ImageField(upload_to='images/', blank=True, null=True)
     answer1 = models.CharField(max_length=200)
     answer2 = models.CharField(max_length=200)
     answer3 = models.CharField(max_length=200)
     answer4 = models.CharField(max_length=200)
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
     solution = models.TextField(max_length=500, null=True, blank=True)
-    solutionThumbnail = models.ImageField(upload_to='images/',  blank=True, null=True)
     points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=15)
 
@@ -89,12 +87,10 @@ class TrueOrFalseQuestion(models.Model):
     index = models.PositiveSmallIntegerField(default=1)
     form = models.CharField(max_length=20, default='trueOrFalseQuestion')
     question_text = models.CharField(max_length=200)
-    thumbnail = models.ImageField(upload_to='images/',  blank=True, null=True)
     answer1 = models.CharField(max_length=20, default='True')
     answer2 = models.CharField(max_length=20, default='False')
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
     solution = models.TextField(max_length=500, null=True, blank=True)
-    solutionThumbnail = models.ImageField(upload_to='images/',  blank=True, null=True)
     points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
 
@@ -164,7 +160,6 @@ class Quiz(models.Model):
     gross_average_score = models.PositiveIntegerField(default=0)
     average_score = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     public = models.BooleanField(default=True)
-    thumbnail = models.ImageField(upload_to='images/', blank=True, null=True)
     categories = models.ManyToManyField(Category, blank=True,
         related_name='categories', related_query_name='categories')
     #duration and each quiz is in minutes, and it overrides the duration of all the questions
@@ -181,15 +176,15 @@ class Quiz(models.Model):
 
 
     
-    def save(self, *args, **kwargs):
-        #use the pre_save signal to handle this task.
-        super().save(*args, **kwargs)
-        if self.thumbnail:
-            img = Image.open(self.thumbnail)
-            if img.height > 300 or img.width > 300:
-                output_size = (100,100)
-                img.thumbnail(output_size)
-                img.save(self.thumbnail.path)
+    # def save(self, *args, **kwargs):
+    #     #use the pre_save signal to handle this task.
+    #     super().save(*args, **kwargs)
+    #     if self.thumbnail:
+    #         img = Image.open(self.thumbnail)
+    #         if img.height > 300 or img.width > 300:
+    #             output_size = (100,100)
+    #             img.thumbnail(output_size)
+    #             img.save(self.thumbnail.path)
 
 
 
@@ -216,40 +211,3 @@ class Quiz(models.Model):
         return f"{self.title}"
 
 
-
-
-
-
-"""
-Change the attempter and the attempt to quiz and question attempter and attempt
-
-"""
-
-class Attempter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    score = models.PositiveSmallIntegerField()
-
-
-    def __str__(self):
-        return f"{self.user} | {self.quiz}"
-
-
-
-class Attempt(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    attempter = models.ForeignKey(Attempter, on_delete=models.CASCADE)
-    # question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    correct = models.BooleanField(default=False)
-
-
-    def __str__(self):
-        return f"{self.quiz.title}"
-
-
-
-
-class QuizTaker(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    quizzes = models.ManyToManyField(User, blank=True, related_name='quizzes')
-    

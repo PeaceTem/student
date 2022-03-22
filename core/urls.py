@@ -4,15 +4,17 @@ my_recommendations_view, CustomLoginView, RegisterPage, ProfilePage,
 ProfileCreationPage, FollowerView, UnfollowView)
 from django.contrib.auth import views as auth_views
 
-
+from . import views
 
 urlpatterns = [
     path('register/', RegisterPage.as_view(), name='register'),
     path('login/', CustomLoginView, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='account_login'), name='logout'),
 
     #referral
     path('', Home, name='home'),
+    path('menu/', views.Menu, name='menu'),
+
     path('referral/<str:ref_code>/', main_view, name='main_view'),
     path('profiles/', my_recommendations_view, name='my_recs_view'),
 
@@ -45,6 +47,4 @@ urlpatterns = [
     # profile
     path('profile/', ProfilePage, name='profile'),
     path('edit_profile/', ProfileCreationPage, name='edit_profile'),
-
-
 ]

@@ -1,7 +1,57 @@
+<div class="head">Step 1 of 3</div>
 
 
+
+<button>math notation</button>
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="copy" value="&copy">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="times" value="×">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="divide" value="÷">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="ne" value="≠">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="plusmn" value="±">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="elt" value="⋜">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="glt" value="⋝">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="deg" value="°">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="fnof" value="ƒ">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="part" value="∂">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="empty" value="∅">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="isin" value="∈">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="notin" value="∉">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="sum" value="∑">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="mnplus" value="∓">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="radic" value="√">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="radic3" value="∛">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="radic4" value="∜">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="infin" value="∞">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="cap" value="∩">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="cup" value="∪">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="int" value="∫">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="sub" value="⊂">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="sup" value="⊃">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="nsub" value="⊄">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="nsup" value="⊅">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="sube" value="⊆">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="supe" value="⊇">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="nsube" value="⊈">
+    <input type="text"  onclick="copyFunction(this.id)" name="" id="nsupe" value="⊉">
+
+
+    
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p|safe}}
     <input type="submit" value="Create Quiz">
 </form>
+
+
+    <script>
+        function copyFunction(base){
+            console.log(base)
+        let copyText = document.getElementById(base);
+        console.log(copyText);
+        copyText.select();
+        copyText.setSelectionRange(0,99999);
+        // document.execCommand("copy")
+        navigator.clipboard.writeText(copyText.value)
+        alert("Copied the text: " + copyText.value)
+    }
+    </script>

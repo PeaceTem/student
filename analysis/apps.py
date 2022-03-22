@@ -1,9 +1,9 @@
-from django.apps import AppConfig
+# from django.apps import AppConfig
 
 
-class AnalysisConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'analysis'
+# class AnalysisConfig(AppConfig):
+#     default_auto_field = 'django.db.models.BigAutoField'
+#     name = 'analysis'
 
-    def ready(self):
-        import analysis.signals
+#     def ready(self):
+#         import analysis.signals

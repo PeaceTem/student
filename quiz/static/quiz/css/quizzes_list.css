@@ -36,10 +36,10 @@
 .card .contentBx div.title-block{
     border-bottom:1px solid#999;
     width: 100%;  
+
 }
 .card .contentBx .title{
-    color: #fff;
-    background : #7d25f1;
+    color: #666;
     min-height: 100px;
     width: 100%;
     padding: 10px;

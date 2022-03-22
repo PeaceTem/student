@@ -1,5 +1,8 @@
-
+{% include 'messages.html'%}
 <div class="question-card-container">
+    <a href="{% url 'profile:profile' quiz.user.username %}">
+        {{quiz.user.username}}
+    </a>
     <p>
         You scored: {{user_score}} out of {{quiz.totalScore}}
     </p>
@@ -17,9 +20,7 @@
 
             {% if question.form == 'fourChoicesQuestion' %}
         <li class="question">
-            {% if question.thumbnail %}
-            <img src="{{question.thumbnail.url}}" alt="">
-            {% endif %}
+
 
             <div>
                     {{question.question_text}}
@@ -57,8 +58,28 @@
              
                                  </div>
                         </li>
-                        Your Answer:
-                        {{answer}}
+                        <div>
+                            Your Answer:
+                            {{answer}}
+                        </div>
+                       
+                        
+                        <div class="correct-answer">
+                            Correct Answer:
+                            {% if question.correct == 'answer1' %}
+                            {{question.answer1}}
+                        {% elif question.correct == 'answer2' %}
+                            {{question.answer2}}
+                        {% elif question.correct == 'answer3' %}
+                            {{question.answer3}}
+                        {% elif question.correct == 'answer4' %}
+                            {{question.answer4}}
+                        {% endif %}
+                        </div>
+                        
+                        <div class="solution">
+                            Solution: {{question.solution}}
+                            </div>
                     </ol>
                   
                
@@ -66,9 +87,7 @@
         </li>
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
-                {% if question.thumbnail %}
-            <img src="{{question.thumbnail.url}}" alt="">
-            {% endif %}
+
 
                 <div>
                         {{question.question_text}}
@@ -91,8 +110,23 @@
                                     {{question.answer2}}
                                     </div>
                             </li>
-                            Your Answer:
-                            {{answer}}
+                            <div>
+                                Your Answer:
+                                {{answer}}
+                            </div>
+                           
+                            <div class="correct-answer">
+                                Correct Answer:
+                                {% if question.correct == 'True' %}
+                                    True
+                                {% elif question.correct == 'False' %}
+                                    False
+                                {% endif %}
+                            </div>
+                         
+                        <div class="solution">
+                        Solution: {{question.solution}}
+                        </div>
                         </ol>
                       
                    
@@ -109,3 +143,17 @@
 <a href="{% url 'quiz:quiz-pdf' quiz.id %}">
     Download the Pdf
 </a>
+
+
+
+<div>
+    <img src="{{postAd.picture.url}}">
+</div>
+
+<div>
+    {{postAd.description}}
+</div>
+
+<div>
+    <a href="{{postAd.link}}" target="_blank">Visit Site</a>
+</div>

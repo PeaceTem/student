@@ -1,16 +1,21 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
 {% load social_share %}
-{% block title %}
-
-{% endblock title %}
+{% block quizTitle %}
+Profile
+{% endblock quizTitle %}
 
 {% block content %}
+
+{% include 'navbar.html' %}
+
 <link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
 {% include 'messages.html' %}
 <div class="menu-icon">
     <span>ready</span>
-    <i> menu</i>
+    <a href="{% url 'menu' %}">
+        <div ><i class="fa fa-bars" aria-hidden="true">menu</i></div>
+    </a>
 </div>
 {% post_to_facebook object_or_url "<p style='color: green;'>facebook</p>" %}
 
@@ -19,11 +24,7 @@
 {% post_to_twitter 'Profile: {{profile.user.username}}, Check my profile to see the cool stuffs I have been up to.' object_or_url 'Post to Twitter' %}
 <div class="profile-box">
     <div class="imgBx">
-        {% if profile.picture %}
-        <img src="{{profile.picture.url}}" alt="profile picture for {{profile.user.username}}">
-        {% else %}
-        <img src="{% static 'quiz/quiz.jpg' %}" alt="default profile picture for {{profile.user.username}}">
-        {% endif %}
+        <img src="/static/images/tothex_500.png">
     </div>
 
 <div class="name">
@@ -100,6 +101,10 @@
         <div class="heading">Streak</div>
         <div class="content"> {{profile.streak.length}} days </div> 
     </div>
+    <div class="userInfo">
+        <div class="heading">Refers</div>
+        <div class="content"> {{profile.refercount}} people</div> 
+    </div>
 </div>
     
     <div class="edit link">
@@ -139,6 +144,9 @@ add the delete and the update button
         <div class="private-links">
             <a href="{% url 'question:edit-trueOrFalseQuestion' question.id %}">Update</a>
         </div>
+        <div class="private-links">
+            <a href="{% url 'question:delete-question' trueOrFalse question.id %}">Delete</a>
+        </div>
         {% endif %}
     {% endfor %}
 </div>
@@ -152,6 +160,9 @@ add the delete and the update button
 
         <div class="private-links">
             <a href="{% url 'question:edit-fourChoicesQuestion' question.id %}">Update</a>
+        </div>
+        <div class="private-links">
+            <a href="{% url 'question:delete-question' fourChoices question.id %}">Delete</a>
         </div>
         {% endif %}
     {% endfor %}

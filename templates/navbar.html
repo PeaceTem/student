@@ -6,17 +6,16 @@
 {% endblock css %}
 
 {% block content %}
-    <header>
-        
+    <header>   
         <div class="name">
         <h3>ToTheX</h3>
         </div>
         <div class="top-navigation">
-            <a href="#" class="active"><i class="fa fa-home" aria-hidden="true"></i><div>Quiz</div></a>
-            <a href="#"><i class="fa fa-address-book" aria-hidden="true"></i><div>Diary</div></a>
+            <a href="{% url 'quiz:quizzes' %}" class="active"><i class="fa fa-address-book" aria-hidden="true"></i><div>Quiz</div></a>
+            <a href="{% url 'question:answer-question' %}"><i class="fa fa-home" aria-hidden="true"></i><div>Question</div></a>
             <a href="#"><i class="fa fa-thumb-tack" aria-hidden="true"></i><div>Task</div></a>
-            <a href="#"><i class="fa fa-sticky-note" aria-hidden="true"></i><div>Note</div></a>
-            <a href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i><div>Shop</div></a>
+            <a href="{% url 'leaderboard:leaderboard' %}"><i class="fa fa-sticky-note" aria-hidden="true"></i><div>Leaderboard</div></a>
+            <a href="{% url 'profile' %}"><i class="fa fa-user" aria-hidden="true"></i><div>Profile</div></a>
         </div>
     </header>
     <script src="{% static 'js/navbar.js' %}" type="text/javascript"></script>

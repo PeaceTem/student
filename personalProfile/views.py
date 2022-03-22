@@ -14,7 +14,9 @@ def MassProfile(request, profile_name):
         quizzes = Quiz.objects.filter(user=profile.user)
         trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=profile.user)
         fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=profile.user)
-
+        if user != request.user:
+            profile.views += 1
+            profile.save()
         
     except:
         return redirect('quiz:quizzes')
@@ -28,16 +30,3 @@ def MassProfile(request, profile_name):
     }
 
     return render(request, 'core/profile.html', context)
-
-#     visitor = request.user or None
-
-# if not visitor:
-#         code = str(kwargs.get('ref_code'))
-#         print('This is the code', code)
-#         try:
-#             profile = get_object_or_404(Profile, code=code)
-#             profile.coins += 50
-#             profile.save()
-#             print('This is the profile', profile)
-#         except:
-#             pass

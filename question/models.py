@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from quiz.models import Category
 
 # Create your models here.
 """
@@ -30,6 +30,9 @@ class QFourChoicesQuestion(models.Model):
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
     solution = models.TextField(max_length=500, null=True, blank=True)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=15)
+    categories = models.ManyToManyField(Category, related_name='FourChoicesQuestioncategories', blank=True)
+    attempts = models.IntegerField(default=0)
+    avgScore = models.FloatField(default=0.0)
 
 
 
@@ -71,6 +74,9 @@ class QTrueOrFalseQuestion(models.Model):
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
     solution = models.TextField(max_length=500, null=True, blank=True)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
+    categories = models.ManyToManyField(Category, related_name='trueOrFalseQuestioncategories', blank=True)
+    attempts = models.IntegerField(default=0)
+    avgScore = models.FloatField(default=0.0)
 
     def getAnswer(self, value, *args, **kwargs):
         if value == 'answer1':

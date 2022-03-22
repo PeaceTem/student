@@ -8,7 +8,9 @@
 
 {% block content %}
 <body>
-    
+    <a href="{% url 'profile' %}">
+        Go Back
+    </a>
 <div class="navigation">
     <button id="menu-icon" onclick="showBar()">
     <div ><i class="fa fa-bars" aria-hidden="true">menu</i></div>
@@ -19,11 +21,6 @@
 </div>
 <section>
     <ul>
-        
-        <li class="icon"><i class="fa fa-user" aria-hidden="true"></i>
-            <div>profile</div>
-        </li>
-    
         <li class="icon"><i class="fa fa-cog" aria-hidden="true"></i>
         <div>settings</div>
         </li>
@@ -56,12 +53,11 @@
         <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
             <div>feedback</div>
         </li>    
-
-        <li class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
-            <div>logout</div>
-        </li>    
-    
-    
+        <a href="{% url 'logout' %}">
+            <li class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
+                <div>logout</div>
+            </li>
+        </a>
     </ul>
     
 

@@ -26,7 +26,8 @@ from importlib import import_module
 from django.conf import settings
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
-
+def Menu(request):
+    return render(request, 'menu.html')
 
 def Home(request):
     return render(request, 'core/home.html', {})
@@ -39,11 +40,9 @@ Change the streak coins to 5
 Add a leaderboard about the longest running streak
 """
 def main_view(request, *args, **kwargs):
-    user = request.user or ''
-    if user:
-        return redirect('quiz:quizzes')
-
-
+    """
+    Check if the Ip address has visited this page before and validate
+    """
     code = str(kwargs.get('ref_code'))
     print('This is the code', code)
     try:
@@ -51,10 +50,12 @@ def main_view(request, *args, **kwargs):
         profile.coins += 50
         profile.refercount += 1
         profile.save()
+        request.session['ref_profile'] = profile.id 
+
         print('This is the profile', profile)
     except:
         pass
-    return render(request, 'core/main.html', {})
+    return redirect('question:answer-question')
 
 
 def my_recommendations_view(request):
@@ -137,7 +138,7 @@ class RegisterPage(FormView):
 
 
 # add login required
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 def ProfilePage(request):
     user = request.user
     if not user.is_authenticated:

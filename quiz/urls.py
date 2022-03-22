@@ -10,8 +10,10 @@ app_name = 'quiz'
  
 urlpatterns = [
     path('', views.QuizList, name='quizzes'),
+    path('followings/', views.FollowerQuizList, name='following-quizzes'),
     path('detail/<str:quiz_id>/<str:ref_code>', views.QuizDetail, name='quiz-detail'),
     path('create-quiz/', views.QuizCreate, name='quiz-create'),
+    path('create/', views.CreateObject, name='object-create'),
     path('edit-quiz/<str:quiz_id>/', views.QuizUpdate, name='quiz-update'),
     path('delete-quiz/<quiz_id>', views.DeleteQuiz, name='delete-quiz'),
 
@@ -38,11 +40,5 @@ urlpatterns = [
     #pdf generation
     path('<str:quiz_id>/pdf/', views.GeneratePDF.as_view(), name='quiz-pdf'),
 ]
-
-
-
-
-
 # from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
 #  FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)
-

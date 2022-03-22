@@ -31,24 +31,23 @@ def sortKey(e):
 
 
 def randomCoin():
-     value = (1,2,3,4,5)
-     goal = random.choices(value, weights=[22,10,5,2,1], k=1)
-     return goal
-print(randomCoin()[0])
-
-
-
-def quizRandomCoin():
-     value=(3,5,7)
-     goal = random.choices(value, weights=[100,10,1], k=1)
+     value = (1,2,3)
+     goal = random.choices(value, weights=[30,10,1], k=1)
      return goal[0]
 
-print(quizRandomCoin())
+def randomChoice(value):
+     goal = random.choices(value, k=1)
+     return goal[0]
 
+def adsRandom():
+     value = ('ads', 'noAds')
+     goal = random.choices(value, weights=[1,20], k=1)
+     return goal[0]
 
-
-
-
+def quizRandomCoin():
+     value=(5,7,10)
+     goal = random.choices(value, weights=[100,10,1], k=1)
+     return goal[0]
 
 
 

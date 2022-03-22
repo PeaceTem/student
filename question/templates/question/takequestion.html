@@ -1,15 +1,38 @@
 {% load static %}
 
 {% include 'messages.html' %}
+<a href="{% url 'quiz:quizzes' %}">Go Back</a>
+<div class="title">Old Town Road</div>
+<div class="categories">
+    {% for category in question.categories.all %}
+        <span>{{category.title}}</span>
+    {% endfor %}
+</div>
+<div class="inline">
+
+    <div class="attempt">
+        {% if question.attempts < 2 %}
+            {{question.attempts}} attempt
+        {% else %}
+            {{question.attempts}} attempts
+        {% endif %}
+    </div>
+    <div class="average">
+        {{question.avgScore}}%
+    </div>
+    <div id="seconds" class="duration">
+        {{question.duration}}
+    </div><span>seconds</span>
+
+</div>
 <div class="message"></div>
 <div id="countdownbox"></div>
 <div class="question-card-container">
+    <div style='color:#f13456'>ToTheX</div>
+    <a href="{% url 'profile:profile' question.user.username %}">{{question.user.username}}</a>
     <form action="{% url 'question:submit-question' %}" method="post"  id="questionForm">
         {% csrf_token %}
-        <ol>
-        {% for question in questions %}
         <div class="question-box">
-        
             {% if question.form == 'fourChoicesQuestion' %}
             <div id="seconds">{{question.duration}}</div><span>seconds</span> 
 
@@ -41,7 +64,6 @@
             {% elif question.form == 'trueOrFalseQuestion' %}
 
             <li class="question">
-<div id="seconds">{{question.duration}}</div><span>seconds</span> 
 
             <div>
                     {{question.question_text}}
@@ -57,7 +79,6 @@
             </div>
             </li>            
             {% endif %}
-        {% endfor %}
     </ol>
         <input type="submit"  id="submitButton"  value="Submit">
     </form>
@@ -67,14 +88,17 @@
 </form>
 <!-- disable the submit button if the question has not been answered -->
 
-<div  style="display:none;" class='result'></div>
+<div  style="display:none;" class='result'>
+  
+</div>
 <a href=""  class="a">Download</a>
 
 <script src="{% static 'question/html2canvas.js' %}"></script>
 
 <script>
 
-    const elm = document.querySelector('.question-card-container');
+    let elm = document.querySelector('.question-card-container');
+    elm.prepend("");
     html2canvas(elm).then(function(canvas){
         document.querySelector('.result').append(canvas);
         let cvs = document.querySelector('canvas');
@@ -98,8 +122,6 @@
         document.getElementById(target).checked = true;
         
     }
-
-
 
 
     let seconds = document.getElementById('seconds').textContent;

@@ -18,6 +18,7 @@ urlpatterns = [
     path('question/', include('question.urls', namespace='question')),
     path('leaderboard/', include('leaderboard.urls', namespace='leaderboard')),
     path('@', include('personalProfile.urls', namespace='profile')),
+    path('ads/', include('ads.urls', namespace='ads')),
 
 
 ]

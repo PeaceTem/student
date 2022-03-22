@@ -11,18 +11,18 @@ from .forms import NewQuizForm, NewCategoryForm, NewFourChoicesQuestionForm, New
 
 
 # the models to be used to create the quiz app
-
-from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion, Attempter, Attempt
+from core.models import Follower
+from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion
 from core.models import Streak, Profile
-from analysis.models import UserPageCounter, PageCounter
+from ads.models import PostAd
 # from draft.models import DraftQuiz
 from comment.models import QuizComment, Comment
 
 # Utilities
 from random import shuffle
-from .utils import sortKey, quizRandomCoin
+from .utils import sortKey, quizRandomCoin, randomChoice
 
-
+import decimal
 #Paginator
 
 from django.core.paginator import Paginator
@@ -88,13 +88,6 @@ class GeneratePDF(LoginRequiredMixin, View):
             # content = f"inline; filename={filename}"
             content = f"attachment; filename={filename}"
             response['Content-Disposition'] = content
-            pagecounter = PageCounter.objects.get(id=1)
-            pagecounter.pdfDownload += 1
-            pagecounter.save()
-
-            userpagecounter = UserPageCounter.objects.get(user=user)
-            userpagecounter.pdfDownload += 1
-            userpagecounter.save()
 
             return response
         return HttpResponse("Not Found!")
@@ -104,7 +97,7 @@ class GeneratePDF(LoginRequiredMixin, View):
 # the details of a quiz
 
 def QuizDetail(request, quiz_id, *args, **kwargs):
-    user = request.user or None
+    user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
     if not user:
         code = str(kwargs.get('ref_code'))
@@ -117,34 +110,37 @@ def QuizDetail(request, quiz_id, *args, **kwargs):
             print('This is the profile', profile)
         except:
             pass    
+
+    postAd = PostAd.objects.all()
+    postAd = randomChoice(postAd)
         
     context = {
         'quiz': quiz,
         'user': user,
+        'postAd': postAd,
     }
 
-    pagecounter = PageCounter.objects.get(id=1)
-    pagecounter.quizDetailPage += 1
-    pagecounter.save()
-
-    userpagecounter = UserPageCounter.objects.get(user=user)
-    userpagecounter.quizDetailPage += 1
-    userpagecounter.save()
 
     return render(request, 'quiz/quizdetail.html', context)
 
 
-
+def CreateObject(request):
+    return render(request, 'quiz/create.html')
 
 
 """
 Add all the documentation here
 """
 # the quiz list view
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 def QuizList(request):
     user = request.user
+    profile = Profile.objects.get(user=user)
     quizzes = Quiz.objects.all()# shuffle with .order_by('?')
+    """
+    lookup = Q(average_score__gte=profile.quizAvgScore) | Q(categories in profile.categories.all)
+    quizzes=
+    """
     # add split method
 
     # you can add the .exclude method to the queryset
@@ -155,7 +151,7 @@ def QuizList(request):
         search = search.split()
         for search_word in search:
             lookup = Q(title__icontains=search_word) | Q(description__icontains=search_word)
-            quizzes |= Quiz.objects.filter(lookup).distinct()
+            quizzes |= Quiz.objects.filter(lookup).distinct().order_by
 
 
 
@@ -172,23 +168,38 @@ def QuizList(request):
         'page_obj': quizzes,
     }
 
-    pagecounter = PageCounter.objects.get(id=1)
-    pagecounter.quizListPage += 1
-    pagecounter.save()
-
-    userpagecounter = UserPageCounter.objects.get(user=user)
-    userpagecounter.quizListPage += 1
-    userpagecounter.save()
 
     return render(request, 'quiz/quizzes_list.html', context)
 
+
+
+@login_required(login_url='account_login')
+def FollowerQuizList(request):
+    user = request.user
+    follow = Follower.objects.get(user=user)
+    quizzes = Quiz.objects.none()
+    # add more abstraction for efficiency
+    for following in follow.following.all():
+        quizzes |= Quiz.objects.filter(user=following)
+
+    # create pagination
+    p = Paginator(quizzes, 1)
+    page = request.GET.get('page')
+    quizzes = p.get_page(page)
+
+    context={
+        'page_obj': quizzes,
+    }
+
+
+    return render(request, 'quiz/quizzes_list.html', context)
 
 
 
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 def PostLike(request):
     user = request.user
     if request.method == 'POST':
@@ -212,10 +223,11 @@ def PostLike(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 def QuizCreate(request):
     user = request.user
     form = NewQuizForm()
+    print(form)
     if request.method == 'POST':
         form = NewQuizForm(request.POST)
         if form.is_valid():
@@ -224,13 +236,7 @@ def QuizCreate(request):
             duration = form.cleaned_data.get('duration')
 
             quiz = Quiz.objects.create(user=user, title=title, description=description, duration=duration)
-            pagecounter = PageCounter.objects.get(id=1)
-            pagecounter.quizCreationPage += 1
-            pagecounter.save()
-
-            userpagecounter = UserPageCounter.objects.get(user=user)
-            userpagecounter.quizCreationPage += 1
-            userpagecounter.save()
+           
             # return redirect('quiz:new-question', quiz_id=quiz.id)
             return redirect('quiz:category-create', quiz_id=quiz.id)
     
@@ -248,7 +254,7 @@ def QuizCreate(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 
 def QuizUpdate(request, quiz_id):
     user = request.user
@@ -261,14 +267,7 @@ def QuizUpdate(request, quiz_id):
         form = NewQuizForm(request.POST, instance=quiz)
         if form.is_valid():
             form.save()
-            
-            pagecounter = PageCounter.objects.get(id=1)
-            pagecounter.quizUpdatePage += 1
-            pagecounter.save()
 
-            userpagecounter = UserPageCounter.objects.get(user=user)
-            userpagecounter.quizUpdatePage += 1
-            userpagecounter.save()
 
             return redirect('quiz:category-create', quiz_id=quiz.id)
     
@@ -285,21 +284,13 @@ def QuizUpdate(request, quiz_id):
 
 
 # create the quiz delete view
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 def DeleteQuiz(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
     if request.method == 'POST':
         quiz.delete()
 
-        
-        pagecounter = PageCounter.objects.get(id=1)
-        pagecounter.quizDeletePage += 1
-        pagecounter.save()
-
-        userpagecounter = UserPageCounter.objects.get(user=user)
-        userpagecounter.quizDeletePage += 1
-        userpagecounter.save()
 
         return redirect('quiz:quizzes')
     
@@ -312,7 +303,7 @@ def DeleteQuiz(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 
 def QuestionCreate(request, quiz_id):
     user = request.user
@@ -328,7 +319,7 @@ def QuestionCreate(request, quiz_id):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 
 def FourChoicesQuestionCreate(request, quiz_id):
     user = request.user
@@ -375,7 +366,7 @@ def FourChoicesQuestionCreate(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
+@login_required(login_url='account_login')
 
 def TrueOrFalseQuestionCreate(request, quiz_id):
     user = request.user
@@ -418,8 +409,7 @@ def TrueOrFalseQuestionCreate(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
-
+@login_required(login_url='account_login')
 def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -427,15 +417,13 @@ def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     
     fourChoicesForm = NewFourChoicesQuestionForm(instance=question)
     if request.method == 'POST':
-        quiz.totalScore -= question.points
-        quiz.save()
+
         form = NewFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():
-
+            quiz.totalScore -= question.points
             instance = form.save()
             quiz.totalScore += instance.points
             quiz.save()
-
             return redirect('quiz:quiz-detail', quiz_id=quiz.id)
     
     context= {
@@ -445,19 +433,16 @@ def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     return render(request, 'quiz/fourChoicesQuestionCreate.html', context)
 
 
-@login_required(login_url='login')
-
+@login_required(login_url='account_login')
 def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
     question = get_object_or_404(TrueOrFalseQuestion, id=question_id)
     ftrueOrFalseForm = NewTrueOrFalseQuestionForm(instance=question)
     if request.method == 'POST':
-        quiz.totalScore -= question.points
-        quiz.save()
         form = NewFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():
-            form.save()
+            quiz.totalScore -= question.points
             instance = form.save()
             quiz.totalScore += instance.points
             quiz.save()
@@ -475,8 +460,7 @@ def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
-
+@login_required(login_url='account_login')
 def CategoryCreate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -489,34 +473,42 @@ def CategoryCreate(request, quiz_id):
     title = '-'.join(title)
     if title:
 
-        try:
-            Category.objects.get(title__icontains=title)
+        if quiz.categories.all().count() < 3:
+            category = Category.objects.get(title__iexact=title) or None
+            if category:
+                if category not in quiz.categories.all():
+                    quiz.categories.add(category)
+                    quiz.save()  
+                    messages.success(request, f"{category} has been added!")      
+                else:
+                    messages.warning(request, "This category has already been added!")      
             # return a message that it is already created
-        except:
-            newCategory = Category.objects.create(registered_by=user, title=title)
-            quiz.categories.add(newCategory)
-            quiz.save()
+            else:
+                newCategory = Category.objects.create(registered_by=user, title=title)
+                quiz.categories.add(newCategory)
+                quiz.save()
+                messages.success(request, f"{newCategory} has been added!")      
+
 
 
     # create pagination
     quizCategories = quiz.categories.all()
     addedCategories = request.GET.getlist('addedCategories') or ''
-    print(addedCategories)
-    print(quizCategories)
     if addedCategories:
         
         for category in quizCategories:
             if category not in addedCategories:
                 quiz.categories.remove(category)
 
-        for category in addedCategories:
-            category = Category.objects.get(title__icontains=category) or None
-            if category:
-                if category not in quiz.categories.all():
-                    quiz.categories.add(category)
-                    quiz.save()
+        for cart in addedCategories:
+            if quiz.categories.all().count() < 3:
+                category = Category.objects.get(title__iexact=cart) or None
+                if category:
+                    if category not in quiz.categories.all():
+                        quiz.categories.add(category)
+                        quiz.save()
 
-    
+        
     quizCategories = quiz.categories.all()
 
 
@@ -535,11 +527,11 @@ def CategoryCreate(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='login')
-
 def TakeQuiz(request, quiz_id):
     user = request.user
-    profile = Profile.objects.get(user=user)
+    if user.is_authenticated:
+        profile = Profile.objects.get(user=user)
+
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
     preQuestions = []
@@ -557,20 +549,15 @@ def TakeQuiz(request, quiz_id):
     
     if quiz.shuffleable == True:
         shuffle(questions)
-
-    profile.coins -= 1
+    if user.is_authenticated:
+        profile.coins -= 1
+        profile.save()
 
     """
     Create a logic to take care of accounts with less than 1 coins
     Add reward of 1,2,2,2,2,3,3,3,4,4,5
     """
-    pagecounter = PageCounter.objects.get(id=1)
-    pagecounter.quizTakenPage += 1
-    pagecounter.save()
 
-    userpagecounter = UserPageCounter.objects.get(user=user)
-    userpagecounter.quizTakenPage += 1
-    userpagecounter.save()
 
     context = {
         'quiz': quiz,
@@ -594,28 +581,30 @@ The total score should be adjusted whenever the creator the quiz updates the poi
 """
 #totalScore, questionLength
 
-@login_required(login_url='login')
 def SubmitQuiz(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    profile = get_object_or_404(Profile, user=user)
     
-
-
-
-
+    postAd = PostAd.objects.all()
+    postAd = randomChoice(postAd)
+        
+    if user.is_authenticated:
+        profile = get_object_or_404(Profile, user=user)
+    
+    
     if request.method == 'POST':
-        streak = Streak.objects.get(profile=profile)
+        score = 0
+        postAd = PostAd.objects.all()
+        postAd = randomChoice(postAd)
+        if user.is_authenticated:
+            streak = Streak.objects.get(profile=profile)
 
         points = request.POST.get('points')
         answers = request.POST.getlist('answer')
-        attempter = Attempter.objects.create(user=user, quiz=quiz, score=0)
         questionsList = []
   
         for answer in answers:
             combination = tuple(answer.split('|'))
-
-
             
             if combination[0] == 'fourChoicesQuestion':
                 question = FourChoicesQuestion.objects.get(id=combination[1])
@@ -623,63 +612,83 @@ def SubmitQuiz(request, quiz_id):
                 answer = question.getAnswer(pos)
                 questionsList.append((question, answer))
                 if question.correct == combination[2]:
-                    attempter.score += question.points
-                    attempter.save()
-                    streak.validateStreak()
-                    streak.save()
-                   
+                    score += question.points
+                    if user.is_authenticated:
+                        if quiz.user != profile.user:
+                            streak.validateStreak()
+                            streak.save()
+
+                    
             elif combination[0] == 'trueOrFalseQuestion':
                 question = TrueOrFalseQuestion.objects.get(id=combination[1])
                 answer = question.getAnswer(combination[2])
                 questionsList.append((question, answer))
-                if question.correct.lower() == answer.lower():
-                    print('The answer is correct!')
-                    attempter.score += question.points
-                    attempter.save()
-                    streak.validateStreak()
-                    streak.save()
-                    # try to remove the save method
-                    """
-                    Create a function that will handle all the referral stuff
-                    # """
-                    
+                if question.correct == answer:
+                    score += question.points
+                    if user.is_authenticated:
+                        if quiz.user != profile.user:
+                            streak.validateStreak()
+                            streak.save()
 
-        user_score = attempter.score
+
+
         total_score = quiz.totalScore
+        user_score = score
+        if user.is_authenticated:
+            if user_score > 0:
+                quiz.attempts += 1
+                user_avg_score = (user_score/total_score) * 100
+                if user_avg_score >= 60:
+                    if quiz.user != profile.user:
+                        creator = Profile.objects.get(user=quiz.user)
+                        for category in quiz.categories.all():
+                            if category not in profile.categories.all():
+                                if profile.categories.all().count() > 99:
+                                    removed = profile.categories.first()
+                                    profile.categories.remove(removed)
+                                profile.categories.add(category)
 
-        if user_score > 0:
-            quiz.attempts += 1
-            user_avg_score = (user_score/total_score) * 100 
-            if user_avg_score >= 60:
-                profile.coins += quizRandomCoin()
+                    
+                        value = quizRandomCoin()
+                        profile.coins += value
+                        profile.save()
+                        creator.coins += 1
+                        creator.save()
+                        messages.success(request, f"You've won {value} coins!")
+
+                quiz.gross_average_score += user_avg_score
+                quiz.average_score = quiz.gross_average_score / quiz.attempts 
+                quiz.save()
+                if quiz not in profile.quizTaken.all():
+                    if profile.quizTaken.all().count() > 99:
+                        removed = profile.quizTaken.first()
+                        profile.quizTaken.remove(removed)
+                    profile.quizTaken.add(quiz)
+                profile.quizAttempts += 1
+                profile.quizAvgScore = decimal.Decimal(round(((profile.quizAvgScore * (profile.quizAttempts - 1) + decimal.Decimal(user_avg_score)) / profile.quizAttempts), 1))
+
                 profile.save()
-
-            quiz.gross_average_score += user_avg_score
-            quiz.average_score = quiz.gross_average_score / quiz.attempts 
-            quiz.save()
-            pagecounter = PageCounter.objects.get(id=1)
-            pagecounter.quizSubmitPage += 1
-            pagecounter.save()
-
-            userpagecounter = UserPageCounter.objects.get(user=user)
-            userpagecounter.quizSubmitPage += 1
-            userpagecounter.save()
-
+            else:
+                
+                messages.error(request, "You didn't answer any question.")
+                return redirect('quiz:take-quiz', quiz_id = quiz.id)
         else:
-            
-            # messages.error(request, "You didn't answer any question.")
-            return redirect('quiz:take-quiz', quiz_id = quiz.id)
+            if score > 0:
+                user_score = score
+            else:
+                messages.error(request, "You didn't answer any question.")
+                return redirect('question:answer-question')
 
                    
-
         context = {
             'quiz': quiz,
             'user_score': user_score,
             'total_score': total_score,
             'questionsList': questionsList,
-
+            'postAd': postAd,
         }
 
+        
     return render(request, 'quiz/submitQuiz.html', context)
 
 

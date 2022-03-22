@@ -108,7 +108,8 @@ a.link{
     header .top-navigation a{
         height: 100%;
         padding: 0rem 0rem;
-        width: 10rem;
+        width: 50px;
+        font-size: 10px;
     }
 }
 

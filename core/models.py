@@ -5,10 +5,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-from quiz.models import Quiz, Attempt
+from quiz.models import Quiz, Category
 from diary.models import Diary
 from todo.models import Task
-
+from question.models import QTrueOrFalseQuestion, QFourChoicesQuestion
 from datetime import date, datetime, time
 
 from .utils import generate_ref_code
@@ -39,15 +39,27 @@ class Profile(models.Model):
     state_of_origin = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(default='')
-    coins = models.IntegerField(default=1000)
+    coins = models.DecimalField(default=1000.0, decimal_places=2, max_digits=200)
     date_updated = models.DateTimeField(auto_now=True)
     code = models.CharField(max_length=32, null=True, blank=True)
     refercount = models.PositiveIntegerField(default=0)
+    views = models.PositiveIntegerField(default=0)
+    categories = models.ManyToManyField(Category, blank=True, related_name='profileCategories')
+    quizTaken = models.ManyToManyField(Quiz, blank=True, related_name='profileQuizTaken')
+    trueOrFalseQuestionsMissed = models.ManyToManyField(QTrueOrFalseQuestion, blank=True, related_name='trueOrFalseQuestionsMissed')
+    fourChoicesQuestionsMissed = models.ManyToManyField(QFourChoicesQuestion, blank=True, related_name='fourChoicesQuestionsMissed')
+    quizAvgScore = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    questionAvgScore = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    quizAttempts = models.IntegerField(default=0)
+    questionAttempts = models.IntegerField(default=0)
+
+    
+
 
 
 
     class Meta:
-        ordering = ('-coins',)
+        ordering = ['-coins']
 
 
     def get_recommended_profiles(self):

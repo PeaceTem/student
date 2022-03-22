@@ -10,7 +10,6 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-{% include 'search.html' %}
 
 {% include 'quiz/quiz.html' %}
 
@@ -18,7 +17,7 @@
 
 <div class="create-quiz">
 
-    <a  class="link" href="{% url 'quiz:quiz-create' %}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+    <a  class="link" href="{% url 'quiz:object-create' %}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
 </div>
 
 <script src="{% static 'js/navbar.js' %}"></script>

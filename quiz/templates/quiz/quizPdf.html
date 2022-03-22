@@ -8,7 +8,10 @@
         <ol>
         {% for question in questions %}
         <div class="question-box">
-        
+            <div style="color:#f13456">
+                ToTheX
+                </div>
+
             {% if question.form == 'fourChoicesQuestion' %}
 
             <li class="question">
@@ -80,7 +83,7 @@
                     <div class="answer">
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}|{{question.id}}|answer2">
                         <label for="id_answer2">
-                            <pre>B. False </pre>
+                            <pre>   B. False </pre>
                         </label>
                     </div>
             </div>

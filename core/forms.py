@@ -16,5 +16,6 @@ class ProfileCreationForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = ['user', 'date_updated', 'coins', 'streak', 'code', 'referrer']
+        exclude = ['user', 'date_updated', 'coins', 'streak', 'code', 'referrer', 'views', 'picture', 'refercount', 'slug', 'categories', 'quizTaken', 'trueOrFalseQuestionsMissed', 'fourChoicesQuestionsMissed', 'quizAvgScore', 'questionAvgScore', 'quizAttempts', 'questionAttempts']
+
 

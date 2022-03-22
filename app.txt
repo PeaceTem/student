@@ -8,15 +8,7 @@ Users should be able to like the quiz or question
 Each question can only contain 3 categories, but quiz, 5
 
 
-
-Add colored background to the quiz title and the question text. Learn how to resize like facebook and whatsapp
-Add the go live button and save to draft button to the draft quiz and questions
-Finish the question list page
-Add reward to quiz and questions after taking them
-Add the html code for special symbols
-Add followers and links to youtube, like tiktok's
-Research how to change an html page to canvas and to image subsequently
-Add good dashboard to the profile page and remove the vita
+Add youtube link to profile, udemy link 
 Add One minute chanllenge questions
 Add a ReadMe.md file to each app of the tothex project. 
 

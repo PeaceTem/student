@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     # add twitter and linkedIn
     'django_social_share',
     # the main site apps
-    'analysis.apps.AnalysisConfig',
+    # 'analysis.apps.AnalysisConfig',
     'quiz.apps.QuizConfig',
     'todo.apps.TodoConfig',
     'diary.apps.DiaryConfig',
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'likes.apps.LikesConfig',
     'comment.apps.CommentConfig',
     'question.apps.QuestionConfig',
+    'ads.apps.AdsConfig',
     # 'referral.apps.ReferralConfig',
     # third party apps
     'crispy_forms',
@@ -211,7 +212,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # login credentials
-LOGIN_REDIRECT_URL = 'quiz:quizzes'
+LOGIN_REDIRECT_URL = 'question:answer-question'
 LOGIN_URL = 'login'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 
