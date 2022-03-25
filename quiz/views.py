@@ -577,6 +577,7 @@ def DeleteQuestion(request,quiz_id, question_form, question_id):
     if request.method == 'POST':
         quiz.questionLength -= 1
         quiz.totalScore -= question.points
+        quiz.save()
         question.delete()
         messages.success(request, "You've successfully delete a question!")
         return redirect('profile')
