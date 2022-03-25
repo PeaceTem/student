@@ -15,6 +15,11 @@
     color: var(--dark-theme);
     transition: all 0.3s ease-in-out;
 }
+.menu{
+    position: absolute;
+    right:3px;
+    top: 3px;
+}
 
 header{
     width: 100vw;
@@ -22,20 +27,22 @@ header{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    display: relative;
-    border-bottom: 2px solid var(--dark-theme);
+    position: sticky;
+    top: 0;
+    left: 0;
+    /* border-bottom: 2px solid var(--dark-theme); */
+    z-index: 11000;
+    background-color: white;
+    box-shadow: 0 1px 3px var(--dark-theme);
 }
 
 header .name h3{
     color: var(--theme-color);
     font-weight: 600;
-    font-size: 30px;
+    font-size: 20px;
     display: absolute;
-    top: 10px;
+    top: 4px;
     left: 10px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
     margin-left: 10px;
 }
 
@@ -50,15 +57,17 @@ header .top-navigation{
     position: relative;
 }
 
+
 header .top-navigation a{
     padding: 1rem 0.5rem;
     display: inline-block;
     text-decoration: none;
     color: #a1a1a1;
-    width: 80px;
+    width: 100px;
     text-align: center;
     border: none;
 }
+
 
 header .top-navigation a.active{
     color: var(--theme-color);
@@ -73,6 +82,20 @@ header .top-navigation a:hover{
     border-bottom: 3px solid var(--theme-color);
 }
 
+
+#profileUser{
+    display:flex;
+    position: relative;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+
+
+
+
+
+
 a.link{
     background: #fff;
     color: var(--theme-color);
@@ -83,14 +106,15 @@ a.link{
 .create-quiz{
     position: fixed;
     background: var(--theme-color);
-    border-radius: 50%;
+    border-radius: 10px;
     padding: 10px;
-    bottom: 50px;
-    right: 30px;
+    bottom: 10px;
+    right: 20px;
     box-shadow: 0 0 10px #666;
 }
 
 .create-quiz a{
+    font-size: 20px;
     color: var(--white-theme);
     background: var(--theme-color);
 }
@@ -108,7 +132,7 @@ a.link{
     header .top-navigation a{
         height: 100%;
         padding: 0rem 0rem;
-        width: 50px;
+        width: 25%;
         font-size: 10px;
     }
 }

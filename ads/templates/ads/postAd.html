@@ -1,15 +1,51 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block quizTitle %}
+Ads
+{% endblock quizTitle %}
 
-<div>
-    <img src="{{postAd.picture.url}}">
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'ads/css/postAd.css' %}">
+{% endblock quizCss %}
+<div class="container">
+
+    <div id="countdownbox"></div>
+
+    <div>
+        <img src="{{postAd.picture.url}}">
+    </div>
+
+    <div>
+        {{postAd.description}}
+    </div>
+
+    <div>
+        <a href="{{postAd.link}}" target="_blank">Visit Site</a>
+    </div>
+
+
+<a id="nextButton" href="{% url 'question:answer-question' %}">Next</a>
+
 </div>
+<script>
+    let seconds = 10;
+    const next = document.getElementById('nextButton');
+    console.log(next)
+    next.style.display = 'none'
+const countdownbox = document.getElementById('countdownbox');
 
-<div>
-    {{postAd.description}}
-</div>
+setInterval(()=>{
+    seconds -= 1;
 
-<div>
-    <a href="{{postAd.link}}" target="_blank">Visit Site</a>
-</div>
+    if (seconds <= 0){
+        // console.log(seconds)
+        // next.style.display = 'block'
+        next.click();
 
-
-<a href="{% url 'question:answer-question' %}">Next</a>
+    }
+    countdownbox.innerHTML = `<b>${seconds}sec left</b>`;
+}, 1000)
+</script>
+{% endblock content %}

@@ -11,6 +11,8 @@ app_name = 'question'
 urlpatterns = [
     #question
     path('new-question/', views.QuestionCreate, name='new-question'),
+    path('questions/', views.Question, name='questions'),
+    path('my-questions/', views.MyQuestionList, name='my-questions'),
 
     path('create-question/four-choices/', views.FourChoicesQuestionCreate, name='fourChoicesQuestion'),
     path('edit-question/four-choices/<str:question_id>/', views.FourChoicesQuestionUpdate, name='edit-fourChoicesQuestion'),
@@ -21,7 +23,7 @@ urlpatterns = [
 
     path('category-create/<str:question_id>/', views.CategoryCreate, name='category-create'),
 
-    path('question-delete/<str:question_form>/<str:question_id>/', views.DeleteQuestion, name='delete-question'),
+    path('question-delete/<str:question_form>/<str:question_id>', views.DeleteQuestion, name='delete-question'),
 
     # answer question
     path('take/', views.AnswerQuestion, name='answer-question'),

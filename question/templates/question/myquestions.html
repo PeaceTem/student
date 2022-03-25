@@ -1,0 +1,35 @@
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="questions">
+    {% for question in trueOrFalseQuestions %}
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
+
+        <div class="private-links">
+            <a href="{% url 'question:edit-trueOrFalseQuestion' question.id %}">Update</a>
+        </div>
+        <div class="private-links">
+            <a href="{% url 'question:delete-question' 'trueOrFalse' question.id %}">Delete</a>
+        </div>
+    {% endfor %}
+</div>
+
+
+<div class="questions">
+    {% for question in fourChoicesQuestions %}
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
+
+        <div class="private-links">
+            <a href="{% url 'question:edit-fourChoicesQuestion' question.id %}">Update</a>
+        </div>
+        <div class="private-links">
+            <a href="{% url 'question:delete-question' 'fourChoices' question.id %}">Delete</a>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

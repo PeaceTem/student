@@ -27,6 +27,7 @@ Background colors
         e.target.classList.add('active');
     }
 
+    
     function removeActiveClass(){
         // get the active link
         activeLink = document.querySelector('a.active');

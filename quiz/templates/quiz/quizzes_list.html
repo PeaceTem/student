@@ -2,13 +2,17 @@
 {% load static %}
 
 
+{% block quizTitle %} 
+Quizzes
+{% endblock quizTitle %}
+
+
+
 {% block quizCss %} 
-<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 {% endblock quizCss %}
 
 
-{% block content %}
-{% include 'navbar.html' %}
+{% block quizContent %}
 
 
 {% include 'quiz/quiz.html' %}
@@ -17,8 +21,8 @@
 
 <div class="create-quiz">
 
-    <a  class="link" href="{% url 'quiz:object-create' %}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+    <a  class="link" href="{% url 'quiz:object-create' %}">+</a>
 </div>
 
 <script src="{% static 'js/navbar.js' %}"></script>
-{% endblock content %}
+{% endblock quizContent %}

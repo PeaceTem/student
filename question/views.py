@@ -41,6 +41,36 @@ Add all the documentation here
 
 Whenever a question is created, an option to go live or add to draft should be presented to the user.
 """
+
+@login_required(redirect_field_name='next' ,login_url='account_login')
+def Question(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    context={
+        'nav': 'questions',
+        'profile': profile,
+    }
+
+    return render(request, 'question/questions.html', context)
+
+
+
+
+@login_required(redirect_field_name='next' ,login_url='account_login')
+def MyQuestionList(request):
+    user = request.user
+    fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=user)
+    trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=user)
+    context={
+        'fourChoicesQuestions': fourChoicesQuestions,
+        'trueOrFalseQuestions': trueOrFalseQuestions,
+        'nav': 'my-questions',
+    }
+
+    return render(request, 'question/myquestions.html', context)
+
+
+
 def AnswerQuestion(request):
     user = request.user
     decision = adsRandom()
@@ -85,7 +115,7 @@ def QuestionCreate(request):
 
 
 
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def FourChoicesQuestionCreate(request):
     user = request.user
     form = NewQFourChoicesQuestionForm()
@@ -122,7 +152,7 @@ def FourChoicesQuestionCreate(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def TrueOrFalseQuestionCreate(request):
     user = request.user
     form = NewQTrueOrFalseQuestionForm()
@@ -156,7 +186,7 @@ def TrueOrFalseQuestionCreate(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def CategoryCreate(request, question_id):
     user = request.user
     question_id = question_id.split('-')
@@ -223,7 +253,7 @@ def CategoryCreate(request, question_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def FourChoicesQuestionUpdate(request, question_id):
     user = request.user
     question = get_object_or_404(QFourChoicesQuestion, id=question_id)
@@ -244,7 +274,7 @@ def FourChoicesQuestionUpdate(request, question_id):
     return render(request, 'question/fourChoicesQuestionCreate.html', context)
 
 
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def TrueOrFalseQuestionUpdate(request, question_id):
     user = request.user
     question = get_object_or_404(QTrueOrFalseQuestion, id=question_id)
@@ -266,7 +296,7 @@ def TrueOrFalseQuestionUpdate(request, question_id):
 
 
 
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next' ,login_url='account_login')
 def DeleteQuestion(request,question_form, question_id):
     user =request.user
     if question_form == 'fourChoices':
@@ -275,8 +305,8 @@ def DeleteQuestion(request,question_form, question_id):
         question = QTrueOrFalseQuestion.objects.get(id=question_id)
     if request.method == 'POST':
         question.delete()
-        messages.success(request, "You've successfully delete a question!")
-        return redirect('profile')
+        messages.success(request, "You've successfully deleted a question!")
+        return redirect('question:my-questions')
 
     context={
         'obj': question,

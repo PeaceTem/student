@@ -39,7 +39,7 @@ class Profile(models.Model):
     state_of_origin = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(default='')
-    coins = models.DecimalField(default=1000.0, decimal_places=2, max_digits=200)
+    coins = models.DecimalField(default=100.0, decimal_places=2, max_digits=200)
     date_updated = models.DateTimeField(auto_now=True)
     code = models.CharField(max_length=32, null=True, blank=True)
     refercount = models.PositiveIntegerField(default=0)
@@ -52,6 +52,8 @@ class Profile(models.Model):
     questionAvgScore = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     quizAttempts = models.IntegerField(default=0)
     questionAttempts = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
+    quizzes = models.IntegerField(default=0)
 
     
 
@@ -118,7 +120,7 @@ class Profile(models.Model):
         return f"{self.user}"
 
 
-
+ 
 class Follower(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     followers = models.ManyToManyField(User, blank=True, related_name='followers') 
@@ -211,9 +213,15 @@ class Streak(models.Model):
 
 
 
-class SessionSecretKey(models.Model):
-    key = models.CharField(max_length=200)
+class Link(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
 
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.profile}"
+
+
+
+

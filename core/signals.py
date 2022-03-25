@@ -1,7 +1,7 @@
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Profile, Streak, Follower
+from .models import Profile, Streak, Follower, Link
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 
@@ -34,8 +34,7 @@ def create_profile(sender, instance, created, *args, **kwargs):
 def create_streak(sender, instance, created, *args, **kwargs):
     if created:
         # add the referral code here
-
-
+        Link.objects.create(profile=instance)
         Streak.objects.create(profile=instance)
 
 

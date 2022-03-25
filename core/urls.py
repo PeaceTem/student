@@ -47,4 +47,7 @@ urlpatterns = [
     # profile
     path('profile/', ProfilePage, name='profile'),
     path('edit_profile/', ProfileCreationPage, name='edit_profile'),
+
+    # link
+    path('edit-link/', views.EditLink, name='edit-link'),
 ]

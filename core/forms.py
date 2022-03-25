@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Profile
+from .models import Profile, Link
 
 
 
@@ -16,6 +16,11 @@ class ProfileCreationForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = ['user', 'date_updated', 'coins', 'streak', 'code', 'referrer', 'views', 'picture', 'refercount', 'slug', 'categories', 'quizTaken', 'trueOrFalseQuestionsMissed', 'fourChoicesQuestionsMissed', 'quizAvgScore', 'questionAvgScore', 'quizAttempts', 'questionAttempts']
+        exclude = ['user', 'date_updated', 'coins', 'link', 'streak', 'code', 'referrer', 'views', 'picture', 'refercount', 'slug', 'relevance', 'categories', 'quizTaken', 'trueOrFalseQuestionsMissed', 'fourChoicesQuestionsMissed', 'quizAvgScore', 'questionAvgScore', 'quizAttempts', 'questionAttempts']
 
 
+class NewLinkForm(forms.ModelForm):
+    class Meta:
+        model = Link
+        fields = '__all__'
+        exclude = ('profile',)

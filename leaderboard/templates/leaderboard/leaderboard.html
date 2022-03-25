@@ -1,14 +1,28 @@
 
 {% extends 'quiz/base.html' %}
+{% load static %}
 {% block content %}
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'leaderboard/css/leaderboard.css' %}">
+{% endblock quizCss %}
 {% include 'navbar.html' %}
+{% include 'messages.html' %}
 
-<a href="{% url 'leaderboard:wealth' %}">
-    Top Earners
-</a>
+<div class="container">
+    <input type="hidden" id="navActive" name="nav" value="{{nav}}">
 
-<a href="{% url 'leaderboard:streak' %}">
-    Highest Streak Owners
-</a>
+    <div>
+        <a class="leaderboard" href="{% url 'leaderboard:wealth' %}">
+            Top Earners
+        </a>
+    </div>
+    
+    <div>
+        <a class="leaderboard" href="{% url 'leaderboard:streak' %}">
+            Highest Streak Owners
+        </a>
+    </div>    
+</div>
+<script src="{% static 'leaderboard/js/leaderboard.js' %}"></script>
 
 {% endblock content %}

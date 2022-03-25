@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from core.models import Profile, Follower
+from core.models import Profile, Follower, Link
 from django.contrib.auth.models import User
 from quiz.models import Quiz
 from question.models import QTrueOrFalseQuestion, QFourChoicesQuestion
@@ -11,9 +11,7 @@ def MassProfile(request, profile_name):
         user = User.objects.get(username=profile_name) or None
         profile = get_object_or_404(Profile, user=user)
         follower = get_object_or_404(Follower, user=user)
-        quizzes = Quiz.objects.filter(user=profile.user)
-        trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=profile.user)
-        fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=profile.user)
+        link = Link.objects.get(profile=profile)
         if user != request.user:
             profile.views += 1
             profile.save()
@@ -24,9 +22,8 @@ def MassProfile(request, profile_name):
     context = {
         'profile': profile,
         'follower' : follower,
-        'quizzes': quizzes,
-        'trueOrFalseQuestions': trueOrFalseQuestions,
-        'fourChoicesQuestions': fourChoicesQuestions,
+        'link': link,
+        'nav': 'profile',
     }
 
     return render(request, 'core/profile.html', context)

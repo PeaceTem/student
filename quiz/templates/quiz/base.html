@@ -7,15 +7,23 @@
 {% endblock title %}
 
 
+
+
+
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 {% block quizCss %}
 
 {% endblock quizCss %}
 {% endblock css %}
 
-{% block content %}
 
+
+
+{% block content %}
+{% block quizContent %}
+
+
+{% endblock quizContent %}
 {% endblock content %}
 </html>

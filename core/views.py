@@ -14,8 +14,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-from .models import Profile, Follower
-from .forms import ProfileCreationForm, LoginForm
+from .models import Profile, Follower, Link
+from .forms import ProfileCreationForm, LoginForm, NewLinkForm
 from quiz.models import Quiz
 from question.models import QTrueOrFalseQuestion, QFourChoicesQuestion
 # # Create your views here.
@@ -138,7 +138,7 @@ class RegisterPage(FormView):
 
 
 # add login required
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def ProfilePage(request):
     user = request.user
     if not user.is_authenticated:
@@ -148,23 +148,19 @@ def ProfilePage(request):
 
     profile = get_object_or_404(Profile, user=user)
     follower = get_object_or_404(Follower, user=user)
-    quizzes = Quiz.objects.filter(user=user)
-    trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=user)
-    fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=user)
-    print(trueOrFalseQuestions)
+    link = Link.objects.get(profile=profile)
 
     context={
         'profile': profile,
         'follower' : follower,
-        'quizzes': quizzes,
-        'trueOrFalseQuestions': trueOrFalseQuestions,
-        'fourChoicesQuestions': fourChoicesQuestions,
+        'link':link,
+        'nav': 'profile',
     }
 
     return render(request, 'core/profile.html', context)
 
 
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def ProfileCreationPage(request):
     user = request.user
     if not user.is_authenticated:
@@ -210,7 +206,7 @@ def password_success(request):
 
 
 
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def FollowerView(request):
     user = request.user
     if request.method == 'POST':
@@ -233,6 +229,8 @@ def FollowerView(request):
     return redirect('profile')
 
 
+
+@login_required(redirect_field_name='next', login_url='account_login')
 def UnfollowView(request):
     user = request.user
     if request.method == 'POST':
@@ -254,3 +252,25 @@ def UnfollowView(request):
 
     return redirect('profile')
 
+
+
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
+def EditLink(request):
+    profile = Profile.objects.get(user=request.user)
+    print(profile)
+    link = Link.objects.get(profile=profile)
+    print(link)
+    form = NewLinkForm(instance=link)
+    if request.method == 'POST':
+        form = NewLinkForm(request.POST, instance=link)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+
+    context={
+        'form': form,
+    }
+
+    return render(request, 'core/link.html', context)

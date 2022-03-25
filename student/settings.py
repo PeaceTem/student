@@ -73,13 +73,13 @@ INSTALLED_APPS = [
 # PROGRESSIVE WEB APP
 PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static/js' / 'serviceworker.js'
 
-PWA_APP_NAME = 'ToTheX'
-PWA_APP_DESCRIPTION = "ToTheX PWA"
+PWA_APP_NAME = 'ToTheX Lite'
+PWA_APP_DESCRIPTION = "ToTheX Lite"
 PWA_APP_THEME_COLOR = '#f11919'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
-PWA_APP_ORIENTATION = 'any'
+PWA_APP_ORIENTATION = 'portrait'
 PWA_APP_START_URL = '/quiz/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
@@ -204,6 +204,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'diary'/ 'static',
     BASE_DIR / 'todo' / 'static',
     BASE_DIR / 'core' / 'static',
+    BASE_DIR / 'ads' / 'static',
 ]
 
 # media files configuration
@@ -213,7 +214,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # login credentials
 LOGIN_REDIRECT_URL = 'question:answer-question'
-LOGIN_URL = 'login'
+LOGIN_URL = 'account_login'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 
 ACCOUNT_EMAIL_REQUIRED = True

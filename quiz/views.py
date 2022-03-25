@@ -99,7 +99,9 @@ class GeneratePDF(LoginRequiredMixin, View):
 def QuizDetail(request, quiz_id, *args, **kwargs):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    if not user:
+    if user.is_authenticated:
+        profile = Profile.objects.get(user=user)
+    if not user.is_authenticated:
         code = str(kwargs.get('ref_code'))
         print('This is the code', code)
         try:
@@ -118,12 +120,13 @@ def QuizDetail(request, quiz_id, *args, **kwargs):
         'quiz': quiz,
         'user': user,
         'postAd': postAd,
+        'profile': profile or 'None',
     }
 
 
     return render(request, 'quiz/quizdetail.html', context)
 
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def CreateObject(request):
     return render(request, 'quiz/create.html')
 
@@ -132,18 +135,10 @@ def CreateObject(request):
 Add all the documentation here
 """
 # the quiz list view
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def QuizList(request):
     user = request.user
     profile = Profile.objects.get(user=user)
-    quizzes = Quiz.objects.all()# shuffle with .order_by('?')
-    """
-    lookup = Q(average_score__gte=profile.quizAvgScore) | Q(categories in profile.categories.all)
-    quizzes=
-    """
-    # add split method
-
-    # you can add the .exclude method to the queryset
     search_input= request.GET.get('search-area') or ''
     if search_input:
         quizzes = Quiz.objects.none()
@@ -151,14 +146,26 @@ def QuizList(request):
         search = search.split()
         for search_word in search:
             lookup = Q(title__icontains=search_word) | Q(description__icontains=search_word)
-            quizzes |= Quiz.objects.filter(lookup).distinct().order_by
+            quizzes |= Quiz.objects.filter(lookup).distinct().order_by('-likes', '-attempts')
+    else:
+        quizzes = Quiz.objects.all()
+        # for category in profile.categories.all():
+        # lookup = Q(categories in profile.categories.all()) | Q(average_score__gte=(100 - profile.avgScore)) 
+        # quizzes = Quiz.objects.filter(lookup).distinct().order_by('-likes', '-attempts')
 
+    """
+    quizzes = random.choices(quizzes, k=200)
+    """
+    # add split method
+
+    # you can add the .exclude method to the queryset
+    
 
 
     # quizzes.insert(0, ad)
-
+    print('okay')
     # create pagination
-    p = Paginator(quizzes, 1)
+    p = Paginator(quizzes, 10)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
@@ -166,6 +173,8 @@ def QuizList(request):
 
         'search_input': search_input,
         'page_obj': quizzes,
+        'profile': profile,
+        'nav': 'quizzes',
     }
 
 
@@ -173,22 +182,25 @@ def QuizList(request):
 
 
 
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def FollowerQuizList(request):
     user = request.user
     follow = Follower.objects.get(user=user)
+    profile = Profile.objects.get(user=user)
     quizzes = Quiz.objects.none()
     # add more abstraction for efficiency
     for following in follow.following.all():
         quizzes |= Quiz.objects.filter(user=following)
 
     # create pagination
-    p = Paginator(quizzes, 1)
+    p = Paginator(quizzes, 10)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
 
     context={
         'page_obj': quizzes,
+        'nav': 'following-quizzes',
+        'profile': profile,
     }
 
 
@@ -196,26 +208,50 @@ def FollowerQuizList(request):
 
 
 
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
+def MyQuizList(request):
+    user = request.user
+    quizzes = Quiz.objects.filter(user=user)
+    # create pagination
+    p = Paginator(quizzes, 10)
+    page = request.GET.get('page')
+    quizzes = p.get_page(page)
+
+    context={
+        'page_obj': quizzes,
+        'nav': 'my-quizzes',
+    }
+
+
+    return render(request, 'quiz/quizzes_list.html', context)
+
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def PostLike(request):
     user = request.user
     if request.method == 'POST':
         print(request)
         quiz_id = request.POST.get('quiz_id')
         quiz = Quiz.objects.get(id=quiz_id)
+        profile = Profile.objects.get(user=quiz.user)
         print(quiz)
 
 
         if user in quiz.likes.all():
             quiz.likes.remove(user)
+            profile.likes -= 1
+
             print('removed user')
         else:
             quiz.likes.add(user)
+            profile.likes += 1
             print('added user')
-
+        quiz.save()
+        profile.save()
 
 
     return redirect('quiz:quizzes')
@@ -223,9 +259,10 @@ def PostLike(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def QuizCreate(request):
     user = request.user
+    profile = Profile.objects.get(user=user)
     form = NewQuizForm()
     print(form)
     if request.method == 'POST':
@@ -236,7 +273,8 @@ def QuizCreate(request):
             duration = form.cleaned_data.get('duration')
 
             quiz = Quiz.objects.create(user=user, title=title, description=description, duration=duration)
-           
+            profile.quizzes += 1
+            profile.save()
             # return redirect('quiz:new-question', quiz_id=quiz.id)
             return redirect('quiz:category-create', quiz_id=quiz.id)
     
@@ -254,8 +292,7 @@ def QuizCreate(request):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def QuizUpdate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -284,11 +321,14 @@ def QuizUpdate(request, quiz_id):
 
 
 # create the quiz delete view
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def DeleteQuiz(request, quiz_id):
     user = request.user
+    profile = Profile.objects.get(user=user)
     quiz = get_object_or_404(Quiz, id=quiz_id)
     if request.method == 'POST':
+        profile.quizzes -= 1
+        profile.save()
         quiz.delete()
 
 
@@ -303,8 +343,7 @@ def DeleteQuiz(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def QuestionCreate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -319,8 +358,7 @@ def QuestionCreate(request, quiz_id):
 
 
 
-@login_required(login_url='account_login')
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def FourChoicesQuestionCreate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -366,8 +404,7 @@ def FourChoicesQuestionCreate(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def TrueOrFalseQuestionCreate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -409,7 +446,7 @@ def TrueOrFalseQuestionCreate(request, quiz_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -433,7 +470,7 @@ def FourChoicesQuestionUpdate(request, quiz_id, question_id):
     return render(request, 'quiz/fourChoicesQuestionCreate.html', context)
 
 
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -460,7 +497,7 @@ def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
 """
 Add all the documentation here
 """
-@login_required(login_url='account_login')
+@login_required(redirect_field_name='next', login_url='account_login')
 def CategoryCreate(request, quiz_id):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -474,7 +511,12 @@ def CategoryCreate(request, quiz_id):
     if title:
 
         if quiz.categories.all().count() < 3:
-            category = Category.objects.get(title__iexact=title) or None
+            category = None
+            try:
+                category = Category.objects.get(title__iexact=title)
+            except:
+                pass
+
             if category:
                 if category not in quiz.categories.all():
                     quiz.categories.add(category)
@@ -520,6 +562,31 @@ def CategoryCreate(request, quiz_id):
     }
 
     return render(request, 'quiz/categoryCreate.html', context)
+
+
+
+
+@login_required(redirect_field_name='next' ,login_url='account_login')
+def DeleteQuestion(request,quiz_id, question_form, question_id):
+    user =request.user
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    if question_form == 'fourChoices':
+        question = FourChoicesQuestion.objects.get(id=question_id)
+    elif question_form == 'trueOrFalse':
+        question = TrueOrFalseQuestion.objects.get(id=question_id)
+    if request.method == 'POST':
+        quiz.questionLength -= 1
+        quiz.totalScore -= question.points
+        question.delete()
+        messages.success(request, "You've successfully delete a question!")
+        return redirect('profile')
+
+    context={
+        'obj': question,
+    }
+
+    return render(request, 'question/delete.html', context)
+
 
 
 

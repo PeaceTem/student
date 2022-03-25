@@ -1,0 +1,10 @@
+
+<h3>Change Link</h3>
+<p>
+    Add an external link
+</p>
+<form action="" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="Change">
+</form>

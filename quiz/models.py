@@ -139,6 +139,7 @@ class Category(models.Model):
 
 
 
+
 class Quiz(models.Model):
 
     DURATION_CHOICES = zip( range(1,61), range(1,61) )
@@ -185,7 +186,6 @@ class Quiz(models.Model):
     #             output_size = (100,100)
     #             img.thumbnail(output_size)
     #             img.save(self.thumbnail.path)
-
 
 
     @property

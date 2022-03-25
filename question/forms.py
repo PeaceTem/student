@@ -8,7 +8,7 @@ class NewQFourChoicesQuestionForm(forms.ModelForm):
     class Meta:
         model = QFourChoicesQuestion
         fields = '__all__'
-        exclude = ('user', 'form', 'categories')
+        exclude = ('user', 'form', 'categories', 'attempts', 'avgScore')
 
 
 
@@ -17,6 +17,6 @@ class NewQTrueOrFalseQuestionForm(forms.ModelForm):
     class Meta:
         model = QTrueOrFalseQuestion
         fields = '__all__'
-        exclude = ('user', 'form','answer1', 'answer2', 'categories')
+        exclude = ('user', 'form','answer1', 'answer2', 'categories', 'attempts', 'avgScore')
 
 

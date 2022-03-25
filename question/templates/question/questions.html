@@ -1,0 +1,39 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block quizTitle %}
+Questions
+{% endblock quizTitle %}
+
+{% block content %}
+
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'question/css/questions.css' %}">
+{% endblock quizCss %}
+{% include 'navbar.html' %}
+
+{% include 'messages.html' %}
+
+<div class="container">
+    <input type="hidden" id="navActive" name="nav" value="{{nav}}">
+    <div>
+        <a class="question" href="{% url 'question:my-questions' %}">
+            <div>
+                My questions
+            </div>
+        </a>
+    </div>
+       
+    <div>
+        <a class="question" href="{% url 'question:answer-question' %}">
+            
+            <div>
+                Old Town Road
+            </div>
+        </a>
+    </div>
+</div>
+<script src="/static/js/navbar.js" type="text/javascript"></script>
+
+<script src="{% static 'question/js/questions.js' %}"></script>
+{% endblock content %}

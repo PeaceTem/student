@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from core.models import Streak, Profile
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -12,8 +13,20 @@ little explanation and link to full details
 
 And then, the all the objects. 
 """
+@login_required(redirect_field_name='next', login_url='account_login')
 def Leaderboard(request):
-    return render(request, 'leaderboard/leaderboard.html')
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    context={
+        'nav': 'leaderboard',
+        'profile': profile,
+    }
+    return render(request, 'leaderboard/leaderboard.html', context)
+
+
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
 def StreakLeaderBoard(request):
     leaders = Streak.objects.all()[0:1000] or Streak.objects.all()
     # add the get absolute url function to the profile
@@ -28,6 +41,9 @@ def StreakLeaderBoard(request):
 
 # add the function for reward that will be triggered by celery. it wont't be a view function
 
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
 def WealthLeaderBoard(request,*args, **kwargs):
     leaders = Profile.objects.all().order_by('coins')[0:1000] or Profile.objects.all().order_by('coins')
     context = {

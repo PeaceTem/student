@@ -10,12 +10,14 @@ app_name = 'quiz'
  
 urlpatterns = [
     path('', views.QuizList, name='quizzes'),
-    path('followings/', views.FollowerQuizList, name='following-quizzes'),
+    path('following-quizzes/', views.FollowerQuizList, name='following-quizzes'),
+    path('my-quizzes/', views.MyQuizList, name='my-quizzes'),
     path('detail/<str:quiz_id>/<str:ref_code>', views.QuizDetail, name='quiz-detail'),
     path('create-quiz/', views.QuizCreate, name='quiz-create'),
     path('create/', views.CreateObject, name='object-create'),
     path('edit-quiz/<str:quiz_id>/', views.QuizUpdate, name='quiz-update'),
     path('delete-quiz/<quiz_id>', views.DeleteQuiz, name='delete-quiz'),
+    path('delete-question/<str:quiz_id>/<str:question_form>/<str:question_id>/', views.DeleteQuestion, name='delete-question'),
 
     #like post
     path('like/', views.PostLike, name ='post-like'),
