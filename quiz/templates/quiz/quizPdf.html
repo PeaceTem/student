@@ -1,33 +1,144 @@
-{% load static %}
+<head>
+<style>
 
-<div id="minute">{{quiz.duration}}</div><span>minutes</span> 
-<div id="countdownbox"></div>
+*{
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+a{
+    text-decoration: none;
+    color: #751515;
+    font-size: 15px;
+    font-weight: 900;
+    font-family: sans-serif;
+    cursor: pointer;
+}
+
+a div{
+    height: 100%;
+    width: 100%;
+
+}
+
+.question-box,  .container{
+    display: block;
+    position: relative;
+    margin:auto;
+    width: 500px;
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+
+.question-box > li, .container > div{
+    margin-bottom: 10px;
+    border-top: 4px solid #f11919;
+    border-radius: 4px;
+    min-height: 50px;
+    padding-top: 10px;
+}
+li div{
+
+    text-align: left;
+    margin-left: 3px;
+}
+
+.container .minuteBx{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+}
+img{
+    width: 100%;
+    max-width:500px;
+}
+
+
+.questionBx{
+    text-align: left;
+}
+
+
+
+input[type="submit"]{
+    margin: auto;
+    background: #f11919;
+    color: #fff;
+    width: 95vw;
+    max-width: 200px;
+    border: none;
+    padding: 3px 5px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    outline: none;
+    border-radius: 4px;
+}
+
+
+.points{
+    text-align: left;
+    font-size: 12px;
+    color: #666;
+    border: none;
+}
+
+.answer{
+    border: none;
+    margin: 0 0;
+}
+</style>
+    
+</head>
+
+<div style="color:#f11919; text-align: center;">
+    ToTheX
+</div>
+
+<div class="container">
+<div class="username">@{{quiz.user.username}}</div>
+
+        <div class="minuteBx">
+            <div>
+                {% if quiz.duration < 2 %}
+                    {{quiz.duration}} minute
+                {% else %}
+                    {{quiz.duration}} minutes
+                {% endif %}
+            </div> 
+        </div>
+</div>
+
+
+
 <div class="question-card-container">
     <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data" id="quizForm">
         {% csrf_token %}
         <ol>
         {% for question in questions %}
         <div class="question-box">
-            <div style="color:#f13456">
-                ToTheX
-                </div>
-
+            
             {% if question.form == 'fourChoicesQuestion' %}
 
             <li class="question">
             <div>
-                {% if question.thumbnail %}
-                <img src="{% static 'question.thumbnail.path' %}" alt="{{question.question_text}}">
-                {% endif %}
+               
                 <input type="hidden" name="points" value="{{question.points}}">
-                    Q. {{question.question_text}}
-                    <p>
-                        {% if question.points < 2 %}
+                <div class="questionBx">
+                    <div>
+                        Q. {{question.question_text}} <br>
+                        <div class="points">
+                            {% if question.points < 2 %}
                             {{question.points}} point
                         {% else %}
                             {{question.points}} points
                         {% endif %}
-                    </p>
+                        </div>
+                </div>    
+                
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}|{{question.id}}|answer1">
                         <label for="id_answer1">
@@ -61,18 +172,19 @@
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
             <div>
-            {% if question.thumbnail %}
-            <img src="{{question.thumbnail.path}}" alt="{{question.question_text}}">
-            {% endif %}
+            
                 <input type="hidden" name="points" value="{{question.points}}">
-                    Q. {{question.question_text}}
-                    <p>
-                        {% if question.points < 2 %}
+                <div class="questionBx">
+                    <div>
+                        Q. {{question.question_text}} <br>
+                        <div class="points">
+                            {% if question.points < 2 %}
                             {{question.points}} point
                         {% else %}
                             {{question.points}} points
                         {% endif %}
-                    </p>
+                        </div>
+                </div>   
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}|{{question.id}}|answer1">
                         <label for="id_answer1">

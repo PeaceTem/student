@@ -1,25 +1,60 @@
-<div id="minute">{{quiz.duration}}</div><span>minutes</span> 
-<div id="countdownbox"></div>
+
+{% extends 'quiz/base.html' %}
+
+{% load static %}
+
+{% block quizTitle %}
+Old Town Road Correction
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'quiz/css/takequiz.css' %}">
+{% endblock quizCss %}
+
+
+
+<div class="container">
+{% include 'messages.html'%}
+    <div class="minuteBx">
+        <div id="minute">{{quiz.duration}}</div>
+        <div>
+            {% if quiz.duration < 2 %}
+                 minute
+            {% else %}
+                minutes
+            {% endif %}
+        </div> 
+    </div>
+    <div id="countdownbox"></div>
+</div>
+
 <div class="question-card-container">
-    <form action="{% url 'quiz:submit-quiz' quiz.id %}" method="post" enctype="multipart/form-data" id="quizForm">
-        {% csrf_token %}
+    {% if request.user.is_authenticated %}
+    <form action="{% url 'quiz:submit-quiz' quiz.id profile.code %}" method="post" enctype="multipart/form-data" id="quizForm">
+    {% else %}
+    <form action="{% url 'quiz:submit-quiz' quiz.id None %}" method="post" enctype="multipart/form-data" id="quizForm">
+        {% endif %}
+    {% csrf_token %}
         <ol>
         {% for question in questions %}
-        <div class="question-box">
-        
+        <div class="question-box">        
             {% if question.form == 'fourChoicesQuestion' %}
-
             <li class="question">
-            <div>
                 <input type="hidden" name="points" value="{{question.points}}">
-                    {{question.question_text}}
-                    <p>
-                        {% if question.points < 2 %}
+                <div class="questionBx">
+                    <div>
+                        {{question.question_text}} <br>
+                        <div class="points">
+                            {% if question.points < 2 %}
                             {{question.points}} point
                         {% else %}
                             {{question.points}} points
                         {% endif %}
-                    </p>
+                        </div>
+                </div>
+                    
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}|{{question.id}}|answer1">
                         <label for="id_answer1">{{question.answer1}}</label>
@@ -39,20 +74,22 @@
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer4" value="{{question.form}}|{{question.id}}|answer4">
                         <label for="id_answer4">{{question.answer4}}</label>
                     </div>
-            </div>
             </li>
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
-            <div>
                 <input type="hidden" name="points" value="{{question.points}}">
-                    {{question.question_text}}
-                    <p>
-                        {% if question.points < 2 %}
+                <div class="questionBx">
+                    <div>
+                        {{question.question_text}} <br>
+                        <div class="points">
+                            {% if question.points < 2 %}
                             {{question.points}} point
                         {% else %}
                             {{question.points}} points
                         {% endif %}
-                    </p>
+                    </div>
+                    
+                </div>
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}|{{question.id}}|answer1">
                         <label for="id_answer1">True</label>
@@ -62,7 +99,6 @@
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}|{{question.id}}|answer2">
                         <label for="id_answer2">False</label>
                     </div>
-            </div>
             </li>            
             {% endif %}
         {% endfor %}
@@ -107,3 +143,6 @@
     }, 1000)
 
 </script>
+
+
+{% endblock content %}

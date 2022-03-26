@@ -1,9 +1,11 @@
-
+<!-- Add the copy button to all the form templates and add a display to show that the text has been copied. -->
 <div class="trueOrFalse">
     <form action="" method="post">
         {% csrf_token %}
         {{trueOrFalseForm.as_p}}
-<!-- add display absolute to the create + button -->
+        <div>
+            Duration in seconds
+        </div>
         <input type="submit" value="Create">
     </form>
 </div>

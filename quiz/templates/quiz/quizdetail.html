@@ -25,7 +25,7 @@ Quiz Detail
         <div class="categories">
                 Categories:
                 {% for category in quiz.categories.all %}
-                    <span>{{category.title}}</span>
+                    <span class="category">{{category.title}}</span>
                 {% endfor %}
         </div>
         <div >Title: {{quiz.title|capfirst}}</div>
@@ -40,7 +40,12 @@ Quiz Detail
                     {% endif %}
         </div>
         <div class="questionLength">
-                    {{quiz.questionLength}} questions
+            {% if quiz.questionLength < 2 %}
+                {{quiz.questionLength}} question
+            {% else %}
+                {{quiz.questionLength}} questions
+            {% endif %}
+                    
         </div>
         <div class="average">
                     {{quiz.average_score}}%
@@ -50,7 +55,12 @@ Quiz Detail
         </div>
 
         <div class="linkBx">
-             {{quiz.likes.all.count}} likes
+            <!-- assign this value to a variable -->
+            {% if quiz.likes.all.count < 2 %}
+            {{quiz.likes.all.count}} like
+                    {% else %}
+                    {{quiz.likes.all.count}} likes
+                {% endif %}
         </div>
         <div>
             <a href="{% url 'quiz:take-quiz' quiz.id %}">
@@ -80,10 +90,16 @@ Quiz Detail
     </div>
 </div>
 
-<div>
-    {% post_to_facebook 'https://ecclewikitestquiz.herokuapp.com/quiz/detail/47/02bf9b4e33504ef08e26348485347387' object_or_url 'Share to Facebook' %}
-
-
+<div class="social-share">
+    Refer To Earn More Coins (50 coins per click)
+{% post_to_facebook  object_or_url 'Post to Facebook' %}
+{% post_to_twitter "Take A Quiz: {{quiz.title}}" object_or_url "Post to Twitter" %}
+{% post_to_linkedin  object_or_url "Post to" %}
+{% send_email "ToTheX Quiz" "Take A Quiz: {{quiz.title}}" object_or_url "Share via email" %}
+{% post_to_reddit "Take A Quiz: {{quiz.title}}" object_or_url %}
+{% post_to_telegram "Take A Quiz: {{quiz.title}}" object_or_url %}
+{% post_to_whatsapp object_or_url "Share via WhatsApp" %}
+{% save_to_pinterest object_or_url %}
 </div>
 
 <div>
@@ -102,9 +118,62 @@ Quiz Detail
 <div>
     <a href="{{postAd.link}}" target="_blank">Visit Site</a>
 </div>
-</div>
+{% if quiz.user == user %}
+<div>
+    {% for question in quiz.fourChoicesQuestions.all %}
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
 
+        <div class="private-links">
+            <a href="{% url 'quiz:delete-question' quiz.id 'fourChoices' question.id %}">Delete</a>
+        </div>
+    {% endfor %}
+    {% for question in quiz.trueOrFalseQuestions.all %}
+    <div class="questions">
+        <div class="quizItem">
+            {{question.question_text|truncatechars:20}}
+        </div>
+
+        <div class="private-links">
+            <a id="deleteButton" data-url="{% url 'quiz:delete-question' quiz.id 'trueOrFalse' question.id %}" href="{% url 'quiz:delete-question' quiz.id 'trueOrFalse' question.id %}">Delete</a>
+        </div>
+    </div>
+        
+    {% endfor %}
+</div>
+{% endif %}
+</div>
+<script src="{% static 'js/jquery.js' %}"></script>
 <script>
+    const deleteButton = $('#deleteButton');
+    $(document).on('click', '#deleteButton', function(e){
+        alert('JQuery is working!');
+        e.preventDefault();
+        alert($('#deleteButton').data('url'));
+
+        $.ajax({
+            type: 'GET',
+            url : $('#deleteButton').data('url'),
+            data : {
+            },
+            success : function(response){
+                alert('It works');
+                document.querySelector('#deleteButton').parentNode.parentNode.style.display = 'none';
+
+                console.log(response)
+                
+
+            },
+            error : function(){
+                alert('It falis silently!')
+            }
+
+        });
+    });
+        
+
+    console.log(deleteButton);
     function copyFunction(){
     let copyText = document.getElementById('copy-link');
     copyText.select();
@@ -113,6 +182,9 @@ Quiz Detail
     navigator.clipboard.writeText(copyText.value)
     alert("Copied the text: " + copyText.value)
 }
+
+const share = document.querySelector('.social-share');
+console.log(share);
 </script>
 
 <script src="{% static 'quiz/js/copy.js' %}" type="text/javascript"></script>

@@ -1,17 +1,44 @@
+
+
+{% extends 'quiz/base.html' %}
+
+{% load static %}
+{% load social_share %}
+{% block quizTitle %}
+Old Town Road Correction
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'quiz/css/submitQuiz.css' %}">
+{% endblock quizCss %}
+
+
+
+
 {% include 'messages.html'%}
+
 <div class="question-card-container">
-    <a href="{% url 'profile:profile' quiz.user.username %}">
-        {{quiz.user.username}}
-    </a>
-    <p>
+    <div>
+        <a href="{% url 'quiz:quizzes' %}">Go back home</a>
+
+    </div>
+    <div>
+        <a href="{% url 'profile:profile' quiz.user.username %}">
+            @{{quiz.user.username}}
+        </a>
+    </div>
+    <div>
         You scored: {{user_score}} out of {{quiz.totalScore}}
-    </p>
+        <br>
+        Quiz's average score: {{quiz.average_score}}%
 
+    </div>
 </div>
-<a href="{% url 'quiz:quizzes' %}">Go back home</a>
 
 
-<div class="question-card-container">
+<div class="question-card-container download-quiz">
 
         
         {% for question, answer in questionsList %}
@@ -23,14 +50,14 @@
 
 
             <div>
-                    {{question.question_text}}
-                    <p>
+                    {{question.question_text}} <br>
+                    <div class="points">
                         {% if question.points < 2 %}
-                            {{question.points}} point
-                        {% else %}
-                            {{question.points}} points
-                        {% endif %}
-                    </p>
+                        {{question.points}} point
+                    {% else %}
+                        {{question.points}} points
+                    {% endif %}
+                    </div>
                     <ol style="list-style:upper-alpha;">
                         <li>
                             <div class="answer">
@@ -42,21 +69,21 @@
                             <div class="answer">
                                 {{question.answer2}}
             
-                                </div>
+                            </div>
                         </li>
                      
                         <li>
                             <div class="answer">
                                 {{question.answer3}}
                
-                                   </div>
+                            </div>
                         </li>
    
                         <li>
                             <div class="answer">
                                 {{question.answer4}}
              
-                                 </div>
+                            </div>
                         </li>
                         <div>
                             Your Answer:
@@ -66,7 +93,7 @@
                         
                         <div class="correct-answer">
                             Correct Answer:
-                            {% if question.correct == 'answer1' %}
+                        {% if question.correct == 'answer1' %}
                             {{question.answer1}}
                         {% elif question.correct == 'answer2' %}
                             {{question.answer2}}
@@ -77,11 +104,11 @@
                         {% endif %}
                         </div>
                         
-                        <div class="solution">
-                            Solution: {{question.solution}}
-                            </div>
+                        
                     </ol>
-                  
+                    <div class="solution">
+                        Solution: {{question.solution}}
+                    </div>
                
             </div>
         </li>
@@ -90,14 +117,14 @@
 
 
                 <div>
-                        {{question.question_text}}
-                        <p>
+                        {{question.question_text}} <br>
+                        <div class="points">
                             {% if question.points < 2 %}
-                                {{question.points}} point
-                            {% else %}
-                                {{question.points}} points
-                            {% endif %}
-                        </p>
+                            {{question.points}} point
+                        {% else %}
+                            {{question.points}} points
+                        {% endif %}
+                        </div>
                         <ol style="list-style:upper-alpha;">
                             <li>
                                 <div class="answer">
@@ -124,11 +151,11 @@
                                 {% endif %}
                             </div>
                          
-                        <div class="solution">
-                        Solution: {{question.solution}}
-                        </div>
+                        
                         </ol>
-                      
+                        <div class="solution">
+                            Solution: {{question.solution}}
+                        </div>
                    
                 </div>
             </li>
@@ -138,13 +165,31 @@
         {% endfor %}
     </ol>
 </div>
-
-
-<a href="{% url 'quiz:quiz-pdf' quiz.id %}">
-    Download the Pdf
-</a>
-
-
+<div class="question-card-container">
+    <div class="linkBx">
+        <div id="likes">
+            <form action="{% url 'quiz:post-like' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="quiz_id" value="{{quiz.id}}">
+                {% if not request.user in quiz.likes.all %}
+                    <button type="submit">like</button>
+                {% else %}
+                    <button type="submit">unlike</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    <div style="display:none; max-width: 500px;" class="result">
+    
+    </div>
+    <div>
+        <a href=""  class="a">Download the Image</a>
+    </div>
+<div>
+    <a href="{% url 'quiz:quiz-pdf' quiz.id %}">
+        Download the Pdf
+    </a>
+</div>
 
 <div>
     <img src="{{postAd.picture.url}}">
@@ -157,3 +202,38 @@
 <div>
     <a href="{{postAd.link}}" target="_blank">Visit Site</a>
 </div>
+
+
+<div class="social-share">
+    Refer To Earn More Coins (50 coins per click)
+{% post_to_facebook  object_or_url 'Post to Facebook' %}
+{% post_to_twitter "Take A Quiz: {{quiz.title}}" object_or_url "Post to Twitter" %}
+{% post_to_linkedin  object_or_url "Post to" %}
+{% send_email "ToTheX Quiz" "Take A Quiz: {{quiz.title}}" object_or_url "Share via email" %}
+{% post_to_reddit "Take A Quiz: {{quiz.title}}" object_or_url %}
+{% post_to_telegram "Take A Quiz: {{quiz.title}}" object_or_url %}
+{% post_to_whatsapp object_or_url "Share via WhatsApp" %}
+{% save_to_pinterest object_or_url %}
+</div>
+
+</div>
+
+<script src="{% static 'question/html2canvas.js' %}"></script>
+
+<script>
+
+    let elm = document.querySelector('.download-quiz');
+    elm.prepend("");
+    html2canvas(elm).then(function(canvas){
+        document.querySelector('.result').append(canvas);
+        let cvs = document.querySelector('canvas');
+        let a = document.querySelector('.a');
+        a.href = cvs.toDataURL();
+        a.download = 'tothex-{{quiz.quiz.title}}.png'
+    })
+
+
+
+
+</script>
+{% endblock content %}

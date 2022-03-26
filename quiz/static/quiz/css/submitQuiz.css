@@ -22,7 +22,7 @@ a div{
 
 }
 
-.question-box,  .container{
+.question-box,  .container, .question-card-container{
     display: block;
     position: relative;
     margin:auto;
@@ -32,12 +32,17 @@ a div{
 }
 
 
-.question-box > li, .container > div{
+.question-box > li, .container > div,  .question-card-container > div{
     margin-bottom: 10px;
     border-top: 4px solid #f11919;
     border-radius: 4px;
     min-height: 50px;
     padding-top: 10px;
+}
+ol{
+    max-width: 100%;
+    width: 500px;
+
 }
 li div{
 
@@ -76,7 +81,6 @@ input[type="submit"]{
     border-radius: 4px;
 }
 
-
 .points{
     text-align: left;
     font-size: 12px;
@@ -84,10 +88,20 @@ input[type="submit"]{
 }
 
 
+button{
+    padding: 3px 7px;
+    background-color: #f11919;
+    color: #fff;
+    border: none;
+    outline: none;
+    width: 120px;
+    max-width: 25vw;
+    border-radius: 4px;
+    box-shadow: inset 1px 3px 10px rgb(173, 52, 52);
 
-.answer{
-    padding-top: 10px;
 }
+
+
 
 
 @media (max-width:700px) {

@@ -57,97 +57,6 @@ Add a ReadMe.md file to each app of the tothex project.
 
 
 
-
-
-
-
-Skip to main content
- Contribute today to the 𝛑thon PSF Spring Fundraiser and show your love for Python!  Donate Now
-PyPI
-Search PyPI
-Search projects
-Search
-Help Sponsors Log in Register
-django-social-share 2.2.1
-pip install django-social-shareCopy PIP instructions
-Latest version
-Released: Feb 4, 2021
-
-Templatetags for 'tweet this' and 'share on facebook'
-
-Navigation
- Project description
- Release history
- Download files
-Project links
-Homepage
-Statistics
-GitHub statistics:
- Stars: 193
- Forks: 67
- Open issues/PRs: 17
-View statistics for this project via Libraries.io, or by using our public dataset on Google BigQuery
-
-Meta
-License: MIT License (MIT)
-
-Author: Flavio Curella
-
-Maintainers
-Avatar for curella.org from gravatar.com curella.org
-Classifiers
-Development Status
-3 - Alpha
-Environment
-Console
-Framework
-Django
-Intended Audience
-Developers
-Information Technology
-License
-OSI Approved :: MIT License
-Operating System
-OS Independent
-Programming Language
-Python
-Sponsored: Python Software Foundation
-Coiled is a Contributing sponsor of the Python Software Foundation.
-PSF Sponsor · Served ethically
-Project description
-https://github.com/fcurella/django-social-share/workflows/Python%20build/badge.svg https://coveralls.io/repos/github/fcurella/django-social-share/badge.svg?branch=master
-Provides templatetags for:
-
-‘Tweet This’
-‘Share this on Facebook’
-‘Share on Google+’
-‘Share on LinkedIn’
-‘Share on Telegram’
-‘Share on WhatsApp’
-‘mailto://’.
-‘Save to Pinterest’
-Plain HTML templates are provided for your convenience, but you can override them to provide your own look and feel.
-
-Installation
-$ pip install django-social-share
-Add the app to INSTALLED_APPS:
-
-INSTALLED_APPS += ['django_social_share']
-You will also have to add django.template.context_processors.request to your context_processors list. This way the templatetags will use the correct scheme and hostname:
-
-TEMPLATES=[
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
-        ],
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-            ],
-        }
-    },
-]
 Note in most cases sharing will not work if you are using localhost or your domain is otherwise not accessible from the public internet. For testing local development, you can use a service like ngrok, and set your Site instance’s domain to the hostname provided by ngrok.
 
 Usage
@@ -207,6 +116,7 @@ Example:
 {% load social_share %}
 
 {% post_to_facebook object_or_url "Post to Facebook!" %}
+
 {% post_to_twitter "New Song: {{object.title}}. Check it out!" object_or_url "Post to Twitter" %}
 {% post_to_gplus object_or_url "Post to Google+!" %}
 {% post_to_linkedin object_or_url %}
@@ -230,70 +140,3 @@ django_social_share/templatetags/post_to_whatsapp.html.
 django_social_share/templatetags/save_to_pinterest.html.
 django_social_share/templatetags/pinterest_script.html.
 You can override them to suit your mileage.
-
-
-Help
-Installing packages
-Uploading packages
-User guide
-FAQs
-About PyPI
-PyPI on Twitter
-Infrastructure dashboard
-Package index name retention
-Our sponsors
-Contributing to PyPI
-Bugs and feedback
-Contribute on GitHub
-Translate PyPI
-Development credits
-Using PyPI
-Code of conduct
-Report security issue
-Privacy policy
-Terms of use
-Status: All Systems Operational
-
-Developed and maintained by the Python community, for the Python community.
-Donate today!
-
-© 2022 Python Software Foundation
-Site map
-
- English español français 日本語 português (Brasil) українська Ελληνικά Deutsch 中文 (简体) 中文 (繁體) русский עברית esperanto
-AWS
-AWS
-Cloud computing
- Datadog
-Datadog
-Monitoring
- Facebook / Instagram
-Facebook / Instagram
-PSF Sponsor
- Fastly
-Fastly
-CDN
- Google
-Google
-Object Storage and Download Analytics
- Huawei
-Huawei
-PSF Sponsor
- Microsoft
-Microsoft
-PSF Sponsor
- NVIDIA
-NVIDIA
-PSF Sponsor
- Pingdom
-Pingdom
-Monitoring
- Salesforce
-Salesforce
-PSF Sponsor
- Sentry
-Sentry
-Error logging
- StatusPage
-StatusPage
-Status page

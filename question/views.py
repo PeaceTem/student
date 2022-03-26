@@ -13,7 +13,8 @@ from quiz.forms import NewCategoryForm
 # the models to be used to create the quiz app
 
 from core.models import Streak, Profile
-from quiz.models import Category 
+from quiz.models import Category, TrueOrFalseQuestion, FourChoicesQuestion
+from ads.models import PostAd
 # Utilities
 from random import shuffle
 from quiz.utils import sortKey, randomCoin, adsRandom, randomChoice
@@ -59,8 +60,12 @@ def Question(request):
 @login_required(redirect_field_name='next' ,login_url='account_login')
 def MyQuestionList(request):
     user = request.user
-    fourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=user)
-    trueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=user)
+    qfourChoicesQuestions = QFourChoicesQuestion.objects.filter(user=user)
+    qtrueOrFalseQuestions = QTrueOrFalseQuestion.objects.filter(user=user)
+    fourChoicesQuestions = FourChoicesQuestion.objects.filter(user=user)
+    trueOrFalseQuestions = TrueOrFalseQuestion.objects.filter(user=user)
+    trueOrFalseQuestions = (*qtrueOrFalseQuestions, *trueOrFalseQuestions)
+    fourChoicesQuestions = (*qfourChoicesQuestions, *fourChoicesQuestions)
     context={
         'fourChoicesQuestions': fourChoicesQuestions,
         'trueOrFalseQuestions': trueOrFalseQuestions,
@@ -88,6 +93,8 @@ def AnswerQuestion(request):
     questions = []
     questions += QFourChoicesQuestion.objects.all()
     questions += QTrueOrFalseQuestion.objects.all()
+    # questions += FourChoicesQuestion.objects.all()
+    # questions += TrueOrFalseQuestion.objects.all()
     # random 
 
     question = randomChoice(questions)
@@ -102,6 +109,32 @@ def AnswerQuestion(request):
     return render(request, 'question/takequestion.html', context)
 
 
+
+
+def CorrectionView(request, question_form, question_id, answer):
+    if question_form == 'fourChoicesQuestion':
+        question = QFourChoicesQuestion.objects.get(id=question_id)
+        print(question_form)
+    elif question_form == 'trueOrFalseQuestion':
+        question = QTrueOrFalseQuestion.objects.get(id=question_id)
+        print(question_form)
+
+
+    answer = question.getAnswer(answer)
+    
+    postAd = PostAd.objects.all()
+    postAd = randomChoice(postAd)
+    print(postAd)
+
+    
+
+    context={
+        'question': question,
+        'postAd': postAd,
+        'answer': answer,
+    }
+
+    return render(request, 'question/correction.html', context)
 
 
 """
@@ -322,6 +355,7 @@ value="{{question.form}}|{{question.id}}|answer1"
 from django.core import serializers
 from django.forms.models import model_to_dict
 def SubmitQuestion(request):
+
     try:
         user = request.user
         if user.is_authenticated:
@@ -368,6 +402,7 @@ def SubmitQuestion(request):
                         profile.save()
                         messages.warning(request, f"You've lost 1 coin")
                     messages.error(request, 'WRONG!')
+                    return redirect('question:correction', question_form=combination[0], question_id=combination[1], answer=combination[2])
 
 
             elif combination[0] == 'trueOrFalseQuestion':
@@ -405,6 +440,8 @@ def SubmitQuestion(request):
                         profile.save()
                         messages.warning(request, f"You've lost 1 coin")
                     messages.error(request, 'WRONG!')
+                    return redirect('question:correction', question_form=combination[0], question_id=combination[1], answer=combination[2])
+
     except:
         pass
 

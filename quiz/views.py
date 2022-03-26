@@ -2,7 +2,7 @@
 # important method to deal with models
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.forms.models import model_to_dict
 from django.db.models import Q
 
@@ -214,6 +214,7 @@ def FollowerQuizList(request):
 def MyQuizList(request):
     user = request.user
     quizzes = Quiz.objects.filter(user=user)
+    profile = Profile.objects.get(user=user)
     # create pagination
     p = Paginator(quizzes, 10)
     page = request.GET.get('page')
@@ -222,6 +223,7 @@ def MyQuizList(request):
     context={
         'page_obj': quizzes,
         'nav': 'my-quizzes',
+        'profile': profile,
     }
 
 
@@ -374,11 +376,11 @@ def FourChoicesQuestionCreate(request, quiz_id):
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
             duration=form.cleaned_data.get('duration')
-
+            solution=form.cleaned_data.get('solution')
 
             question = FourChoicesQuestion.objects.create(user=user, question_text=question_text,
             answer1=answer1, answer2=answer2, answer3=answer3, answer4=answer4,
-            correct=correct, points=points, duration=duration)
+            correct=correct, points=points, duration=duration, solution=solution)
 
             quiz.fourChoicesQuestions.add(question)
             quiz.lastQuestionIndex += 1
@@ -418,11 +420,11 @@ def TrueOrFalseQuestionCreate(request, quiz_id):
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
             duration=form.cleaned_data.get('duration')
+            solution=form.cleaned_data.get('solution')
 
 
             question = TrueOrFalseQuestion.objects.create(user=user, question_text=question_text,
-            correct=correct, points=points,
-            duration=duration)
+            correct=correct, points=points, solution=solution, duration=duration)
 
             quiz.trueOrFalseQuestions.add(question)
             quiz.lastQuestionIndex += 1
@@ -574,13 +576,17 @@ def DeleteQuestion(request,quiz_id, question_form, question_id):
         question = FourChoicesQuestion.objects.get(id=question_id)
     elif question_form == 'trueOrFalse':
         question = TrueOrFalseQuestion.objects.get(id=question_id)
-    if request.method == 'POST':
+    if request.method == 'GET':
         quiz.questionLength -= 1
         quiz.totalScore -= question.points
         quiz.save()
         question.delete()
+        print('Thank God!')
         messages.success(request, "You've successfully delete a question!")
-        return redirect('profile')
+
+        return HttpResponse('You have deleted a question.')
+
+        # return redirect('profile')
 
     context={
         'obj': question,
@@ -597,6 +603,7 @@ Add all the documentation here
 """
 def TakeQuiz(request, quiz_id):
     user = request.user
+    profile = None
     if user.is_authenticated:
         profile = Profile.objects.get(user=user)
 
@@ -630,6 +637,7 @@ def TakeQuiz(request, quiz_id):
     context = {
         'quiz': quiz,
         'questions': questions,
+        'profile': profile,
     }
     return render(request, 'quiz/takequiz.html', context)
 
@@ -649,9 +657,23 @@ The total score should be adjusted whenever the creator the quiz updates the poi
 """
 #totalScore, questionLength
 
-def SubmitQuiz(request, quiz_id):
+def SubmitQuiz(request, quiz_id, *args, **kwargs):
     user = request.user
     quiz = get_object_or_404(Quiz, id=quiz_id)
+    if not user.is_authenticated:
+        code = str(kwargs.get('ref_code'))
+        print('This is the code', code)
+        try:
+            profile = get_object_or_404(Profile, code=code)
+            profile.coins += 50
+            profile.refercount += 1
+            profile.save()
+            print('This is the profile', profile)
+        except:
+            pass    
+
+    if request.method == 'GET':
+        return redirect('quiz:take-quiz', quiz_id=quiz.id)
     
     postAd = PostAd.objects.all()
     postAd = randomChoice(postAd)
@@ -758,5 +780,13 @@ def SubmitQuiz(request, quiz_id):
 
         
     return render(request, 'quiz/submitQuiz.html', context)
+
+
+
+
+
+
+
+
 
 

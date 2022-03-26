@@ -22,7 +22,7 @@
             <div class="contentBx">
                 <a href="{% url 'profile:profile' quiz.user.username %}" class="username">
                     <img src="https://picsum.photos/20" alt="">
-                    {{quiz.user.username}}
+                    @{{quiz.user.username}}
                 </a>
                 <div class="categories">
                     {% for category in quiz.categories.all %}

@@ -1,45 +1,64 @@
+{% extends 'quiz/base.html' %}
+
 {% load static %}
+
+{% block quizTitle %}
+Old Town Road
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'question/css/takequestion.css' %}">
+{% endblock quizCss %}
 
 {% include 'messages.html' %}
 <a href="{% url 'quiz:quizzes' %}">Go Back</a>
-<div class="title">Old Town Road</div>
-<div class="categories">
-    {% for category in question.categories.all %}
-        <span>{{category.title}}</span>
-    {% endfor %}
-</div>
-<div class="inline">
-
-    <div class="attempt">
-        {% if question.attempts < 2 %}
-            {{question.attempts}} attempt
-        {% else %}
-            {{question.attempts}} attempts
-        {% endif %}
+<div class="container">
+    <div class="top">
+        <div class="title">Old Town Road</div>
+        <div class="categories">
+            {% for category in question.categories.all %}
+                <span class="category">{{category.title}}</span>
+            {% endfor %}
+        </div>
     </div>
-    <div class="average">
-        {{question.avgScore}}%
+    
+    <div class="inline">
+    
+        <div class="attempt">
+            {% if question.attempts < 2 %}
+                {{question.attempts}} attempt
+            {% else %}
+                {{question.attempts}} attempts
+            {% endif %}
+        </div>
+        <div class="average">
+            {{question.avgScore}}%
+        </div>
+        <div id="seconds" class="duration">
+            {{question.duration}}
+        </div>
+        <div class="secondsName">
+            seconds            
+        </div>
+    
     </div>
-    <div id="seconds" class="duration">
-        {{question.duration}}
-    </div><span>seconds</span>
+    
+    
+    <div id="countdownbox"></div>
+    <div class="question-card-container">
+        <div style='color:#f11919'>ToTheX</div>
+        <a style="color: #751515;" href="{% url 'profile:profile' question.user.username %}">@{{question.user.username}}</a>
+        <form class="question-form-box" action="{% url 'question:submit-question' %}" method="post"  id="questionForm">
+            {% csrf_token %}
+                {% if question.form == 'fourChoicesQuestion' %}
+                <div>
+                    <div class="questionBx">
+                        {{question.question_text}}
 
-</div>
-<div class="message"></div>
-<div id="countdownbox"></div>
-<div class="question-card-container">
-    <div style='color:#f13456'>ToTheX</div>
-    <a href="{% url 'profile:profile' question.user.username %}">{{question.user.username}}</a>
-    <form action="{% url 'question:submit-question' %}" method="post"  id="questionForm">
-        {% csrf_token %}
-        <div class="question-box">
-            {% if question.form == 'fourChoicesQuestion' %}
-            <div id="seconds">{{question.duration}}</div><span>seconds</span> 
-
-            <li class="question">
-            <div>
-                    {{question.question_text}}
-              
+                    </div>
+                  
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}-{{question.id}}-answer1">
                         <label for="id_answer1">{{question.answer1}}</label>
@@ -59,14 +78,11 @@
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer4" value="{{question.form}}-{{question.id}}-answer4">
                         <label for="id_answer4">{{question.answer4}}</label>
                     </div>
-            </div>
-            </li>
             {% elif question.form == 'trueOrFalseQuestion' %}
+            <div class="questionBx">
+                {{question.question_text}}
 
-            <li class="question">
-
-            <div>
-                    {{question.question_text}}
+            </div>
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}-{{question.id}}-answer1">
                         <label for="id_answer1">True</label>
@@ -76,22 +92,25 @@
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}-{{question.id}}-answer2">
                         <label for="id_answer2">False</label>
                     </div>
-            </div>
-            </li>            
-            {% endif %}
-    </ol>
-        <input type="submit"  id="submitButton"  value="Submit">
+                </div>
+                        
+                {% endif %}
+            <input type="submit"  id="submitButton"  value="Submit">
+        </form>
+    </div>
+    <form action="{% url 'question:answer-question' %}" method="get">
+        <input id="skipButton" type="submit" value="Skip">
     </form>
+    <!-- disable the submit button if the question has not been answered -->
+    
+    <div  style="display:none;" class='result'>
+      
+    </div>
+    <div>
+        <a href=""  class="a">Download</a>
+    </div>
+    
 </div>
-<form action="{% url 'question:answer-question' %}" method="get">
-    <input id="skipButton" type="submit" value="Skip">
-</form>
-<!-- disable the submit button if the question has not been answered -->
-
-<div  style="display:none;" class='result'>
-  
-</div>
-<a href=""  class="a">Download</a>
 
 <script src="{% static 'question/html2canvas.js' %}"></script>
 
@@ -142,3 +161,5 @@
     }, 1000)
 
 </script>
+
+{% endblock content %}

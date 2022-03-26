@@ -49,7 +49,7 @@ class FourChoicesQuestion(models.Model):
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
     solution = models.TextField(max_length=500, null=True, blank=True)
     points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=15)
+    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
 
 
 
@@ -164,7 +164,7 @@ class Quiz(models.Model):
     categories = models.ManyToManyField(Category, blank=True,
         related_name='categories', related_query_name='categories')
     #duration and each quiz is in minutes, and it overrides the duration of all the questions
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, null=True, blank=True)
+    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=3)
 
     likes = models.ManyToManyField(User, default=None, blank=True, related_name='likes')
 

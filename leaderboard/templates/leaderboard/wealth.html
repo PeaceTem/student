@@ -10,7 +10,7 @@
     <a href="{% url 'leaderboard:leaderboard' %}">Go Back</a>
     {% for leader in leaders %}
         <div class="line">
-            <div class="name">{{leader.user.username}}</div>
+            <div class="name">@{{leader.user.username}}</div>
             <div class="length">{{leader.coins}}</div>
         </div>
         <a href="{% url 'profile:profile' leader.user.username  %}">See Profile</a>

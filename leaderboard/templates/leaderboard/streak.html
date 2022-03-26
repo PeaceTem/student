@@ -10,7 +10,7 @@
     <a href="{% url 'leaderboard:leaderboard' %}">Go Back</a>
     {% for leader in leaders %}
         <div class="line">
-            <div class="name">{{leader.profile.user.username}}</div>
+            <div class="name">@{{leader.profile.user.username}}</div>
             <div class="length">{{leader.length}}</div>
             <div class="active">
                 {% if leader.active %}

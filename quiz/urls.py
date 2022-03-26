@@ -37,7 +37,7 @@ urlpatterns = [
     #takequiz
 
     path('<str:quiz_id>/take/', views.TakeQuiz, name='take-quiz'),
-    path('<str:quiz_id>/submit/', views.SubmitQuiz, name='submit-quiz'),
+    path('<str:quiz_id>/submit/<str:ref_code>', views.SubmitQuiz, name='submit-quiz'),
 
     #pdf generation
     path('<str:quiz_id>/pdf/', views.GeneratePDF.as_view(), name='quiz-pdf'),

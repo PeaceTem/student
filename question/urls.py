@@ -28,6 +28,7 @@ urlpatterns = [
     # answer question
     path('take/', views.AnswerQuestion, name='answer-question'),
     path('submit/', views.SubmitQuestion, name='submit-question'),
+    path('correction/<str:question_form>/<str:question_id>/<str:answer>', views.CorrectionView, name='correction'),
 
 ]
 

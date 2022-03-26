@@ -1,0 +1,145 @@
+
+{% extends 'quiz/base.html' %}
+
+{% load static %}
+
+{% block quizTitle %}
+Old Town Road Correction
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'question/css/correction.css' %}">
+{% endblock quizCss %}
+
+
+{% include 'messages.html'%}
+<div class="question-card-container">
+    <a href="{% url 'profile:profile' question.user.username %}">
+        @{{question.user.username}}
+    </a>
+</div>
+
+
+<div class="question-card-container">
+
+        
+        <div class="question-box">
+            {% if question.form == 'fourChoicesQuestion' %}
+            <div>
+                    {{question.question_text}}
+                    <ol style="list-style:upper-alpha;">
+                        <li>
+                            <div class="answer">
+                                {{question.answer1}}
+                            </div>
+                        </li>
+                       
+                        <li>
+                            <div class="answer">
+                                {{question.answer2}}
+            
+                            </div>
+                        </li>
+                     
+                        <li>
+                            <div class="answer">
+                                {{question.answer3}}
+               
+                            </div>
+                        </li>
+   
+                        <li>
+                            <div class="answer">
+                                {{question.answer4}}
+             
+                            </div>
+                        </li>
+                    </ol>
+                       
+                        <div class="your-answer">
+                            Your Answer: {{answer}}
+                        </div>
+                        <div class="correct-answer">
+                            Correct Answer:
+                            {% if question.correct == 'answer1' %}
+                            {{question.answer1}}
+                        {% elif question.correct == 'answer2' %}
+                            {{question.answer2}}
+                        {% elif question.correct == 'answer3' %}
+                            {{question.answer3}}
+                        {% elif question.correct == 'answer4' %}
+                            {{question.answer4}}
+                        {% endif %}
+                        </div>
+                        
+                        <div class="solution">
+                            Solution: {{question.solution}}
+                            </div>
+                  
+               
+            </div>
+            {% elif question.form == 'trueOrFalseQuestion' %}
+
+
+                <div>
+                        {{question.question_text}}
+                        <ol style="list-style:upper-alpha;">
+                            <li>
+                                <div class="answer">
+                                    {{question.answer1}}
+                                </div>
+                            </li>
+                           
+                            <li>
+                                <div class="answer">
+                                    {{question.answer2}}
+                                    </div>
+                            </li>
+                        </ol>
+                        
+                           <div class="your-answer">
+                               Your Answer: {{answer}}
+                           </div>
+                            <div class="correct-answer">
+                                Correct Answer:
+                                {% if question.correct == 'True' %}
+                                    True
+                                {% elif question.correct == 'False' %}
+                                    False
+                                {% endif %}
+                            </div>
+                         
+                        <div class="solution">
+                        Solution: {{question.solution}}
+                        </div>
+                      
+                   
+                </div>
+            {% endif %}
+        </div>
+
+
+
+        <div>
+            <img src="{{postAd.picture.url}}">
+        </div>
+        
+        <div>
+            {{postAd.description}}
+        </div>
+        
+        <div>
+            <a href="{{postAd.link}}" target="_blank">Visit Site</a>
+        </div>
+        
+        
+        <div>
+            <a href="{% url 'question:answer-question' %}">Continue Answering Questions</a>
+        </div>
+        
+</div>
+
+
+{% endblock content%}

@@ -5,6 +5,7 @@
     box-sizing: border-box;
     font-size: 20px;
 }
+
 a{
     text-decoration: none;
     color: #751515;
@@ -17,16 +18,19 @@ a{
 a div{
     height: 100%;
     width: 100%;
+
 }
 
-.detail{
+.container{
     display: block;
     position: relative;
     margin:auto;
     width: 500px;
     max-width: 100%;
 }
-.detail > div{
+
+
+.container > div{
     margin-bottom: 10px;
     border-top: 4px solid #f11919;
     border-radius: 4px;
@@ -34,21 +38,58 @@ a div{
     padding-top: 10px;
 }
 
-img{
-    width: 100%;
-    max-width:500px;
+.container .inline{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-button{
-    background: #f11919;
-    color:white;
-    border: none;
-    outline: none;
-    padding: 5px 5px;
-    border-radius: 4px;
-    width: 95%;
-    height: 100%;
+
+.container .inline >*{
+    margin: 0 5px;
 }
+
+
+.container .inline .secondsName{
+    margin: 0 0;
+}
+
+form.question-form-box{
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+form.question-form-box >*{
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 10px;
+    border-top: 4px solid #f11919;
+    border-radius: 4px;
+    min-height: 50px;
+    padding-top: 10px;
+}
+
+input[type="submit"]{
+    margin: auto;
+    background: #f11919;
+    color: #fff;
+    width: 95vw;
+    max-width: 200px;
+    border: none;
+    padding: 3px 5px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    outline: none;
+    border-radius: 4px;
+}
+
+.result{
+    max-width: 400px;
+}
+
 
 
 .categories{
@@ -62,7 +103,12 @@ button{
     padding: 2px 3px;
 }
 
-
+.answer, .questionBx{
+    text-align: left;
+}
+.answer{
+    padding-top: 10px;
+}
 
 @media (max-width:700px) {
     *{
