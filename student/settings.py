@@ -216,8 +216,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_REDIRECT_URL = 'question:answer-question'
 LOGIN_URL = 'account_login'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
-
-ACCOUNT_EMAIL_REQUIRED = True
+"""
+Change this settings later
+"""
+ACCOUNT_EMAIL_REQUIRED = False
 
 SOCIALACCOUNT_QUERY_EMAIL = True
 

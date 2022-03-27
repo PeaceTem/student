@@ -88,3 +88,54 @@ for(var dateContent = 0; dateContent < parseInt(output.length); dateContent++){
 // datepoint.textContent = outputDate;
 // console.log(outputDate);
 
+
+
+
+function likeFunction(value){
+    let likeObject = document.getElementById(value);
+    console.log(likeObject);
+    $(document).on('submit', likeObject.parentNode, function(e){
+        alert('JQuery is working!');
+        e.preventDefault();
+        // alert($(`#${value}`).data('url'));
+
+        $.ajax({
+            type: 'GET',
+            url : $(`#${value}`).parent().data('url'),
+            data : {
+                quiz_id: $(`#${value}`).parent().data('quiz'),
+            },
+            success : function(response){
+                alert('It works');
+                // document.querySelector('#deleteButton').parentNode.parentNode.style.display = 'none';
+                const id =$(`#${value}`).parent().data('quiz');
+                // console.log(id);
+                // console.log(response)
+                if (response == 'liked'){
+                    // console.log($(`#likeButton${id}`));
+                    $(`#unlikeButton${id}`).text('unlike');
+                }else if (response == 'unliked'){
+                    // console.log($(`#unlikeButton${id}`));
+                    $(`#unlikeButton${id}`).text('like');
+                }
+                
+
+            },
+            error : function(){
+                alert('It falis silently!')
+            }
+
+        });
+    });
+        
+
+}
+
+
+
+
+
+
+
+
+

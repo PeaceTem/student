@@ -29,11 +29,12 @@
     {% endfor %}
     </div>
 
-    <input type="submit" value="add categories">
+    <input type="submit" value="Add Categories">
 </form>
 
 
 <!-- Add infinite scroll to the category with ajax -->
+<div>Click to add categories to above bucket</div>
 {% for category in page_obj %}
 <input type="button" onclick="addClassCategory(this.value)" value="{{category.title}}">
 {% endfor %}

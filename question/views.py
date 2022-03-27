@@ -162,11 +162,11 @@ def FourChoicesQuestionCreate(request):
             answer4=form.cleaned_data.get('answer4')
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
-            duration=form.cleaned_data.get('duration')
+            duration=form.cleaned_data.get('duration_in_seconds')
             solution=form.cleaned_data.get('solution')
             question = QFourChoicesQuestion.objects.create(user=user, question_text=question_text,
             answer1=answer1, answer2=answer2, answer3=answer3, answer4=answer4,
-            correct=correct, duration=duration, solution=solution)
+            correct=correct, duration_in_seconds=duration, solution=solution)
 
 
             return redirect('question:category-create', question_id=f'fourChoices-{question.id}')
@@ -197,11 +197,11 @@ def TrueOrFalseQuestionCreate(request):
             answer2=form.cleaned_data.get('answer2')
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
-            duration=form.cleaned_data.get('duration')
+            duration=form.cleaned_data.get('duration_in_seconds')
             solution=form.cleaned_data.get('solution')
 
             question = QTrueOrFalseQuestion.objects.create(user=user, question_text=question_text,
-            correct=correct, solution=solution, duration=duration)
+            correct=correct, solution=solution, duration_in_seconds=duration)
 
             return redirect('question:category-create', question_id=f'trueOrFalse-{question.id}')
 

@@ -235,9 +235,9 @@ Add all the documentation here
 @login_required(redirect_field_name='next', login_url='account_login')
 def PostLike(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == 'GET':
         print(request)
-        quiz_id = request.POST.get('quiz_id')
+        quiz_id = request.GET.get('quiz_id')
         quiz = Quiz.objects.get(id=quiz_id)
         profile = Profile.objects.get(user=quiz.user)
         print(quiz)
@@ -246,17 +246,20 @@ def PostLike(request):
         if user in quiz.likes.all():
             quiz.likes.remove(user)
             profile.likes -= 1
-
+            quiz.save()
+            profile.save()
             print('removed user')
+            return HttpResponse('unliked')
+
         else:
             quiz.likes.add(user)
             profile.likes += 1
             print('added user')
-        quiz.save()
-        profile.save()
+            quiz.save()
+            profile.save()
 
-
-    return redirect('quiz:quizzes')
+            return HttpResponse('liked')
+    # return redirect('quiz:quizzes')
 
 """
 Add all the documentation here
@@ -272,9 +275,9 @@ def QuizCreate(request):
         if form.is_valid():
             title= form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
-            duration = form.cleaned_data.get('duration')
+            duration = form.cleaned_data.get('duration_in_minutes')
 
-            quiz = Quiz.objects.create(user=user, title=title, description=description, duration=duration)
+            quiz = Quiz.objects.create(user=user, title=title, description=description, duration_in_minutes=duration)
             profile.quizzes += 1
             profile.save()
             # return redirect('quiz:new-question', quiz_id=quiz.id)

@@ -103,10 +103,10 @@ input[type="submit"]{
 
         <div class="minuteBx">
             <div>
-                {% if quiz.duration < 2 %}
-                    {{quiz.duration}} minute
+                {% if quiz.duration_in_minutes < 2 %}
+                    {{quiz.duration_in_minutes}} minute
                 {% else %}
-                    {{quiz.duration}} minutes
+                    {quiz.duration_in_minutes}} minutes
                 {% endif %}
             </div> 
         </div>

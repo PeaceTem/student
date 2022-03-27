@@ -164,7 +164,7 @@ class Quiz(models.Model):
     categories = models.ManyToManyField(Category, blank=True,
         related_name='categories', related_query_name='categories')
     #duration and each quiz is in minutes, and it overrides the duration of all the questions
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=3)
+    duration_in_minutes = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=3)
 
     likes = models.ManyToManyField(User, default=None, blank=True, related_name='likes')
 

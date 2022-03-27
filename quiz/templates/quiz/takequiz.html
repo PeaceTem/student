@@ -18,9 +18,9 @@ Old Town Road Correction
 <div class="container">
 {% include 'messages.html'%}
     <div class="minuteBx">
-        <div id="minute">{{quiz.duration}}</div>
+        <div id="minute">{{quiz.duration_in_minutes}}</div>
         <div>
-            {% if quiz.duration < 2 %}
+            {% if quiz.duration_in_minutes < 2 %}
                  minute
             {% else %}
                 minutes
