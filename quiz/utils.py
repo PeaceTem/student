@@ -32,7 +32,7 @@ def sortKey(e):
 
 def randomCoin():
      value = (1,2,3)
-     goal = random.choices(value, weights=[30,10,1], k=1)
+     goal = random.choices(value, weights=[10,20,1], k=1)
      return goal[0]
 
 def randomChoice(value):
@@ -41,7 +41,7 @@ def randomChoice(value):
 
 def adsRandom():
      value = ('ads', 'noAds')
-     goal = random.choices(value, weights=[1,20], k=1)
+     goal = random.choices(value, weights=[1,30], k=1)
      return goal[0]
 
 def quizRandomCoin():

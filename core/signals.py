@@ -2,6 +2,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Profile, Streak, Follower, Link
+from quiz.models import Category
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 
@@ -17,8 +18,28 @@ Whenever a user is created, loop through the sessionstore
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, *args, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        profile = Profile.objects.create(user=instance)
+        quizCategories = Category.objects.all().order_by('-quiz_number_of_times_taken')[:10]
+        questionCategories = Category.objects.all().order_by('-question_number_of_times_taken')[:10]
+        for category in quizCategories:
+            profile.categories.add(category)
+
+        for category in questionCategories:
+            profile.categories.add(category)
+            profile.save()
+
         Follower.objects.create(user=instance)
+
+
+
+@receiver(post_save, sender=User)
+def update_profile(sender, instance, created, *args, **kwargs):
+    if not created:
+        profile = instance.profile
+        username = instance.username
+        profile.code = username
+        profile.save()
+        print('profile updated!')
 
 # post_save.connect(create_profile, sender=User)
 

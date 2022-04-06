@@ -9,56 +9,48 @@
 {% block content %}
 <body>
     <a href="{% url 'profile' %}">
-        Go Back
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>Go Back
     </a>
-<div class="navigation">
-    <button id="menu-icon" onclick="showBar()">
-    <div ><i class="fa fa-bars" aria-hidden="true">menu</i></div>
 
-    </button>
-    <div id="back" onclick="hideBar()"><i class="fa fa-chevron-left" aria-hidden="true">back</i></div>
 
-</div>
 <section>
-    <ul>
-        <li class="icon"><i class="fa fa-cog" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-cog" aria-hidden="true"></i>
         <div>settings</div>
-        </li>
+        </div>
     
-        <li class="icon"><i class="fa fa-info-circle" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-info-circle" aria-hidden="true"></i>
             <div>help & feedback</div>
-        </li>
+        </div>
         
-        <li class="icon"><i class="fa fa-user-secret" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-user-secret" aria-hidden="true"></i>
             <div>privacy policy</div>
-        </li>
+        </div>
     
-        <li class="icon"><i class="fa fa-gift" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-gift" aria-hidden="true"></i>
             <div>Donate</div>
-        </li>
+        </div>
     
-        <li class="icon"><i class="fa fa-handshake-o" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-handshake-o" aria-hidden="true"></i>
             <div>advertise with us</div>
-        </li>
+        </div>
     
-        <li class="icon"><i class="fa fa-check-square-o" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-check-square-o" aria-hidden="true"></i>
             <div>terms & conditions</div>
-        </li>  
+        </div>  
             
-        <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-info" aria-hidden="true"></i>
             <div>about</div>
-        </li>    
+        </div>    
     
     
-        <li class="icon"><i class="fa fa-info" aria-hidden="true"></i>
+        <div class="icon"><i class="fa fa-info" aria-hidden="true"></i>
             <div>feedback</div>
-        </li>    
+    </div>    
         <a href="{% url 'logout' %}">
-            <li class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
+            <div class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i>
                 <div>logout</div>
-            </li>
+            </div>
         </a>
-    </ul>
     
 
 </section>

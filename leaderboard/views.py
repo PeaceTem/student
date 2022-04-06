@@ -5,14 +5,14 @@ from django.contrib.auth.decorators import login_required
 
 
 """
-Template wireframe
+Add Pagination To All The Leaderboard
 
-streak | question | and others
-1(AI prediction) | 0 (Current one) | -1 (last week)
-little explanation and link to full details
 
-And then, the all the objects. 
 """
+
+
+
+
 @login_required(redirect_field_name='next', login_url='account_login')
 def Leaderboard(request):
     user = request.user
@@ -45,9 +45,22 @@ def StreakLeaderBoard(request):
 
 @login_required(redirect_field_name='next', login_url='account_login')
 def WealthLeaderBoard(request,*args, **kwargs):
-    leaders = Profile.objects.all().order_by('coins')[0:1000] or Profile.objects.all().order_by('coins')
+    leaders = Profile.objects.all().order_by('-coins')[0:1000] or Profile.objects.all().order_by('-coins')
     context = {
         'leaders' : leaders,
     }
 
     return render(request, 'leaderboard/wealth.html', context)
+
+
+
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
+def ReferralLeaderBoard(request,*args, **kwargs):
+    leaders = Profile.objects.all().order_by('-refercount')
+    context = {
+        'leaders' : leaders,
+    }
+
+    return render(request, 'leaderboard/referral.html', context)

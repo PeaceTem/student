@@ -1,7 +1,7 @@
 :root{
     --card-background-color: #fff;
     --background-color: #dfdfdf;
-    --theme-color:  #f11919/* rgb(219, 104, 104) #333edb*/;
+    --theme-color:  #777/* rgb(219, 104, 104) #333edb*/;
     --white-theme: #fff;
     --dark-theme: #666;
 }
@@ -90,11 +90,40 @@ header .top-navigation a:hover{
     align-items: flex-end;
 }
 
+span img.svg{
+    height: 20px;
+    width: 20px;
+}
 
 
+span .streakActive::before{
+    content: '';
+    position: relative;
+    top: 0;
+    left: 0;
+    background: #00ff00;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
 
+}
 
+span .streakInActive::before{
+    content: '';
+    position: relative;
+    top: 0;
+    left: 0;
+    background: #ff0000;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
 
+}
+/* 
+
+span img{
+    background: #77b822;
+} */
 
 a.link{
     background: #fff;

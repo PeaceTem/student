@@ -5,6 +5,8 @@
     padding: 0;
     box-sizing: border-box;
     font-size: 20px;
+    font-family: sans-serif;
+    
 }
 
 a{
@@ -27,11 +29,20 @@ a div{
     position: relative;
     margin:auto;
     width: 500px;
-    max-width: 100%;
+    max-width: 90%;
     margin-top: 10px;
 }
 
+.indicator{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px; 
+    border-radius: 50%;
 
+    /* background: #f11919;    */
+}
 .question-box > li, .container > div,  .question-card-container > div{
     margin-bottom: 10px;
     border-top: 4px solid #f11919;

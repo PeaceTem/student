@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
 from .models import PostAd
 from .forms import NewPostAdForm
@@ -18,3 +19,17 @@ def PostAdView(request):
     }
 
     return render(request, 'ads/postAd.html', context)
+
+
+
+
+def PostAdClick(request, post_id):
+    # link_id = request.GET.get('link_id')
+
+    postAd = PostAd.objects.get(id=post_id)
+
+    postAd.clicks += 1
+    postAd.save()
+    print(postAd.clicks)
+
+    return HttpResponse('clicked')

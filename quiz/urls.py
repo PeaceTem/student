@@ -9,9 +9,12 @@ app_name = 'quiz'
 
  
 urlpatterns = [
+    path('custom/', views.CustomCheckbox, name='custom'),
     path('', views.QuizList, name='quizzes'),
     path('following-quizzes/', views.FollowerQuizList, name='following-quizzes'),
     path('my-quizzes/', views.MyQuizList, name='my-quizzes'),
+    path('quizzes-taken/', views.QuizTakenList, name='quizTaken'),
+
     path('detail/<str:quiz_id>/<str:ref_code>', views.QuizDetail, name='quiz-detail'),
     path('create-quiz/', views.QuizCreate, name='quiz-create'),
     path('create/', views.CreateObject, name='object-create'),
@@ -38,6 +41,7 @@ urlpatterns = [
 
     path('<str:quiz_id>/take/', views.TakeQuiz, name='take-quiz'),
     path('<str:quiz_id>/submit/<str:ref_code>', views.SubmitQuiz, name='submit-quiz'),
+    path('solution-quality/<str:quiz_id>/', views.SolutionQuality, name='solution-quality'),
 
     #pdf generation
     path('<str:quiz_id>/pdf/', views.GeneratePDF.as_view(), name='quiz-pdf'),

@@ -1,4 +1,9 @@
-
+*{
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 section .contentBx{
     margin: 30px 0 0 0;
@@ -14,6 +19,7 @@ section .contentBx{
     max-width: 95vw;
     padding: 20px;
     flex-direction: column;
+
 
 }
 

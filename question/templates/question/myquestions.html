@@ -1,27 +1,87 @@
 {% extends 'quiz/base.html' %}
 
+{% load static %}
+
+{% block quizTitle %}
+My Questions
+{% endblock quizTitle %}
+
 {% block content %}
-<div class="questions">
-    {% for question in trueOrFalseQuestions %}
-        <div class="quizItem">
-            {{question.question_text|truncatechars:20}}
-        </div>
 
-        <div class="private-links">
-            <a href="{% url 'question:edit-trueOrFalseQuestion' question.id %}">Update</a>
-        </div>
-        <div class="private-links">
-            <a href="{% url 'question:delete-question' 'trueOrFalse' question.id %}">Delete</a>
-        </div>
-    {% endfor %}s
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'question/css/myquestions.css' %}">
+{% endblock quizCss %}
+<div style="text-align:left;" class="top-link">
+    <a style="text-align:left;" href="{% url 'question:questions' %}">Go back</a>
 </div>
+<div class="container">
+    {% include 'messages.html' %}
 
-
-<div class="questions">
-    {% for question in fourChoicesQuestions %}
-        <div class="quizItem">
-            {{question.question_text|truncatechars:20}}
-        </div>
+        {% for question in trueOrFalseQuestions %}
+    <div class="questions">
+            <div class="quizItem">
+                {{question.question_text|truncatechars:50}}
+            </div>
+            <div class="inline">
+    
+                <div class="attempt">
+                    {% if question.attempts < 2 %}
+                        {{question.attempts}} attempt
+                    {% else %}
+                        {{question.attempts}} attempts
+                    {% endif %}
+                </div>
+                <div class="average">
+                    {{question.avgScore}}%
+                </div>
+                <span id="seconds" class="duration">
+                    {{question.duration_in_seconds}}
+                </span>
+                <span class="secondsName">
+                    seconds            
+                </span>
+            
+            </div>
+            
+            <div class="linkTab">
+                <div class="private-links">
+                    <a href="{% url 'question:edit-trueOrFalseQuestion' question.id %}">Update</a>
+                </div>
+                <div class="private-links">
+                    <a href="{% url 'question:delete-question' 'trueOrFalse' question.id %}">Delete</a>
+                </div>
+            </div>
+        
+    </div>
+        {% endfor %}
+    
+    
+        {% for question in fourChoicesQuestions %}
+    <div class="questions">
+            <div class="quizItem">
+                {{question.question_text|truncatechars:50}}
+            </div>
+            <div class="inline">
+    
+                <div class="attempt">
+                    {% if question.attempts < 2 %}
+                        {{question.attempts}} attempt
+                    {% else %}
+                        {{question.attempts}} attempts
+                    {% endif %}
+                </div>
+                <div class="average">
+                    {{question.avgScore}}%
+                </div>
+                <span id="seconds" class="duration">
+                    {{question.duration_in_seconds}}
+                </span>
+                <span class="secondsName">
+                    seconds            
+                </span>
+            
+            </div>
+    <div class="linkTab">
 
         <div class="private-links">
             <a href="{% url 'question:edit-fourChoicesQuestion' question.id %}">Update</a>
@@ -29,7 +89,12 @@
         <div class="private-links">
             <a href="{% url 'question:delete-question' 'fourChoices' question.id %}">Delete</a>
         </div>
-    {% endfor %}
+    </div>
+    </div>
+        {% endfor %}
+    
+
 </div>
+
 
 {% endblock content %}

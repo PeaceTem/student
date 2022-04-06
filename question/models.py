@@ -28,12 +28,13 @@ class QFourChoicesQuestion(models.Model):
     answer3 = models.CharField(max_length=200)
     answer4 = models.CharField(max_length=200)
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, null=True, blank=True)
+    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
     duration_in_seconds = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=15)
     categories = models.ManyToManyField(Category, related_name='FourChoicesQuestioncategories', blank=True)
     attempts = models.IntegerField(default=0)
     avgScore = models.FloatField(default=0.0)
-
+    solution_quality = models.IntegerField(default=0)
+    solution_validators = models.ManyToManyField(User,  blank=True, related_name='fourChoicesQuestion_solution_validators')
 
 
     def getAnswer(self, value, *args, **kwargs):
@@ -68,15 +69,17 @@ class QTrueOrFalseQuestion(models.Model):
     SCORE_CHOICES = zip( range(5,0, -1), range(5,0, -1) )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     form = models.CharField(max_length=20, default='trueOrFalseQuestion')
-    question_text = models.CharField(max_length=200)
+    question_text = models.TextField(max_length=500)
     answer1 = models.CharField(max_length=20, default='True')
     answer2 = models.CharField(max_length=20, default='False')
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, null=True, blank=True)
+    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
     duration_in_seconds = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
     categories = models.ManyToManyField(Category, related_name='trueOrFalseQuestioncategories', blank=True)
     attempts = models.IntegerField(default=0)
     avgScore = models.FloatField(default=0.0)
+    solution_quality = models.IntegerField(default=0)
+    solution_validators = models.ManyToManyField(User, related_name='trueOrFalse_solution_validators', blank=True)
 
     def getAnswer(self, value, *args, **kwargs):
         if value == 'answer1':

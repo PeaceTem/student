@@ -15,6 +15,7 @@ Old Town Road Correction
 
 
 {% include 'messages.html'%}
+
 <div class="question-card-container">
     <a href="{% url 'profile:profile' question.user.username %}">
         @{{question.user.username}}
@@ -25,7 +26,7 @@ Old Town Road Correction
 <div class="question-card-container">
 
         
-        <div class="question-box">
+        <div class="question-box download-container">
             {% if question.form == 'fourChoicesQuestion' %}
             <div>
                     {{question.question_text}}
@@ -76,9 +77,21 @@ Old Town Road Correction
                         
                         <div class="solution">
                             Solution: {{question.solution}}
+                        </div>
+                        {% if not request.user in question.solution_validators.all %}
+
+                            <div>
+                                <form method="get" id="solutionQualityForm" data-url="{% url 'question:solution-quality' 'fourChoices' question.id %}">
+                                    <div>Is the solution helpful?</div>
+                                <input type="radio" id="yes"  name="quality" value="Yes">
+                                <label for="yes">Yes</label>
+                                <input type="radio" id="no"  name="quality" value="No">
+                                <label for="no">No</label>
+                                <br>
+                                <input type="submit" value="Submit">
+                            </form>
                             </div>
-                  
-               
+                        {% endif %}        
             </div>
             {% elif question.form == 'trueOrFalseQuestion' %}
 
@@ -114,12 +127,28 @@ Old Town Road Correction
                         <div class="solution">
                         Solution: {{question.solution}}
                         </div>
-                      
-                   
+                      {% if request.user in question.solution_validators.all %}
+                        <div>
+                            <form method="get" id="solutionQualityForm" data-url="{% url 'question:solution-quality' 'trueOrFalse' question.id %}">
+                                <div>Is the solution helpful?</div>
+                            <input type="radio" id="yes"  name="quality" value="Yes">
+                            <label for="yes">Yes</label>
+                            <input type="radio" id="no"  name="quality" value="No">
+                            <label for="no">No</label>
+                            <br>
+                            <input type="submit" value="Submit">
+                        </form>
+                        </div>
+                        {% endif %}
                 </div>
             {% endif %}
         </div>
 
+<div class="question-card-container">
+
+        <div>
+            <a href=""  class="a">Download</a>
+        </div>
 
 
         <div>
@@ -131,7 +160,7 @@ Old Town Road Correction
         </div>
         
         <div>
-            <a href="{{postAd.link}}" target="_blank">Visit Site</a>
+            <a class="postAd" onclick="clickFunction()" data-url="{% url 'ads:post-click' postAd.id %}" href="{{postAd.link}}" target="_blank">Visit Site</a>
         </div>
         
         
@@ -139,7 +168,76 @@ Old Town Road Correction
             <a href="{% url 'question:answer-question' %}">Continue Answering Questions</a>
         </div>
         
+        
 </div>
 
 
+<div  style="display:none;" class='result'>
+  
+</div>
+
+<script src="{% static 'question/html2canvas.js' %}"></script>
+<script src="{% static 'js/jquery.js' %}"></script>
+<script>
+
+let elm = document.querySelector('.question-box.download-container');
+elm.prepend("");
+html2canvas(elm).then(function(canvas){
+    document.querySelector('.result').append(canvas);
+    let cvs = document.querySelector('canvas');
+    let a = document.querySelector('.a');
+    a.href = cvs.toDataURL();
+    a.download = 'ToTheX-Correction-{{question.question_text}}.png'
+})
+
+
+
+
+
+function clickFunction(){
+        
+        $.ajax({
+            // change this to post
+            type: 'GET', 
+            url : $('a.postAd').data('url'),
+            data : {
+            },
+            success : function(response){
+                alert('link clicked!')
+                
+
+            },
+            error : function(){
+                alert('It falis silently!')
+            }
+
+        });
+
+    }
+
+
+
+
+    $(document).on('submit', '#solutionQualityForm', function(e){
+    e.preventDefault();
+        const object = $('#solutionQualityForm');
+        const dataList = object.serialize()
+        $.ajax({
+            // change this to post
+            type: 'GET', 
+            // serialize the data
+            url : $('#solutionQualityForm').data('url'),
+            data : dataList,
+            success : function(response){
+                $('#solutionQualityForm').parent().hide(1000);
+                
+
+            },
+            error : function(){
+            }
+
+        });
+        });
+
+</script>
 {% endblock content%}

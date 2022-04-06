@@ -1,4 +1,5 @@
 {% extends "account/base.html" %}
+{% load static %}
 
 {% load i18n %}
 
@@ -6,11 +7,16 @@
 
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
-{% block content %}
+{% block accountContent %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+
 <div class="text-center">
     <h1>{% trans "Sign Up" %}</h1>
 
     <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+</div>
+<div class="text-center">
+    Don't add your email account because there is no email host yet!
 </div>
 <div class="row">
     <div class="col-md-6 offset-md-3">

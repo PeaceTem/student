@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 from PIL import Image
 
+from .managers import QuizManager
 
 # Create your models here.
 
@@ -47,7 +48,7 @@ class FourChoicesQuestion(models.Model):
     answer3 = models.CharField(max_length=200)
     answer4 = models.CharField(max_length=200)
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, null=True, blank=True)
+    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
     points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
 
@@ -86,11 +87,11 @@ class TrueOrFalseQuestion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     index = models.PositiveSmallIntegerField(default=1)
     form = models.CharField(max_length=20, default='trueOrFalseQuestion')
-    question_text = models.CharField(max_length=200)
+    question_text = models.TextField(max_length=500)
     answer1 = models.CharField(max_length=20, default='True')
     answer2 = models.CharField(max_length=20, default='False')
     correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, null=True, blank=True)
+    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
     points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
     duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
 
@@ -129,14 +130,12 @@ class Category(models.Model):
     question_number_of_times_taken = models.PositiveIntegerField(default=0)
     date_registered = models.DateTimeField(auto_now_add=True)
     #add images to this Also
-    thumbnail = models.ImageField(upload_to='images/',  blank=True, null=True)
 
     class Meta:
         verbose_name_plural='Categories'
 
     def __str__(self):
         return f"category | {self.title}"
-
 
 
 
@@ -165,10 +164,12 @@ class Quiz(models.Model):
         related_name='categories', related_query_name='categories')
     #duration and each quiz is in minutes, and it overrides the duration of all the questions
     duration_in_minutes = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=3)
-
+    solution_quality = models.IntegerField(default=0)
     likes = models.ManyToManyField(User, default=None, blank=True, related_name='likes')
+    likeCount = models.PositiveIntegerField(default=0)
+    solution_validators = models.ManyToManyField(User,  blank=True, related_name='quiz_solution_validators')
 
-
+    objects = QuizManager()
     @property
     def num_likes(self):
         return self.likes.all().count()
@@ -198,16 +199,47 @@ class Quiz(models.Model):
     @property
     def when_created(self):
         days_length = date.today() - self.date.date()
-        days_length_shrink = str(days_length).split(',', 1)[0]
-        return days_length_shrink
+        print(days_length)
+        
+        try:
+            days_length_shrink = str(days_length).split(',', 1)[0]
+            days_length_shrink = days_length_shrink[:len(days_length_shrink) - 4]
 
+            days_length_shrink = int(days_length_shrink)
+
+            if days_length_shrink > 364:
+                days_length_shrink = days_length_shrink // 365
+                if days_length_shrink < 2:
+                    return f"{str(days_length_shrink)} year"
+                return f"{str(days_length_shrink)} years"
+            elif days_length_shrink > 29:
+                days_length_shrink = days_length_shrink // 30
+                if days_length_shrink < 2:
+                    return f"{str(days_length_shrink)} month"
+                return f"{str(days_length_shrink)} months"
+            elif days_length_shrink > 6:
+                days_length_shrink = days_length_shrink // 7
+                if days_length_shrink < 2:
+                    return f"{str(days_length_shrink)} week"
+                return f"{str(days_length_shrink)} weeks"
+            if days_length_shrink < 2:
+                    return f"{str(days_length_shrink)} day"
+            return f"{str(days_length_shrink)} days"
+        except:
+            return f"0 days"
 
     class Meta:
-        ordering = ['-date', 'attempts']
+        ordering = ['-date', '-attempts']
         verbose_name_plural = 'Quizzes'
 
         
     def __str__(self):
         return f"{self.title}"
+
+
+
+
+
+
 
 

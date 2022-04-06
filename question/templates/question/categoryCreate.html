@@ -10,8 +10,10 @@
 </head>
 <body>
 
-
+    <div class="head">Step 2 of 2</div>
+{% include 'messages.html' %}
 <h3>Add Categories</h3>
+<div class="top-info">You can add up to 5 categories <br>Categories: {{questionCategories.count}}</div>
 <div class="category-create" >
     <form action="" id="category-form" method="get">
         <input type="text" name="newCategory" id="newCategory">
@@ -25,7 +27,7 @@
     <div id="categoryBucket">
 
         {% for category in questionCategories %}
-        <input type='text' id="{{category.title}}"  class="addedCategories" onclick="removeCategory(this.id)" name="addedCategories" value={{category.title}}>
+        <input type='text' id="{{category.title}}"  class="addedCategories" onclick="removeCategory(this.id)" name="addedCategories" value={{category.title}} readonly>
     {% endfor %}
     </div>
 
@@ -55,7 +57,7 @@ function addClassCategory(obj_name){
         var bucket = document.getElementById('categoryBucket');
 
         bucket.innerHTML += `
-                                <input type="text" class = "addedCategories" name="addedCategories" value=${obj_name}>
+                                <input type="text" class = "addedCategories" name="addedCategories" value=${obj_name} readonly>
                             `;
 
     }

@@ -1,12 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends 'quiz/base.html' %}
+
+{% load static %}
+
+{% block quizTitle %}
+Wealth
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'leaderboard/css/wealth.css' %}">
+{% endblock quizCss %}
+<div style="text-align:left;" class="top-link">
+    <a style="text-align:left;" href="{% url 'leaderboard:leaderboard' %}">Go back</a>
+</div>
+<div class="container">
+    {% include 'messages.html' %}
+
+
     <a href="{% url 'leaderboard:leaderboard' %}">Go Back</a>
     {% for leader in leaders %}
         <div class="line">
@@ -18,5 +29,6 @@
         <br>
         <br>
     {% endfor %}
-</body>
-</html>
+
+
+{% endblock content %}

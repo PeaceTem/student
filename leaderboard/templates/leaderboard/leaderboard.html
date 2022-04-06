@@ -1,6 +1,11 @@
 
 {% extends 'quiz/base.html' %}
 {% load static %}
+
+{% block quizTitle %}
+Leaderboard
+{% endblock quizTitle %}
+
 {% block content %}
 {% block quizCss %}
 <link rel="stylesheet" href="{% static 'leaderboard/css/leaderboard.css' %}">
@@ -13,13 +18,18 @@
 
     <div>
         <a class="leaderboard" href="{% url 'leaderboard:wealth' %}">
-            Top Earners
+            Earner
         </a>
     </div>
     
     <div>
         <a class="leaderboard" href="{% url 'leaderboard:streak' %}">
-            Highest Streak Owners
+            Streak
+        </a>
+    </div>  
+    <div>
+        <a class="leaderboard" href="{% url 'leaderboard:referral' %}">
+            Referral
         </a>
     </div>    
 </div>

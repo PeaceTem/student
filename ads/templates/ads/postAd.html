@@ -22,13 +22,14 @@ Ads
     </div>
 
     <div>
-        <a href="{{postAd.link}}" target="_blank">Visit Site</a>
+        <a class="postAd" onclick="clickFunction()" data-url="{% url 'ads:post-click' postAd.id %}" href="{{postAd.link}}" target="_blank">Visit Site</a>
     </div>
 
 
 <a id="nextButton" href="{% url 'question:answer-question' %}">Next</a>
 
 </div>
+<script src="{% static 'js/jquery.js' %}"></script>
 <script>
     let seconds = 10;
     const next = document.getElementById('nextButton');
@@ -47,5 +48,31 @@ setInterval(()=>{
     }
     countdownbox.innerHTML = `<b>${seconds}sec left</b>`;
 }, 1000)
+
+
+
+
+function clickFunction(){
+        
+        $.ajax({
+            // change this to post
+            type: 'GET', 
+            url : $('a.postAd').data('url'),
+            data : {
+            },
+            success : function(response){
+                alert('link clicked!')
+                
+
+            },
+            error : function(){
+                alert('It falis silently!')
+            }
+
+        });
+
+    }
+
+
 </script>
 {% endblock content %}

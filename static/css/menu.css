@@ -1,26 +1,28 @@
 
-#back{
-    position: absolute;
-    top : 10px;
-    left: 10px;
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
-#menu-icon{
-    position: absolute;
-    top : 10px;
-    right: 10px;
 
-}
 section{
-    display: flex;
-    justify-content:center;
-    align-items: center;
-    height: 100vh;
+    margin: 0;
+    padding: 0;
     width: 100vw;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     background: var(--theme-color);
-    
 }
 
-section > div{
-    line-height: 20px;
+section div{
+    margin: 6px 4px 4px 4px;
+    background: #fff;
+    display: block;
+    width: 100vw;
+    line-height: 30px;
+    border-radius: 4px;
 }
-

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 
 # function based views
 from django.views.generic.edit import FormView
@@ -13,6 +13,7 @@ from django.contrib.auth import login, authenticate
 
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.db.models import Count, Q
 
 from .models import Profile, Follower, Link
 from .forms import ProfileCreationForm, LoginForm, NewLinkForm
@@ -43,18 +44,20 @@ def main_view(request, *args, **kwargs):
     """
     Check if the Ip address has visited this page before and validate
     """
-    code = str(kwargs.get('ref_code'))
-    print('This is the code', code)
-    try:
-        profile = get_object_or_404(Profile, code=code)
-        profile.coins += 50
-        profile.refercount += 1
-        profile.save()
-        request.session['ref_profile'] = profile.id 
+    user = request.user
+    if not user.is_authenticated:
+        code = str(kwargs.get('ref_code'))
+        print('This is the code', code)
+        try:
+            profile = get_object_or_404(Profile, code=code)
+            profile.coins += 20
+            profile.refercount += 1
+            profile.save()
+            request.session['ref_profile'] = profile.id 
 
-        print('This is the profile', profile)
-    except:
-        pass
+            print('This is the profile', profile)
+        except:
+            pass
     return redirect('question:answer-question')
 
 
@@ -147,7 +150,9 @@ def ProfilePage(request):
 
 
     profile = get_object_or_404(Profile, user=user)
-    follower = get_object_or_404(Follower, user=user)
+    follower = Follower.objects.prefetch_related('followers','following').get(user=user)
+    followersCount = follower.followers.all().count()
+    followingsCount = follower.following.all().count()
     link = Link.objects.get(profile=profile)
 
     context={
@@ -155,6 +160,8 @@ def ProfilePage(request):
         'follower' : follower,
         'link':link,
         'nav': 'profile',
+        'followersCount': followersCount,
+        'followingsCount': followingsCount,
     }
 
     return render(request, 'core/profile.html', context)
@@ -224,6 +231,7 @@ def FollowerView(request):
                 follower.save()#new
 
         if user != following_user:
+            return HttpResponse('follow')
             return redirect('profile:profile', profile_name=following_username)
 
     return redirect('profile')
@@ -248,6 +256,8 @@ def UnfollowView(request):
                 follower.save()#new
 
         if user != following_user:
+            return HttpResponse('unfollow')
+
             return redirect('profile:profile', profile_name=following_username)
 
     return redirect('profile')
@@ -274,3 +284,18 @@ def EditLink(request):
     }
 
     return render(request, 'core/link.html', context)
+
+
+
+
+
+def LinkClick(request, link_id):
+    # link_id = request.GET.get('link_id')
+
+    link = Link.objects.get(id=link_id)
+
+    link.clicks += 1
+    link.save()
+    print(link.clicks)
+
+    return HttpResponse('clicked')

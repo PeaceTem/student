@@ -16,6 +16,8 @@ Old Town Road Correction
 
 
 <div class="container">
+<div>Number Of Registered Users : {{number_of_registered_users}}</div>
+
 {% include 'messages.html'%}
     <div class="minuteBx">
         <div id="minute">{{quiz.duration_in_minutes}}</div>
@@ -45,7 +47,7 @@ Old Town Road Correction
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        {{question.question_text}} <br>
+                        {{question.question_text|escape}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -80,7 +82,7 @@ Old Town Road Correction
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        {{question.question_text}} <br>
+                        {{question.question_text|escape}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -103,6 +105,7 @@ Old Town Road Correction
             {% endif %}
         {% endfor %}
     </ol>
+    <input id ='timeTaken' type="hidden" name="timeTaken">
         <input id="submitButton" type="submit" value="Submit">
     </form>
 </div>
@@ -126,14 +129,17 @@ Old Town Road Correction
 
     const countdownbox = document.getElementById('countdownbox');
     let seconds = minutes * 60;
+    const duration = minutes * 60;
     const quiz = document.getElementById('quizForm');
-    
+    let timeTaken = document.getElementById('timeTaken');
+    timeTaken.value = seconds;
     setInterval(()=>{
         seconds -= 1;
         let minutesLeft = Math.floor(seconds/60);
         let secondsLeft = seconds%60;
 
         countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
+        timeTaken.value = parseInt(duration - seconds);
         if (seconds <= 0){
             print(seconds);
             const finished =  document.getElementById('submitButton');

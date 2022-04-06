@@ -1,3 +1,22 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+
+{% block quizTitle %}
+Create A New Question
+{% endblock quizTitle %}
+
+{% block content %}
+
+{% block quizCss %}
+<link rel="stylesheet" href="{% static 'quiz/css/categoryCreate.css' %}">
+{% endblock quizCss %}
+
+
+{% load crispy_forms_tags %}
+
+{% include 'messages.html' %}
+
+
 
 <section>
     <div class="head">Step 3 of 3</div>
@@ -13,7 +32,7 @@
 
     <div class="inputBx">
         <p>
-            Finished? <a href="{% url 'quiz:my-quizzes' %} ">finish</a>
+            Finished? <a href="{% url 'quiz:quiz-detail' quiz.id profile.code %} ">finish</a>
         </p>
     </div>
 </div>
@@ -23,3 +42,6 @@
 <script>
 
 </script>
+
+
+{% endblock content %}

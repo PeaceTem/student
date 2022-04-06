@@ -13,7 +13,7 @@ Old Town Road
 {% endblock quizCss %}
 
 {% include 'messages.html' %}
-<a href="{% url 'quiz:quizzes' %}">Go Back</a>
+<a href="{% url 'question:questions' %}">Go Back</a>
 <div class="container">
     <div class="top">
         <div class="title">Old Town Road</div>
@@ -92,9 +92,11 @@ Old Town Road
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}-{{question.id}}-answer2">
                         <label for="id_answer2">False</label>
                     </div>
-                </div>
                         
                 {% endif %}
+                <div style="text-align:right;">
+                    <div style='color:#f11919; text-align:right; margin-right: 3px;'>ToTheX</div>
+                </div>
             <input type="submit"  id="submitButton"  value="Submit">
         </form>
     </div>
@@ -102,21 +104,22 @@ Old Town Road
         <input id="skipButton" type="submit" value="Skip">
     </form>
     <!-- disable the submit button if the question has not been answered -->
-    
-    <div  style="display:none;" class='result'>
-      
-    </div>
     <div>
         <a href=""  class="a">Download</a>
     </div>
     
+</div>
+                </div>
+
+<div  style="display:none;" class='result'>
+      
 </div>
 
 <script src="{% static 'question/html2canvas.js' %}"></script>
 
 <script>
 
-    let elm = document.querySelector('.question-card-container');
+    let elm = document.querySelector('.container');
     elm.prepend("");
     html2canvas(elm).then(function(canvas){
         document.querySelector('.result').append(canvas);

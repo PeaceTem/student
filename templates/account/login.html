@@ -1,13 +1,16 @@
 {% extends "account/base.html" %}
-
+{% load static %}
 {% load i18n %}
 {% load account socialaccount %}
 
 {% load crispy_forms_filters %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
-
-{% block content %}
+{% block head_title %}Login{% trans "Sign In" %}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+    
+{% endblock %}
+{% block accountContent %}
 
   <div class="text-center">
     <h1>{% trans "Sign In" %}</h1>

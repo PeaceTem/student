@@ -11,6 +11,8 @@ urlpatterns = [
     path('leaderboard/', views.Leaderboard, name='leaderboard'),
     path('streak/', views.StreakLeaderBoard, name='streak'),
     path('wealth/', views.WealthLeaderBoard, name='wealth'),
+    path('referral/', views.ReferralLeaderBoard, name='referral'),
+
 
 ]
 

@@ -22,6 +22,9 @@ urlpatterns = [
     path('profile/follower', FollowerView, name='follower'),
     path('profile/unfollow', UnfollowView, name='unfollow'),
 
+    # link clicks
+    path('profile/link-click/<str:link_id>', views.LinkClick, name='link-click'),
+
 
     #change password
     path('password/',PasswordsChangeView.as_view(), name='change_password'),

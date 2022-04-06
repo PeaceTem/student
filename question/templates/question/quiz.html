@@ -1,0 +1,119 @@
+{% include 'messages.html' %}
+<span>min </span>
+<div id="minutes">
+    {{duration}}
+</div>
+<div id="countdownbox"></div>
+{% if request.user.is_authenticated %}
+<form class="question-form-box" action="{% url 'question:quiz-submit' request.user.profile.code  %}" method="post"  id="quizForm">
+{% else %}
+<form class="question-form-box" action="{% url 'question:quiz-submit' None %}" method="post"  id="quizForm">
+
+{% endif %}
+    {% csrf_token %}
+    <ol>
+
+{% for index, question in questions %}
+
+        {% if question.form == 'fourChoicesQuestion' %}
+    <li>
+
+        <div>
+            <div class="questionBx">
+                {{question.question_text}}
+
+            </div>
+          
+            <div class="answer">
+                <input class="option{{index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer1" value="fourChoices-{{question.id}}-answer1">
+                <label for="id_answer1">{{question.answer1}}</label>
+            </div>
+            
+            <div class="answer">
+                <input class="option{{index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer2" value="fourChoices-{{question.id}}-answer2">
+                <label for="id_answer2">{{question.answer2}}</label>
+            </div>
+
+            <div class="answer">
+                <input class="option{{index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer3" value="fourChoices-{{question.id}}-answer3">
+                <label for="id_answer3">{{question.answer3}}</label>
+            </div>
+
+            <div class="answer">
+                <input class="option{{index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer4" value="fourChoices-{{question.id}}-answer4">
+                <label for="id_answer4">{{question.answer4}}</label>
+            </div>
+    </li>
+
+    {% elif question.form == 'trueOrFalseQuestion' %}
+    <li>
+
+    <div class="questionBx">
+        {{question.question_text}}
+
+    </div>
+            <div class="answer">
+                <input class="option{{index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer1" value="trueOrFalse-{{question.id}}-answer1">
+                <label for="id_answer1">True</label>
+            </div>
+            
+            <div class="answer">
+                <input class="option{{index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{index}}_answer2" value="trueOrFalse-{{question.id}}-answer2">
+                <label for="id_answer2">False</label>
+            </div>
+        </li>
+                
+        {% endif %}
+    
+        <div style="text-align:right;">
+            <div style='color:#f11919; text-align:right; margin-right: 3px;'>ToTheX</div>
+        </div>
+{% endfor %}
+</ol>
+<input type="hidden" name="reAttempt" value="{{reAttempt}}">
+<input type="hidden" name="questionLength" value="{{questionLength}}">
+<input type="hidden" name="type" value="{{type}}">
+
+
+<input type="submit"  id="submitButton"  value="Submit">
+
+
+</form>
+
+
+<script>
+
+    function validateAnswer(option, target){
+        let answers = document.getElementsByClassName(option);
+
+        for(var i = 0; i < answers.length; i++){
+        if (answers[i].checked == 1){
+            answers[i].checked = 0;
+        };  
+
+        }
+        document.getElementById(target).checked = true;
+        
+    }
+
+    const minutes = document.getElementById('minutes').textContent;
+
+    const countdownbox = document.getElementById('countdownbox');
+    let seconds = minutes * 60;
+    const quiz = document.getElementById('quizForm');
+    
+    setInterval(()=>{
+        seconds -= 1;
+        let minutesLeft = Math.floor(seconds/60);
+        let secondsLeft = seconds%60;
+
+        countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
+        if (seconds <= 0){
+            print(seconds);
+            const finished =  document.getElementById('submitButton');
+            finished.click();
+
+        }
+    }, 1000)
+
+</script>

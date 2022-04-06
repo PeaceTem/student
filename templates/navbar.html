@@ -15,8 +15,22 @@
         </div>
         <div id="profileUser">
             {% if profile.user == request.user %}
-            <span>{{profile.streak.length}} days streak</span>
-            <span>{{profile.coins}} coins</span>
+            <span>{{profile.streak.length}}</span>
+            <span><img src="{% static 'images/306890_20.png' %}">
+            {% if profile.streak.isActive %}
+            
+            <span class="streakActive"></span>
+            {% else %}
+            
+            <span class="streakInActive">
+            </span>
+            {% endif %}
+            </span>
+            <pre>    </pre>
+            <span>{{profile.coins}} 
+                
+                <img class='svg' src="{%static 'images/coin-svgrepo-com.svg' %}" alt="">
+            </span>
             {% endif %}
         </div>
         
