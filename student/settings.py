@@ -65,17 +65,17 @@ INSTALLED_APPS = [
 
     #progressive web app
     'pwa',
-     "debug_toolbar",
+    #  "debug_toolbar",
 ]
 
 
 
 
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
+# INTERNAL_IPS = [
+#     # ...
+#     "127.0.0.1",
+#     # ...
+# ]
 
 
 
