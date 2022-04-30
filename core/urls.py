@@ -26,6 +26,10 @@ urlpatterns = [
     path('profile/link-click/<str:link_id>', views.LinkClick, name='link-click'),
 
 
+    # interest 
+    path('interest/', views.InterestReport, name='interest'),
+
+
     #change password
     path('password/',PasswordsChangeView.as_view(), name='change_password'),
     path('password_success', password_success, name='password_success'),

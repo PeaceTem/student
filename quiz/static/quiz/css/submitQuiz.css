@@ -9,14 +9,6 @@
     
 }
 
-a{
-    text-decoration: none;
-    color: #751515;
-    font-size: 15px;
-    font-weight: 900;
-    font-family: sans-serif;
-    cursor: pointer;
-}
 
 a div{
     height: 100%;
@@ -49,6 +41,7 @@ a div{
     border-radius: 4px;
     min-height: 50px;
     padding-top: 10px;
+    box-shadow: 1px 4px 4px #ccc;
 }
 ol{
     max-width: 100%;
@@ -112,11 +105,87 @@ button{
 
 }
 
+ol.answers{
+    display: block;
+}
 
+ol.answers li{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0px;
+}
+
+
+
+div.social-share > div, div.link-container{
+    background: rgba(241, 25, 25, .05);
+    border: .5px solid #f11919;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 4px;
+
+}
+
+a{
+    color: #f11919;
+
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: normal;
+    font-family: sans-serif;
+    cursor: pointer;
+}
+a.profile{
+    color: #555;
+    font-size: normal;
+    font-family: sans-serif;
+}
+
+
+.answerGreen, .answerRed, .answerWhite{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    width: 100%;
+    grid-auto-rows: minmax(20px, auto);
+}
+
+
+.answerGreen div{
+    border: 2px solid rgb(0, 255, 55);
+    background: rgba(0, 255, 55, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+
+
+}
+
+.answerRed div{
+    border: 2px solid rgb(248, 13, 13);
+    background: rgba(248, 13, 13, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+    
+}
+
+
+ol.scores{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: space-between;
+    width: 80%;
+}
+.link-container{
+    height: 30px;
+}
 
 
 @media (max-width:700px) {
     *{
-        font-size: 14px;
+        font-size: 12px;
     }
 }

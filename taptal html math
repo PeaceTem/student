@@ -158,3 +158,22 @@ The toISOString() method converts a Date object to a string, using the ISO stand
 Example
 const d = new Date();
 d.toISOString();
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    function reload_js(src) {
+        $('script[src="' + src + '"]').remove();
+        $('<script>').attr('src', src).appendTo('head');
+    }
+    reload_js('source_file.js');
+</script>

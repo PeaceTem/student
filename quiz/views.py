@@ -1,52 +1,48 @@
-
+# django 
 # important method to deal with models
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.forms.models import model_to_dict
-from django.db.models import Q, Avg, Min, Max
-
-# the forms for each model
-from .forms import NewQuizForm, NewCategoryForm, NewFourChoicesQuestionForm, NewTrueOrFalseQuestionForm
-
-
-# the models to be used to create the quiz app
-from core.models import Follower
-from .models import Quiz, Category, FourChoicesQuestion, TrueOrFalseQuestion
-from core.models import Streak, Profile
-from ads.models import PostAd
-# from draft.models import DraftQuiz
-from comment.models import QuizComment, Comment
-
-# Utilities
-from random import shuffle
-from .utils import sortKey, quizRandomCoin, randomChoice
-
-import decimal
-#Paginator
-
+from django.db.models import Q, Avg, Min, Max, F, Count, Sum
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-
-# django messages
 from django.contrib import messages
-
-
-# pdf generator
-
 from django.http import HttpResponse
-
 from django.views.generic import View
-
-# import the utilities needed to create the quiz
-from .utils import render_to_pdf
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.template.loader import get_template
 from django.contrib.auth.mixins import LoginRequiredMixin
-# make sure you add the question mode herein
+from django.utils import timezone
+# all the forms
+# the forms for each model
+from .forms import NewQuizForm, NewFourChoicesQuestionForm, NewTrueOrFalseQuestionForm, NewQuizLinkForm
+from category.forms import NewCategoryForm
+# all the models
+# the models to be used to create the quiz app
+from core.models import Follower
+from category.models import Category
+from .models import Quiz, QuizLink, Attempter
+from question.models import TrueOrFalseQuestion, FourChoicesQuestion
+from core.models import Streak, Profile
+from ads.models import PostAd
 
-# xhtml2pdf
-from diary.models import Diary
 
-from django.db.models import F
+# celery tasks
+from core.tasks import LikeQuiz, StreakValidator, CoinsTransaction, CreatorCoins
+
+
+# services
+
+from core.services import ReferralService
+
+# Utilities
+import random
+from random import shuffle
+from .utils import render_to_pdf, sortKey, quizRandomCoin, randomChoice, sortQuiz
+
+import decimal
 
 
 
@@ -80,7 +76,7 @@ class GeneratePDF(LoginRequiredMixin, View):
         for question in questionsList:
             questions.append(question[1])
         if request.method == 'GET':
-            if quiz.shuffleable == True:
+            if quiz.shuffleaQuestions:
                 shuffle(questions)
 
         context = {
@@ -107,33 +103,53 @@ class GeneratePDF(LoginRequiredMixin, View):
 # the details of a quiz
 
 def QuizDetail(request, quiz_id, *args, **kwargs):
-    user = request.user
-    quiz = get_object_or_404(Quiz, id=quiz_id)
-    number_of_registered_users = Profile.objects.all().count()
-    if user.is_authenticated:
-        profile = Profile.objects.get(user=user)
-    if not user.is_authenticated:
-        code = str(kwargs.get('ref_code'))
-        print('This is the code', code)
-        try:
-            profile = get_object_or_404(Profile, code=code)
-            profile.coins += 20
-            profile.refercount += 1
-            profile.save()
-            print('This is the profile', profile)
-        except:
-            pass    
+    try:
+        user = request.user
+        quiz = Quiz.objects.get(id=quiz_id)
+        preQuestions = []
+        preQuestions += quiz.fourChoicesQuestions.all()
+        preQuestions += quiz.trueOrFalseQuestions.all()
+        questions = []
+        for question in preQuestions:
+            questions.append(tuple((question.index, question)))
 
-    postAd = PostAd.objects.all()
-    postAd = randomChoice(postAd)
+
+        questions.sort(key=sortKey)
+        print(questions)
+        profile = None
+        number_of_registered_users = Profile.objects.all().count()
+        if user.is_authenticated:
+            profile = Profile.objects.get(user=user)
+        if not user.is_authenticated:
+            code = str(kwargs.get('ref_code'))
+            ReferralService(code)
         
+        postAd = PostAd.objects.all()
+        postAd = randomChoice(postAd)
+    except:
+        return redirect('quiz:my-quizzes')    
     context = {
         'quiz': quiz,
         'user': user,
         'postAd': postAd,
         'profile': profile or 'None',
         'number_of_registered_users': number_of_registered_users,
+        'questions': questions,
     }
+
+    try:
+        if quiz.quizlink.name and quiz.quizlink.link and quiz.quizlink.description:
+
+            context['quizLink'] = quiz.quizlink
+    except:
+        pass
+
+    
+    try:
+        attempters = quiz.attempter_set.select_related('user').all()[:10]
+        context['attempters'] = attempters
+    except:
+        pass
 
 
     return render(request, 'quiz/quizdetail.html', context)
@@ -164,39 +180,101 @@ def QuizList(request):
             lookup =  Q(title__icontains=search_word) | Q(description__icontains=search_word) | Q(categories__title__icontains=search_word) | Q(user__username__icontains=search_word)
             quizzes |= Quiz.objects.filter(lookup)
         
-        quizzes = quizzes.order_by('-solution_quality', '-likes', '-attempts').distinct()
+        quizzes = quizzes.order_by('-relevance').distinct()[:100]
     else:
+        age = profile.get_user_age
         quizzes = Quiz.objects.none()
         for category in profile.categories.all():
-            lookup = Q(categories__title=category.title)
-            quizzes |= Quiz.objects.filter(lookup).distinct()
-        print(quizzes.count())
-        
-        lookup = Q(questionLength__gt=0) & Q(average_score__gte=(100 - profile.quizAvgScore)) & Q(average_score__lte=(profile.quizAvgScore + 20))
-        quizzes &= Quiz.objects.filter(lookup).distinct()
+            lookup = Q(categories__title=category.title) & Q(questionLength__gte=2) & Q(age_from__gte=age) & Q(age_to__lte=age)
+            quizzes |= Quiz.objects.filter(lookup)
+        quizzes = quizzes.distinct()
+        QUIZZES = quizzes
 
         takenQuiz = profile.quizTaken.all()
-
         randomQuizzes = []
-        print('The fetch has started!')
-        while len(randomQuizzes) < 100 and quizzes.count() > 0:
+        _randomQuizzes = randomQuizzes
+        while len(randomQuizzes) + len(_randomQuizzes) < 100 and quizzes.count() > 0:
             quiz = randomChoice(quizzes)
-            print(quiz)
             quizzes = quizzes.exclude(id=quiz.id)
             if quiz not in takenQuiz:
-                print('The quiz is not in quizTaken!')
                 randomQuizzes.append(quiz)
-            
+        # the quizzes has dapo
+        # if len(randomQuizzes) < 100:
+        #     # randomQuizzes.sort(key=sortQuiz, reverse=True)
+
+        #     quizzes = QUIZZES
+        #     lookup = Q(average_score__lt=(100 - profile.quizAvgScore))
+        #     quizzes &= Quiz.objects.filter(lookup).distinct()
+        #     while (len(randomQuizzes) + len(_randomQuizzes)) < 100 and quizzes.count() > 0:
+        #         print('Work 2')
+                
+                
+        #         quiz = randomChoice(quizzes)
+        #         quizzes = quizzes.exclude(id=quiz.id)
+        #         if quiz not in takenQuiz:
+        #             _randomQuizzes.append(quiz)
+           
+        # _randomQuizzes.sort(key=sortQuiz, reverse=True)
+
+        # for q in _randomQuizzes:
+        #     randomQuizzes.append(q)
+
+        # _randomQuizzes = []
+
+        # if len(randomQuizzes) < 100:
+
+        #     lookup = Q(questionLength__gt=0)
+        #     quizzes = Quiz.objects.filter(lookup).distinct()
+        #     for quiz in QUIZZES:
+        #         quizzes.exclude(id=quiz.id)
+        #     print(quizzes.count())
+
+        #     while (len(randomQuizzes)  + len(_randomQuizzes)) < 100 and quizzes.count() > 0:
+        #         print('Work 3')
+
+        #         quiz = randomChoice(quizzes)
+        #         quizzes = quizzes.exclude(id=quiz.id)
+        #         if quiz not in takenQuiz:
+        #             _randomQuizzes.append(quiz)
+           
+
+
+    
+        # _randomQuizzes.sort(key=sortQuiz, reverse=True)
+
+        for q in _randomQuizzes:
+            randomQuizzes.append(q)
+
+        _randomQuizzes = []
+
+
+
+        if (len(randomQuizzes) + len(_randomQuizzes)) < 100:
+            # randomQuizzes.sort(key=sortQuiz, reverse=True)
+            quizzes = Quiz.objects.filter(questionLength__gte=0)
+            while len(randomQuizzes) < 100 and quizzes.count() > 0:
+                print('Work 4')
+
+                quiz = randomChoice(quizzes)
+                quizzes = quizzes.exclude(id=quiz.id)
+                if quiz not in randomQuizzes:
+                    _randomQuizzes.append(quiz)
+           
+
+        # _randomQuizzes.sort(key=sortQuiz, reverse=True)
+
+        for q in _randomQuizzes:
+            randomQuizzes.append(q)
+
         quizzes = randomQuizzes
         
-
     # quizzes.insert(0, ad)
-    print('okay')
     # create pagination
-    p = Paginator(quizzes, 100)
+    p = Paginator(quizzes, 10)
     page = request.GET.get('page')
     quizzes = p.get_page(page)
-
+    for q in quizzes:
+        print(q.relevance, "relevance")
     context={
 
         'search_input': search_input,
@@ -221,19 +299,17 @@ def FollowerQuizList(request):
 
     search_input= request.GET.get('search-area') or ''
     if search_input:
-        quizzes = Quiz.objects.none()
         search = search_input.strip()
         search = search.split()
         for search_word in search:
-            for following in follow.following.all():
-                lookup = Q(user=following) | Q(user__username__icontains=search_word) | Q(title__icontains=search_word) | Q(description__icontains=search_word)
-                quizzes |= Quiz.objects.filter(lookup).distinct().order_by('-likeCount', '-attempts')
+            lookup = Q(user=following) | Q(user__username__icontains=search_word) | Q(title__icontains=search_word) | Q(description__icontains=search_word)
+            quizzes = quizzes.filter(lookup).distinct()
     else:
         quizzes = Quiz.objects.none()
         # add more abstraction for efficiency
         for following in follow.following.all():
-            quizzes |= Quiz.objects.filter(user=following)
-        quizzes = quizzes.distinct().order_by('-likeCount', '-attempts')
+            quizzes |= Quiz.objects.filter(user=following)[:10]
+        quizzes = quizzes.distinct()
 
         takenQuiz = profile.quizTaken.all()
 
@@ -273,17 +349,16 @@ def FollowerQuizList(request):
 def MyQuizList(request):
     user = request.user
     profile = Profile.objects.get(user=user)
+    quizzes = Quiz.objects.get_user_quizzes(user)
+
     number_of_registered_users = Profile.objects.all().count()
     search_input= request.GET.get('search-area') or ''
     if search_input:
-        quizzes = Quiz.objects.none()
         search = search_input.strip()
         search = search.split()
         for search_word in search:
             lookup = Q(title__icontains=search_word) | Q(description__icontains=search_word)
-            quizzes |= Quiz.objects.filter(lookup).distinct('id').order_by('-likes', '-attempts')
-    else:
-        quizzes = Quiz.objects.filter(user=user)
+            quizzes = quizzes.filter(lookup).distinct()
 
     # create pagination
     p = Paginator(quizzes, 10)
@@ -312,16 +387,15 @@ def QuizTakenList(request):
     user = request.user
     profile = Profile.objects.get(user=user)
     number_of_registered_users = Profile.objects.prefetch_related('quizTaken').all().count()
+    quizzes = profile.quizTaken.all()
+
     search_input= request.GET.get('search-area') or ''
     if search_input:
-        quizzes = Quiz.objects.none()
         search = search_input.strip()
         search = search.split()
         for search_word in search:
             lookup = Q(title__icontains=search_word) | Q(description__icontains=search_word)
-            quizzes |= Quiz.objects.filter(lookup).distinct('id').order_by('-likes', '-attempts')
-    else:
-        quizzes = profile.quizTaken.all()
+            quizzes = quizzes.filter(lookup).distinct()
 
     # create pagination
     p = Paginator(quizzes, 10)
@@ -342,6 +416,65 @@ def QuizTakenList(request):
 
 
 
+@login_required(redirect_field_name='next', login_url='account_login')
+def FavoriteQuizList(request):
+    user = request.user
+    profile = Profile.objects.prefetch_related('favoriteQuizzes').get(user=user)
+    quizzes = profile.favoriteQuizzes.all()
+    number_of_registered_users = Profile.objects.all().count()
+    search_input= request.GET.get('search-area') or ''
+    if search_input:
+        search = search_input.strip()
+        search = search.split()
+        for search_word in search:
+            lookup = Q(title__icontains=search_word) | Q(description__icontains=search_word)
+            quizzes = quizzes.filter(lookup).distinct()
+        
+
+
+    p = Paginator(quizzes, 10)
+    page = request.GET.get('page')
+    quizzes = p.get_page(page)
+
+    context={
+        'page_obj': quizzes,
+        'nav': 'favorites',
+        'profile': profile,
+        'number_of_registered_users' : number_of_registered_users,
+    }
+    return render(request, 'quiz/quizzes_list.html', context)
+
+
+
+
+
+
+
+
+@login_required(redirect_field_name='next', login_url='account_login')
+def CategoryQuizList(request, category):
+    quizzes = Quiz.objects.filter(categories__title=category)
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    number_of_registered_users = Profile.objects.all().count()
+
+
+
+    p = Paginator(quizzes, 10)
+    page = request.GET.get('page')
+    quizzes = p.get_page(page)
+
+    context={
+        'page_obj': quizzes,
+        'nav': 'my-quizzes',
+        'profile': profile,
+        'number_of_registered_users' : number_of_registered_users,
+    }
+
+    return render(request, 'quiz/quizzes_list.html', context)
+
+
+
 
 """
 Add all the documentation here
@@ -353,12 +486,15 @@ def PostLike(request):
         quiz_id = request.POST.get('quiz_id')
         quiz = Quiz.objects.select_related('user').get(id=quiz_id)
         profile = Profile.objects.get(user=quiz.user)
+        likeProfile = Profile.objects.prefetch_related('favoriteQuizzes').get(user=user)
 
 
         if user in quiz.likes.all():
             quiz.likes.remove(user)
             quiz.likeCount -= 1
             profile.likes -= 1
+            likeProfile.favoriteQuizzes.remove(quiz)
+            likeProfile.save()
             quiz.save()
             profile.save()
             return HttpResponse('unliked')
@@ -367,11 +503,47 @@ def PostLike(request):
             quiz.likes.add(user)
             profile.likes += 1
             quiz.likeCount += 1
+            likeProfile.favoriteQuizzes.add(quiz)
             quiz.save()
             profile.save()
 
             return HttpResponse('liked')
-    # return redirect('quiz:quizzes')
+
+
+        """
+        This is a celery command
+        """
+
+        LikeQuiz.delay(quiz_id, user)
+
+
+
+
+
+class RandomQuizPicker(LoginRequiredMixin, View):
+    def get(self, request):
+        user = self.request.user
+        profile = Profile.objects.get_selected_and_prefetched_data(user, prefetched=['categories'])
+        quizzes = Quiz.objects.none()
+        quizzes |= Quiz.objects.filter(categories__title__in=profile.categories.all(), questionLength__gt=5, solution_quality__gt=0, likeCount__gt=0, average_score__gte=50).distinct()[:100]
+
+        quiz = None
+        if not quizzes.count() > 0:
+            quizzes |= Quiz.objects.filter(questionLength__gt=3, solution_quality__gt=0).distinct()[:100]
+
+        
+        if not quizzes.count() > 0:
+            quizzes = Quiz.objects.filter(questionLength__gt=0)[:100]
+
+        if quizzes.count() > 0:
+            quiz = randomChoice(quizzes)
+
+        if not quiz:
+            messages.error(self.request, 'There is no quiz available')
+            return redirect('quiz:quizzes')
+        return redirect('quiz:take-quiz', quiz_id=quiz.id)
+
+
 
 
 
@@ -391,13 +563,14 @@ def QuizCreate(request):
         if form.is_valid():
             title= form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
-            duration = form.cleaned_data.get('duration_in_minutes')
-            shuffleable = form.cleaned_data.get('shuffleable')
-            quiz = Quiz.objects.create(user=user, title=title, description=description, shuffleable=shuffleable, duration_in_minutes =duration)
+            shuffleQuestions = form.cleaned_data.get('shuffleQuestions')
+            age_from = form.cleaned_data.get('age_from')
+            age_to = form.cleaned_data.get('age_to')
+            quiz = Quiz.objects.create(user=user, title=title, description=description, shuffleQuestions=shuffleQuestions, age_from=age_from, age_to=age_to)
             profile.quizzes += 1
             profile.save()
             # return redirect('quiz:new-question', quiz_id=quiz.id)
-            return redirect('quiz:category-create', quiz_id=quiz.id)
+            return redirect('quiz:create-quiz-link', quiz_id=quiz.id)
     
     context= {
         'form': form,
@@ -406,6 +579,53 @@ def QuizCreate(request):
     return render(request, 'quiz/quizCreate.html', context)
 
 
+
+# use create view later
+class QuizLinkCreate(LoginRequiredMixin, View):
+
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = Quiz.objects.select_related('quizlink').get(id=quiz_id)
+        try:
+            if quiz.quizlink.link:
+                return redirect('quiz:category-create', quiz_id=quiz.id)
+        except:
+            pass
+        form = NewQuizLinkForm()
+        context = {
+            'form': form,
+            'quiz': quiz,
+        }
+        return render(request, 'quiz/quizzes_form.html', context)
+     
+
+    def post(self, request, quiz_id, *args, **kwargs):
+        try:
+            form = NewQuizLinkForm(self.request.POST)
+            if form.is_valid():
+                user = self.request.user
+                quiz = Quiz.objects.get(id=quiz_id)
+
+
+                if user != quiz.user:
+                    messages.error(self.request, 'You are not authorize to add a link')
+                    return redirect('quiz:quizzes')
+                try:
+                    if quiz.quizlink:
+                        messages.warning(self.request, 'You have already added a link to this quiz!')
+                        return redirect('quiz:category-create', quiz_id=quiz.id)
+                except:
+                    pass
+                name = self.request.POST.get('name')
+                link = self.request.POST.get('link')
+                description = self.request.POST.get('description')
+                quizLink = QuizLink.objects.create(quiz=quiz, name=name, link=link, description=description)
+                return redirect('quiz:category-create', quiz_id=quiz.id)
+        except:
+            # add IntegrityError 
+            messages.error(self.request, 'An error occurred!')
+            return redirect('quiz:category-create', quiz_id=quiz.id)
+
+        return HttpResponse('Creating Quiz Link!')
 
 
 
@@ -424,10 +644,29 @@ def QuizUpdate(request, quiz_id):
     if request.method == 'POST':
         form = NewQuizForm(request.POST, instance=quiz)
         if form.is_valid():
-            form.save()
+            quiz = form.save()
+            """
+            Add this part to the category create
+            """
+            for category in quiz.categories.all():
+                for question in quiz.fourChoicesQuestions.all():
+                    if category not in question.categories.all():
+                        question.categories.add(category)
+                for category in question.categories.all():
+                    if category not in quiz.categories.all():
+                        question.categories.remove(category)
+                for question in quiz.trueOrFalseQuestions.all():
+                    if category not in question.categories.all():
+                        question.categories.add(category)
+                for category in question.categories.all():
+                    if category not in quiz.categories.all():
+                        question.categories.remove(category)
 
 
-            return redirect('quiz:category-create', quiz_id=quiz.id)
+                question.categories.add(category)
+
+
+            return redirect('quiz:create-quiz-link', quiz_id=quiz.id)
     
     context= {
         'form': form,
@@ -444,18 +683,19 @@ def QuizUpdate(request, quiz_id):
 # create the quiz delete view
 @login_required(redirect_field_name='next', login_url='account_login')
 def DeleteQuiz(request, quiz_id):
-    user = request.user
-    profile = Profile.objects.get(user=user)
-    quiz = get_object_or_404(Quiz, id=quiz_id)
-    if request.method == 'POST':
-        profile.quizzes -= 1
-        profile.save()
-        quiz.delete()
+    try:
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        if request.method == 'POST':
+            profile.quizzes -= 1
+            profile.save()
+            quiz.delete()
 
-        return HttpResponse('deleted!')
-        return redirect('quiz:quizzes')
+            return HttpResponse('deleted!')
+    except:
+        return redirect('quiz:my-quizzes')
     
-    return render(request, 'quiz/quiz_delete.html', {'obj': quiz})
 
 
  
@@ -489,26 +729,32 @@ def FourChoicesQuestionCreate(request, quiz_id):
     if request.method == 'POST':
         form = NewFourChoicesQuestionForm(request.POST)
         if form.is_valid():
-            question_text= form.cleaned_data.get('question_text')
+            question= form.cleaned_data.get('question')
             answer1=form.cleaned_data.get('answer1')
             answer2=form.cleaned_data.get('answer2')
             answer3=form.cleaned_data.get('answer3')
             answer4=form.cleaned_data.get('answer4')
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
-            duration=form.cleaned_data.get('duration')
+            duration_in_seconds=form.cleaned_data.get('duration_in_seconds')
             solution=form.cleaned_data.get('solution')
+            shuffleAnswers = form.cleaned_data.get('shuffleAnswers')
 
-            question = FourChoicesQuestion.objects.create(user=user, question_text=question_text,
+            question = FourChoicesQuestion.objects.create(user=user, question=question,
             answer1=answer1, answer2=answer2, answer3=answer3, answer4=answer4,
-            correct=correct, points=points, duration=duration, solution=solution)
+            correct=correct, points=points, duration_in_seconds=duration_in_seconds, solution=solution, shuffleAnswers=shuffleAnswers)
 
             quiz.fourChoicesQuestions.add(question)
             quiz.lastQuestionIndex += 1
             quiz.questionLength += 1
             quiz.totalScore += question.points
+            quiz.duration += question.duration_in_seconds
             quiz.save()
             question.index = quiz.lastQuestionIndex
+            question.age_from = quiz.age_from
+            question.age_to = quiz.age_to
+            for category in quiz.categories.all():
+                question.categories.add(category)
             question.save()
 
             return redirect('quiz:new-question', quiz_id=quiz.id)
@@ -535,24 +781,29 @@ def TrueOrFalseQuestionCreate(request, quiz_id):
     if request.method == 'POST':
         form = NewTrueOrFalseQuestionForm(request.POST)
         if form.is_valid():
-            question_text= form.cleaned_data.get('question_text')
+            question= form.cleaned_data.get('question')
             answer1=form.cleaned_data.get('answer1')
             answer2=form.cleaned_data.get('answer2')
             correct=form.cleaned_data.get('correct')
             points=form.cleaned_data.get('points')
-            duration=form.cleaned_data.get('duration')
+            duration_in_seconds=form.cleaned_data.get('duration_in_seconds')
             solution=form.cleaned_data.get('solution')
 
 
-            question = TrueOrFalseQuestion.objects.create(user=user, question_text=question_text,
-            correct=correct, points=points, solution=solution, duration=duration)
+            question = TrueOrFalseQuestion.objects.create(user=user, question=question,
+            correct=correct, points=points, solution=solution, duration_in_seconds=duration_in_seconds)
 
             quiz.trueOrFalseQuestions.add(question)
             quiz.lastQuestionIndex += 1
             quiz.questionLength += 1
             quiz.totalScore += question.points
+            quiz.duration += question.duration_in_seconds
             quiz.save()
             question.index = quiz.lastQuestionIndex
+            question.age_from = quiz.age_from
+            question.age_to = quiz.age_to
+            for category in quiz.categories.all():
+                question.categories.add(category)
             question.save()
             return redirect('quiz:new-question', quiz_id=quiz.id)
     
@@ -581,8 +832,10 @@ def FourChoicesQuestionUpdate(request, quiz_id, question_id):
         form = NewFourChoicesQuestionForm(request.POST, instance=question)
         if form.is_valid():
             quiz.totalScore -= question.points
+            quiz.duration -= question.duration_in_seconds
             instance = form.save()
             quiz.totalScore += instance.points
+            quiz.duration += instance.duration_in_seconds
             quiz.save()
             return redirect('quiz:quiz-detail', quiz_id=quiz.id, ref_code=user.profile.code)
     
@@ -603,8 +856,10 @@ def TrueOrFalseQuestionUpdate(request, quiz_id, question_id):
         form = NewTrueOrFalseQuestionForm(request.POST, instance=question)
         if form.is_valid():
             quiz.totalScore -= question.points
+            quiz.duration -= question.duration_in_seconds
             instance = form.save()
             quiz.totalScore += instance.points
+            quiz.duration += instance.duration_in_seconds
             quiz.save()
             return redirect('quiz:quiz-detail', quiz_id=quiz.id, ref_code=user.profile.code)
     
@@ -732,6 +987,7 @@ def DeleteQuestion(request,quiz_id, question_form, question_id):
 
         quiz.questionLength -= 1
         quiz.totalScore -= question.points
+        quiz.duration -= question.duration_in_seconds
         quiz.save()
         question.delete()
         messages.success(request, "You've successfully delete a question!")
@@ -753,12 +1009,24 @@ Add all the documentation here
 """
 def TakeQuiz(request, quiz_id):
     user = request.user
+    quiz = Quiz.objects.prefetch_related('fourChoicesQuestions', 'trueOrFalseQuestions').get(id=quiz_id)
+    quiz = get_object_or_404(Quiz, id=quiz_id)
     profile = None
     number_of_registered_users = Profile.objects.all().count()
     if user.is_authenticated:
-        profile = Profile.objects.get(user=user)
+        profile = Profile.objects.prefetch_related('quizTaken').get(user=user)
+        
+        if quiz not in profile.quizTaken.all():
+            if profile.coins < 5:
+                messages.error(request, "You don't have enough coins to take a quiz")
+                return redirect('question:questions')
+            profile.coins -= 5
+            messages.info(request, '5 coins have been removed \n it will be restored when you submit the test!')
+            profile.save()
 
-    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+            
+
 
     preQuestions = []
     preQuestions += quiz.fourChoicesQuestions.all()
@@ -773,18 +1041,8 @@ def TakeQuiz(request, quiz_id):
     for question in questionsList:
         questions.append(question[1])
     
-    if quiz.shuffleable == True:
+    if quiz.shuffleQuestions:
         shuffle(questions)
-    if user.is_authenticated:
-        profile.coins -= 1
-        profile.save()
-
-    """
-    Create a logic to take care of accounts with less than 1 coins
-    Add reward of 1,2,2,2,2,3,3,3,4,4,5
-    """
-
-
     context = {
         'quiz': quiz,
         'questions': questions,
@@ -811,18 +1069,10 @@ The total score should be adjusted whenever the creator the quiz updates the poi
 
 def SubmitQuiz(request, quiz_id, *args, **kwargs):
     user = request.user
-    quiz = get_object_or_404(Quiz, id=quiz_id)
+    quiz = Quiz.objects.select_related('user').get(id=quiz_id)
     if not user.is_authenticated:
         code = str(kwargs.get('ref_code'))
-        print('This is the code', code)
-        try:
-            profile = get_object_or_404(Profile, code=code)
-            profile.coins += 20
-            profile.refercount += 1
-            profile.save()
-            print('This is the profile', profile)
-        except:
-            pass    
+        ReferralService(code)
 
     if request.method == 'GET':
         return redirect('quiz:take-quiz', quiz_id=quiz.id)
@@ -831,21 +1081,21 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
     postAd = randomChoice(postAd)
         
     if user.is_authenticated:
-        profile = get_object_or_404(Profile, user=user)
+        profile = Profile.objects.select_related('user').get(user=user)
     
     
     if request.method == 'POST':
         score = 0
         postAd = PostAd.objects.all()
         postAd = randomChoice(postAd)
-        if user.is_authenticated:
-            streak = Streak.objects.get(profile=profile)
+        # if user.is_authenticated:
+        #     streak = Streak.objects.get(profile=profile)
 
         points = request.POST.get('points')
         answers = request.POST.getlist('answer')
-        timeTaken = request.POST.get('timeTaken')
-        minutesTaken = int(timeTaken) // 60
-        secondsTaken = int(timeTaken) % 60
+        TimeTaken = request.POST.get('timeTaken')
+        minutesTaken = int(TimeTaken) // 60
+        secondsTaken = int(TimeTaken) % 60
 
         timeTaken = f"The quiz was finished in {minutesTaken} min, {secondsTaken} sec."
         questionsList = []
@@ -857,25 +1107,66 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
                 question = FourChoicesQuestion.objects.get(id=combination[1])
                 pos = combination[2]
                 answer = question.getAnswer(pos)
+
+
+
+                question.attempts += 1
+                
+                if pos == 'answer1':
+                    question.answer1NumberOfTimesTaken += 1
+                elif pos == 'answer2':
+                    question.answer2NumberOfTimesTaken += 1
+                elif pos == 'answer3':
+                    question.answer3NumberOfTimesTaken += 1
+                elif pos == 'answer4':
+                    question.answer4NumberOfTimesTaken += 1
+
+
+                question.save()
+
+
                 questionsList.append((question, answer))
                 if question.correct == combination[2]:
                     score += question.points
                     if user.is_authenticated:
                         if quiz.user != profile.user:
-                            streak.validateStreak()
-                            streak.save()
+                            # streak.validateStreak()
+                            # streak.save()
+                            """
+                            This is a celery task
+                            """
+                            StreakValidator.delay(profile)
 
-                    
+
+
             elif combination[0] == 'trueOrFalseQuestion':
                 question = TrueOrFalseQuestion.objects.get(id=combination[1])
-                answer = question.getAnswer(combination[2])
+                pos = combination[2]
+                answer = question.getAnswer(pos)
+
+
+                
+                question.attempts += 1
+                
+                if pos == 'answer1':
+                    question.answer1NumberOfTimesTaken += 1
+                elif pos == 'answer2':
+                    question.answer2NumberOfTimesTaken += 1
+
+                question.save()
+
                 questionsList.append((question, answer))
                 if question.correct == answer:
                     score += question.points
                     if user.is_authenticated:
                         if quiz.user != profile.user:
-                            streak.validateStreak()
-                            streak.save()
+                            # streak.validateStreak()
+                            # streak.save()
+                            """
+                            This is a celery task
+                            """
+                            StreakValidator.delay(profile)
+
 
 
 
@@ -885,32 +1176,56 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
             try:
                 quiz.attempts += 1
                 user_avg_score = (user_score/total_score) * 100
-                if user_avg_score >= 50:
-                    if quiz.user != profile.user:
+
+
+                if quiz.user != profile.user:
+                    if user_avg_score >= 50:
                         creator = Profile.objects.get(user=quiz.user)
                         for category in quiz.categories.all():
                             if category not in profile.categories.all():
-                                if profile.categories.all().count() > 99:
+                                if profile.categories.all().count() > 29:
                                     removed = profile.categories.first()
                                     profile.categories.remove(removed)
                                 profile.categories.add(category)
 
-                    
-                        value = round(user_avg_score * quiz.questionLength,0)
+                    if quiz not in profile.quizTaken.all():
+                        value = round(((decimal.Decimal(user_avg_score)/100 + 1)**3) *(1 - (quiz.average_score/100)) * decimal.Decimal(user_score),0) + 5
                         profile.coins += value
                         profile.save()
+
+                        """
+                        This is a celery tasks
+                        don't remove the previous task ooo because it is different from this celery task
+                        """
+                        CoinsTransaction.delay(user, value -5)
+
                         creator.coins += 1
                         creator.save()
+                        CreatorCoins.delay(creator.user, 1)
+                        messages.success(request, f"You've won {value} coins!")
+                    else:
+                        value = 5
+                        profile.coins += value 
+                        profile.save()
                         messages.success(request, f"You've won {value} coins!")
 
-                quiz.gross_average_score += user_avg_score
-                quiz.average_score = quiz.gross_average_score / quiz.attempts 
+                        """
+                        This is a celery tasks
+                        don't remove the previous task ooo because it is different from this celery task
+                        """
+                        CoinsTransaction.delay(user, value -5)
+
+
+
+                quiz.average_score = round(((quiz.average_score *(quiz.attempts - 1) + decimal.Decimal(user_avg_score)) / quiz.attempts), 1)
                 quiz.save()
                 if quiz not in profile.quizTaken.all():
-                    if profile.quizTaken.all().count() > 99:
+                    if profile.quizTaken.all().count() > 999:
                         removed = profile.quizTaken.first()
                         profile.quizTaken.remove(removed)
                     profile.quizTaken.add(quiz)
+                    Attempter.objects.create(user=user, quiz=quiz, score=user_score, percentage=user_avg_score, timeTaken=TimeTaken)
+
                 profile.quizAttempts += 1
                 profile.quizAvgScore = decimal.Decimal(round(((profile.quizAvgScore * (profile.quizAttempts - 1) + decimal.Decimal(user_avg_score)) / profile.quizAttempts), 1))
 
@@ -933,6 +1248,8 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
         avgScore = round(quiz.average_score, 2)
         
         attempt_report = f"You answered {len(answers)} out of {quiz.questionLength} questions"
+
+    
         context = {
             'quiz': quiz,
             'user_score': user_score,
@@ -945,7 +1262,18 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
             'timeTaken' : timeTaken,
         }
 
+        try:
+            if quiz.quizlink.name and quiz.quizlink.link and quiz.quizlink.description and not quiz.quizlink.ban:
 
+                context['quizLink'] = quiz.quizlink
+        except:
+            pass
+
+        try:
+            attempters = quiz.attempter_set.select_related('user').all()[:10]
+            context['attempters'] = attempters
+        except:
+            pass
 
     return render(request, 'quiz/submitQuiz.html', context)
 
@@ -956,7 +1284,7 @@ def SubmitQuiz(request, quiz_id, *args, **kwargs):
 
 
 
-
+@login_required(redirect_field_name='next', login_url='account_login')
 def SolutionQuality(request, quiz_id):
     user = request.user
     if user.is_authenticated:
@@ -982,6 +1310,32 @@ def SolutionQuality(request, quiz_id):
 
 
 
+class QuizLinkClickCounter(View):
+    def get(self, request, quizlink_id):
+        quizLink = QuizLink.objects.get(id=quizlink_id)
+
+        quizLink.clicks += 1
+        quizLink.save()
+        return HttpResponse('Quiz Link Clicked!')
 
 
 
+class ReportLink(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        quizLink_id = self.request.POST.get('quizlink_id')
+        user = self.request.POST.get('user')
+        print(quizLink_id, user)
+        quizLink = QuizLink.objects.get(id=quizLink_id)
+        print(quizLink)
+        quizLink.reportCount += 1
+        quizLink.reporters.add(user)
+
+        if not quizLink.ban:        
+            print(quizLink.ban)
+            if quizLink.reportCount >= 10:
+                print(quizLink.reportCount)
+                quizLink.ban = True
+
+        quizLink.save()
+
+        return HttpResponse('The link has been reported!')

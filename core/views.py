@@ -14,11 +14,20 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count, Q
+from django.utils import timezone
+from datetime import datetime, date, time, timedelta
 
-from .models import Profile, Follower, Link
-from .forms import ProfileCreationForm, LoginForm, NewLinkForm
+from .models import Profile, Follower, Link, Interest
+from .forms import ProfileCreationForm, LoginForm, NewLinkForm, NewInterestReportForm
 from quiz.models import Quiz
-from question.models import QTrueOrFalseQuestion, QFourChoicesQuestion
+from question.models import TrueOrFalseQuestion, FourChoicesQuestion
+
+
+
+
+# services
+
+from .services import ReferralService
 # # Create your views here.
 # messages.error, warning, success, info, debug
  
@@ -47,17 +56,7 @@ def main_view(request, *args, **kwargs):
     user = request.user
     if not user.is_authenticated:
         code = str(kwargs.get('ref_code'))
-        print('This is the code', code)
-        try:
-            profile = get_object_or_404(Profile, code=code)
-            profile.coins += 20
-            profile.refercount += 1
-            profile.save()
-            request.session['ref_profile'] = profile.id 
-
-            print('This is the profile', profile)
-        except:
-            pass
+        ReferralService(code)
     return redirect('question:answer-question')
 
 
@@ -155,6 +154,8 @@ def ProfilePage(request):
     followingsCount = follower.following.all().count()
     link = Link.objects.get(profile=profile)
 
+    form = NewInterestReportForm()
+
     context={
         'profile': profile,
         'follower' : follower,
@@ -162,6 +163,7 @@ def ProfilePage(request):
         'nav': 'profile',
         'followersCount': followersCount,
         'followingsCount': followingsCount,
+        'form' : form,
     }
 
     return render(request, 'core/profile.html', context)
@@ -272,11 +274,15 @@ def EditLink(request):
     print(profile)
     link = Link.objects.get(profile=profile)
     print(link)
+    
     form = NewLinkForm(instance=link)
     if request.method == 'POST':
         form = NewLinkForm(request.POST, instance=link)
         if form.is_valid():
-            form.save()
+            link.name = form.cleaned_data.get('name')
+            link.link = form.cleaned_data.get('link')
+            link.description = form.cleaned_data.get('description')
+            link.save()
             return redirect('profile')
 
     context={
@@ -290,6 +296,7 @@ def EditLink(request):
 
 
 def LinkClick(request, link_id):
+
     # link_id = request.GET.get('link_id')
 
     link = Link.objects.get(id=link_id)
@@ -299,3 +306,25 @@ def LinkClick(request, link_id):
     print(link.clicks)
 
     return HttpResponse('clicked')
+
+
+
+
+
+
+def InterestReport(request):
+
+    user = request.user
+    print(user)
+    if request.method == 'POST':
+        print('The interest is received!')
+        form = NewInterestReportForm(request.POST)
+        if form.is_valid():
+            interest = form.cleaned_data.get('interest')
+
+            Interest.objects.create(user=user, interest=interest)
+        return HttpResponse('report submitted!')
+
+
+
+

@@ -103,11 +103,7 @@ input[type="submit"]{
 <div>Number Of Registered Users : {{number_of_registered_users}}</div>
         <div class="minuteBx">
             <div>
-                {% if quiz.duration_in_minutes < 2 %}
-                    {{quiz.duration_in_minutes}} minute
-                {% else %}
-                    {quiz.duration_in_minutes}} minutes
-                {% endif %}
+                {{quiz.get_quiz_duration}}
             </div> 
         </div>
 </div>
@@ -129,7 +125,7 @@ input[type="submit"]{
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        Q. {{question.question_text}} <br>
+                        Q. {{question.question}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -176,7 +172,7 @@ input[type="submit"]{
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        Q. {{question.question_text}} <br>
+                        Q. {{question.question}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point

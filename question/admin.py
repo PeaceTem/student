@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import QTrueOrFalseQuestion, QFourChoicesQuestion
+from .models import TrueOrFalseQuestion, FourChoicesQuestion
 # Register your models here.
 
 
-admin.site.register(QTrueOrFalseQuestion)
-admin.site.register(QFourChoicesQuestion)
+admin.site.register(TrueOrFalseQuestion)
+admin.site.register(FourChoicesQuestion)

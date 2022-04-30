@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Profile, Link
+from .models import Profile, Link, Interest
 
 
 
@@ -16,11 +16,20 @@ class ProfileCreationForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = ['user', 'date_updated', 'coins', 'link', 'streak', 'code', 'referrer', 'views', 'picture', 'refercount', 'slug', 'relevance', 'categories', 'quizTaken', 'trueOrFalseQuestionsMissed', 'fourChoicesQuestionsMissed', 'trueOrFalseQuestionsTaken', 'fourChoicesQuestionsTaken', 'quizAvgScore', 'questionAvgScore', 'quizAttempts', 'questionAttempts', 'likes', 'quizzes',]
+        exclude = ['user', 'date_updated', 'coins', 'link', 'streak', 'code', 'referrer', 'views', 'picture', 'refercount', 'slug', 'relevance', 'categories', 'quizTaken', 'trueOrFalseQuestionsMissed', 'fourChoicesQuestionsMissed', 'trueOrFalseQuestionsTaken', 'fourChoicesQuestionsTaken', 'quizAvgScore', 'questionAvgScore', 'quizAttempts', 'questionAttempts', 'likes', 'quizzes', 'favoriteQuizzes']
 
 
 class NewLinkForm(forms.ModelForm):
     class Meta:
         model = Link
         fields = '__all__'
-        exclude = ('profile', 'clicks')
+        exclude = ('profile', 'clicks', 'date_updated')
+
+
+
+
+
+class NewInterestReportForm(forms.ModelForm):
+    class Meta:
+        model = Interest
+        fields = ['interest']

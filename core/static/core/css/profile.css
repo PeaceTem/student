@@ -26,7 +26,7 @@ a div{
     position: relative;
     margin:auto;
     width: 500px;
-    max-width: 100%;
+    max-width: 95%;
     margin-top: 20px;
 }
 
@@ -37,6 +37,7 @@ a div{
     border-radius: 4px;
     min-height: 50px;
     padding-top: 10px;
+    box-shadow: 0 1px 4px #666;
 }
 
 img{
@@ -113,17 +114,21 @@ img{
 }
 .urlLink >*{
     margin: 20px 0;
+    max-width: 400px;
+    margin: auto;
 }
+
+
 a.profile-link{
     text-decoration: none;
-    background: #751515;
+    background: #fff;
     font-size: 15px;
-    /* font-weight: 900; */
     font-family: sans-serif;
     cursor: pointer;
-    color: white;
+    color: #333;
     padding: 7px 7px;
     border-radius: 4px;
+    border: 1px solid #777;
 }
 
 .urlLink div .change{
@@ -143,71 +148,27 @@ button{
     padding: 5px 5px;
     border-radius: 4px;
 }
-/* 
-
-.otherInfo{
-    display: block;
-    text-align: center;
-    margin: auto;
-    color: #333;
 
 
-}
 
-
-.userInfo{  
-    background : #eee;
-    border-radius : 10px;
-    display : block;
-    margin: auto;
-    margin-top: 10px;
-    width : 500px;
-    max-width : 95vw;
-}
-
-.userInfo .heading, .userInfo .content{
-    display : flex;
-    flex-grow: space-between;
-    justify-content : center;
-    align-items : center;
-    color: #333;
-    padding: 10px 2px;
-}
-
-.userInfo .heading{
-    border-bottom : 1px solid #333;
-    display: block;
-    width: 100%;
+a.profile-link, .edit.link{
+    background: rgba(241, 25, 25, .05);
+    border: .5px solid #f11919;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
 }
 
-
-.menu-icon{
-    position: sticky;
-    top: 0px;
-    right: 0px;
-    background: #fff;
-    display: block;
-    width: 100%;
-    padding: 4px;
-    text-align: right;
-
-    color: #333;
-
-
+.link-container:hover a{
+    color: #555;
+}
+a.profile{
+    color: #555;
+    font-size: normal;
+    font-family: sans-serif;
 }
 
 
-.link.edit{
-    padding: 4px 10px;
-    background: #f00;
-    margin: 10px;
-    border-radius: 10px;
-    text-align: center;
-    letter-spacing: 3px;
-}
-
-.link.edit a{
-    color: #fff;
-} */
 

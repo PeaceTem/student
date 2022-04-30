@@ -30,9 +30,9 @@ Streak
 
         <div class="element">
             <div class="line">
-        <a href="{% url 'profile:profile' leader.profile.user.username  %}">
+        <a href="{% url 'profile:profile' leader.profile  %}">
 
-                    <div class="name">@{{leader.profile.user.username}}</div>
+                    <div class="name">@{{leader.profile}}</div>
                     <div class="length">{{leader.length}}</div>
                     <div class="active">
                         {% if leader.active %}

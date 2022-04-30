@@ -36,9 +36,29 @@ a div{
     border-radius: 4px;
     min-height: 50px;
     padding-top: 10px;
+    box-shadow: 0 1px 4px #666;
+
 }
 
 img{
     width: 100%;
     max-width:500px;
+}
+
+.link-container{
+    border: 1px solid #777;
+    background: #fff;
+    color: #333;
+    margin: auto;
+    width: 150px;
+    border-radius: 4px;    
+}
+
+
+.link-container:hover{
+    background: #751515;
+}
+
+.link-container:hover a{
+    color: #fff;
 }

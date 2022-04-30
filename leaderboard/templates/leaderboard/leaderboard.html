@@ -14,6 +14,7 @@ Leaderboard
 {% include 'messages.html' %}
 
 <div class="container">
+    <p id="info">Each leaderboard will be reset every 24 hours +0 GMT</p>
     <input type="hidden" id="navActive" name="nav" value="{{nav}}">
 
     <div>
@@ -22,6 +23,14 @@ Leaderboard
         </a>
     </div>
     
+    <div>
+        <a class="leaderboard" href="{% url 'leaderboard:creator' %}">
+            Creator
+        </a>
+    </div>
+    
+
+
     <div>
         <a class="leaderboard" href="{% url 'leaderboard:streak' %}">
             Streak

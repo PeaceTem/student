@@ -47,7 +47,7 @@ Quiz Generator Submit
 
 
             <div>
-                    {{question.question_text}} <br>
+                    {{question.question}} <br>
                     <div class="points">
                         {% if question.points < 2 %}
                         {{question.points}} point
@@ -55,44 +55,141 @@ Quiz Generator Submit
                         {{question.points}} points
                     {% endif %}
                     </div>
-                    <ol style="list-style:upper-alpha;">
-                        <li>
+                    <ol class="answers">
+                        {% if question.correct == 'answer1' %}
+                        <li class="answerGreen">
                             <div class="answer">
                                 {{question.answer1}}
                             </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
                         </li>
-                       
-                        <li>
+                        {% elif answer == question.answer1 %}
+                        
+                        <li class="answerRed">
                             <div class="answer">
-                                {{question.answer2}}
-            
+                                {{question.answer1}}
                             </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
                         </li>
-                     
-                        <li>
+
+                        {% else %}
+
+                        <li class="answerWhite">
+                            <div class="answer">
+                                {{question.answer1}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
+                        </li>
+
+                        {% endif %}
+
+
+
+
+
+
+                        {% if question.correct == 'answer2' %}
+                        <li class="answerGreen">
+                            <div class="answer">
+                                {{question.answer2}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
+                        </li>
+                        {% elif answer == question.answer2 %}
+                        
+                        <li class="answerRed">
+                            <div class="answer">
+                                {{question.answer2}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
+                        </li>
+
+                        {% else %}
+
+                        <li class="answerWhite">
+                            <div class="answer">
+                                {{question.answer2}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
+                        </li>
+
+                        {% endif %}
+
+
+
+
+
+
+                        {% if question.correct == 'answer3' %}
+                        <li class="answerGreen">
                             <div class="answer">
                                 {{question.answer3}}
-               
                             </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer3}}</div>
                         </li>
-   
-                        <li>
+                        {% elif answer == question.answer3 %}
+                        
+                        <li class="answerRed">
+                            <div class="answer">
+                                {{question.answer3}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer3}}</div>
+                        </li>
+
+                        {% else %}
+
+                        <li class="answerWhite">
+                            <div class="answer">
+                                {{question.answer3}} 
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer3}}</div>
+                        </li>
+
+                        {% endif %}
+
+
+
+
+
+
+                        {% if question.correct == 'answer4' %}
+                        <li class="answerGreen">
                             <div class="answer">
                                 {{question.answer4}}
-             
                             </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer4}}</div>
                         </li>
-                        <div>
+                        {% elif answer == question.answer4 %}
+                        
+                        <li class="answerRed">
+                            <div class="answer">
+                                {{question.answer4}}
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer4}}</div>
+                        </li>
+
+                        {% else %}
+
+                        <li class="answerWhite">
+                            <div class="answer">
+                                {{question.answer4}}
+                            </div>
+                            <div class="percentage">{{question.get_percentage_chosen_of_answer4}}</div>
+                        </li>
+
+                        {% endif %}
+
+                        <div tyle="display: none;">
                             Your Answer:
-                            <span class="yourAnswer">
+                            <span tyle="display: none;" class="yourAnswer">
                                 {{answer}}
                             </span>
                         </div>
                        
                         
-                        <div class="correct-answer">
+                        <div tyle="display: none;" class="correct-answer">
                             Correct Answer:
-                            <span class="correctAnswer">
+                        <span tyle="display: none;" class="correctAnswer">
 
                         {% if question.correct == 'answer1' %}
                             {{question.answer1}}
@@ -103,7 +200,7 @@ Quiz Generator Submit
                         {% elif question.correct == 'answer4' %}
                             {{question.answer4}}
                         {% endif %}
-                    </span>
+                        </span>
 
                         </div>
                         
@@ -120,7 +217,7 @@ Quiz Generator Submit
 
 
                 <div>
-                        {{question.question_text}} <br>
+                        {{question.question}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -128,26 +225,74 @@ Quiz Generator Submit
                             {{question.points}} points
                         {% endif %}
                         </div>
-                        <ol style="list-style:upper-alpha;">
-                            <li>
+                        <ol class="answers">
+                            {% if question.correct == 'True' %}
+                            <li class="answerGreen">
+                                <div class="answer">
+                                    {{question.answer1}} 
+                                </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
+                            </li>
+                            {% elif answer == question.answer1 %}
+                            
+                            <li class="answerRed">
                                 <div class="answer">
                                     {{question.answer1}}
                                 </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
                             </li>
-                           
-                            <li>
+    
+                            {% else %}
+    
+                            <li class="answerWhite">
+                                <div class="answer">
+                                    {{question.answer1}}
+                                </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer1}}</div>
+                            </li>
+    
+                            {% endif %}
+    
+    
+    
+    
+    
+    
+                            {% if question.correct == 'False' %}
+                            <li class="answerGreen">
+                                <div class="answer">
+                                    {{question.answer2}} 
+                                </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
+                            </li>
+                            {% elif answer == question.answer2 %}
+                            
+                            <li class="answerRed">
                                 <div class="answer">
                                     {{question.answer2}}
-                                    </div>
+                                </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
                             </li>
-                            <div>
+    
+                            {% else %}
+    
+                            <li class="answerWhite">
+                                <div class="answer">
+                                    {{question.answer2}} 
+                                </div>
+                                <div class="percentage">{{question.get_percentage_chosen_of_answer2}}</div>
+                            </li>
+    
+                            {% endif %}
+    
+                            <div tyle="display: none;">
                                 Your Answer:
                                 <span class="yourAnswer">
                                 {{answer}}
                             </span>
                             </div>
                            
-                            <div class="correct-answer">
+                            <div tyle="display: none;" class="correct-answer">
                                 Correct Answer:
                                 <span class="correctAnswer">
                                 {% if question.correct == 'True' %}
@@ -253,7 +398,6 @@ Quiz Generator Submit
     const yourAnswer = document.getElementsByClassName('yourAnswer')
     const correctAnswer = document.getElementsByClassName('correctAnswer')
     const indicators = document.getElementsByClassName('indicator')
-console.log('Starting!')
     for(let i = 0; i < yourAnswer.length; i++){
         console.log(yourAnswer[i].innerText)
         console.log(correctAnswer[i].innerText)

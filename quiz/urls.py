@@ -14,13 +14,28 @@ urlpatterns = [
     path('following-quizzes/', views.FollowerQuizList, name='following-quizzes'),
     path('my-quizzes/', views.MyQuizList, name='my-quizzes'),
     path('quizzes-taken/', views.QuizTakenList, name='quizTaken'),
+    path('favorites/', views.FavoriteQuizList, name='favorites'),
+
 
     path('detail/<str:quiz_id>/<str:ref_code>', views.QuizDetail, name='quiz-detail'),
     path('create-quiz/', views.QuizCreate, name='quiz-create'),
     path('create/', views.CreateObject, name='object-create'),
     path('edit-quiz/<str:quiz_id>/', views.QuizUpdate, name='quiz-update'),
-    path('delete-quiz/<quiz_id>', views.DeleteQuiz, name='delete-quiz'),
+    path('delete-quiz/<quiz_id>/', views.DeleteQuiz, name='delete-quiz'),
     path('delete-question/<str:quiz_id>/<str:question_form>/<str:question_id>/', views.DeleteQuestion, name='delete-question'),
+
+    # quiz link
+    path('link/report/', views.ReportLink.as_view(), name='report-link'),
+    path('link/<str:quiz_id>/', views.QuizLinkCreate.as_view(), name='create-quiz-link'),
+    path('link/<str:quizlink_id>/click/', views.QuizLinkClickCounter.as_view(), name='quiz-link-click-counter'),
+
+    # random quiz picker
+    path('random/', views.RandomQuizPicker.as_view(), name='random-quiz-picker'),
+
+    # category
+    path('category/<str:category>/', views.CategoryQuizList, name='category-quiz'),
+
+
 
     #like post
     path('like/', views.PostLike, name ='post-like'),
@@ -46,5 +61,5 @@ urlpatterns = [
     #pdf generation
     path('<str:quiz_id>/pdf/', views.GeneratePDF.as_view(), name='quiz-pdf'),
 ]
-# from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
-#  FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)
+# # from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
+# #  FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)

@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block quizTitle %}
-Old Town Road Correction
+Take Quiz
 {% endblock quizTitle %}
 
 {% block content %}
@@ -20,17 +20,14 @@ Old Town Road Correction
 
 {% include 'messages.html'%}
     <div class="minuteBx">
-        <div id="minute">{{quiz.duration_in_minutes}}</div>
+        <div style="display:none;" id="minute">{{quiz.duration}}</div>
         <div>
-            {% if quiz.duration_in_minutes < 2 %}
-                 minute
-            {% else %}
-                minutes
-            {% endif %}
+            {{quiz.get_quiz_duration}}
         </div> 
     </div>
     <div id="countdownbox"></div>
 </div>
+
 
 <div class="question-card-container">
     {% if request.user.is_authenticated %}
@@ -47,7 +44,7 @@ Old Town Road Correction
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        {{question.question_text|escape}} <br>
+                        {{question.question|escape}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -56,33 +53,37 @@ Old Town Road Correction
                         {% endif %}
                         </div>
                 </div>
-                    
+                <!-- Add the logic for if question.shuffleAnswers -->
+                {% for answer in question.shuffle_answers %}
+                {% if answer == 1 %}
                     <div class="answer">
                         <input class="option{{question.index}}"  onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer1" value="{{question.form}}|{{question.id}}|answer1">
                         <label for="id_answer1">{{question.answer1}}</label>
                     </div>
-                    
+                {% elif answer == 2 %}
                     <div class="answer">
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer2" value="{{question.form}}|{{question.id}}|answer2">
                         <label for="id_answer2">{{question.answer2}}</label>
                     </div>
-
+                {% elif answer == 3 %}
                     <div class="answer">
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer3" value="{{question.form}}|{{question.id}}|answer3">
                         <label for="id_answer3">{{question.answer3}}</label>
                     </div>
-
+                {% elif answer == 4 %}
                     <div class="answer">
                         <input class="option{{question.index}}" onclick="validateAnswer(this.className, this.id)" type="checkbox" name="answer" id="id_{{question.index}}_answer4" value="{{question.form}}|{{question.id}}|answer4">
                         <label for="id_answer4">{{question.answer4}}</label>
                     </div>
+                {% endif %}
+                {% endfor %}
             </li>
             {% elif question.form == 'trueOrFalseQuestion' %}
             <li class="question">
                 <input type="hidden" name="points" value="{{question.points}}">
                 <div class="questionBx">
                     <div>
-                        {{question.question_text|escape}} <br>
+                        {{question.question|escape}} <br>
                         <div class="points">
                             {% if question.points < 2 %}
                             {{question.points}} point
@@ -103,6 +104,7 @@ Old Town Road Correction
                     </div>
             </li>            
             {% endif %}
+            </div>
         {% endfor %}
     </ol>
     <input id ='timeTaken' type="hidden" name="timeTaken">
@@ -128,25 +130,35 @@ Old Town Road Correction
     const minutes = document.getElementById('minute').textContent;
 
     const countdownbox = document.getElementById('countdownbox');
-    let seconds = minutes * 60;
-    const duration = minutes * 60;
+    let seconds = minutes ;
+    const duration = minutes;
     const quiz = document.getElementById('quizForm');
     let timeTaken = document.getElementById('timeTaken');
     timeTaken.value = seconds;
-    setInterval(()=>{
+    const myInterval = setInterval(()=>{
         seconds -= 1;
         let minutesLeft = Math.floor(seconds/60);
         let secondsLeft = seconds%60;
 
         countdownbox.innerHTML = `<b>${minutesLeft}min:${secondsLeft}sec left</b>`;
         timeTaken.value = parseInt(duration - seconds);
-        if (seconds <= 0){
+        if (seconds == 0){
             print(seconds);
             const finished =  document.getElementById('submitButton');
             finished.click();
 
         }
+
+
+        if(seconds <= -1){
+            myStopFunction();
+        }
     }, 1000)
+
+
+function myStopFunction(){
+    clearInterval(myInterval);
+}
 
 </script>
 

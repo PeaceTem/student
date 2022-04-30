@@ -49,26 +49,37 @@ INSTALLED_APPS = [
     # add twitter and linkedIn
     'django_social_share',
     # the main site apps
-    # 'analysis.apps.AnalysisConfig',
     'quiz.apps.QuizConfig',
-    'todo.apps.TodoConfig',
-    'diary.apps.DiaryConfig',
     'core.apps.CoreConfig',
-    'draft.apps.DraftConfig',
     'leaderboard.apps.LeaderboardConfig',
     'personalProfile.apps.PersonalprofileConfig',
-    'likes.apps.LikesConfig',
-    'comment.apps.CommentConfig',
     'question.apps.QuestionConfig',
     'ads.apps.AdsConfig',
-    # 'referral.apps.ReferralConfig',
+    'category.apps.CategoryConfig',
+    'diary.apps.DiaryConfig',
+    'todo.apps.TodoConfig',
+    'comment.apps.CommentConfig',
     # third party apps
     'crispy_forms',
 
 
     #progressive web app
     'pwa',
+     "debug_toolbar",
 ]
+
+
+
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
+
+
+
 
 # PROGRESSIVE WEB APP
 PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static/js' / 'serviceworker.js'
@@ -120,6 +131,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 # root url
@@ -213,15 +227,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # login credentials
-LOGIN_REDIRECT_URL = 'question:answer-question'
+LOGIN_REDIRECT_URL = 'profile'
 LOGIN_URL = 'account_login'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 """
 Change this settings later
 """
-ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = False # change this to true
 
-SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_QUERY_EMAIL = False # change this to true
 
 ACCOUNT_SESSION_REMEMBER = True
 
@@ -236,13 +250,13 @@ django_heroku.settings(locals())
 
 #SMTP Configuration
 
-EMAIL_BACKEND = config('EMAIL_BACKEND')
-EMAIL_HOST = config('EMAIL_HOST') 
-EMAIL_PORT = config('EMAIL_PORT')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'olumidejonathan10@gmail.com'
+EMAIL_HOST_PASSWORD = 'triumphant'
 
 # SOCIAL AUTHENTICATION_BACKENDS
 
@@ -291,3 +305,33 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
+# validating the views before any transaction
+
+
+
+# setting the session expiry date
+
+# SESSION_COOKIE_AGE = 60 * 60 # 60 minutes
+
+
+# celery
+
+CELERY_BEAT_SCHEDULE = {
+    "scheduled_tasks" :{
+        'task' : 'core.tasks.add',
+        'schedule' : 10.0,
+        'args' : (10,10),
+    },
+    "dailyStreakUpdate" : {
+        'task' : 'core.tasks.DailyStreakUpdate',
+        'schedule' : 10.0, #crontab(minute=0, hour=0),   declare crontab later
+    }
+}
+
+
+
+
+
+# celery tasks
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"

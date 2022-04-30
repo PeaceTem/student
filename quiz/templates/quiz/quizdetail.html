@@ -27,11 +27,15 @@ Quiz Detail
         <div class="categories">
                 Categories:
                 {% for category in quiz.categories.all %}
-                    <span class="category">{{category.title}}</span>
+                    <span class="category">
+                        <a href="{% url 'quiz:category-quiz' category.title %}">
+                            {{category.title}}
+                        </a>
+                    </span>
                 {% endfor %}
         </div>
         <div >Title: {{quiz.title|capfirst}}</div>
-        <div >{{quiz.description | safe}}</div> 
+        <div id="description">{{quiz.description | safe}}</div> 
         <div >created by {{quiz.user|capfirst}}</div>
         <div >It was created on {{quiz.date|date:"Y-M-d"}} {{quiz.date|time:"H:i"}}</div> 
         <div > Attempts: {{quiz.attempts}}
@@ -44,7 +48,7 @@ Quiz Detail
                     {{quiz.average_score}}%
         </div>
         <div class="duration">
-                    {{quiz.duration_in_minutes}} min
+                    {{quiz.get_quiz_duration}}
         </div>
         <div>
             <form data-quiz="{{quiz.id}}" data-url="{% url 'quiz:post-like' %}" data-id="likeForm{{quiz.id}}" id="likeForm{{quiz.id}}" method="post" class="likeForm">
@@ -83,9 +87,12 @@ Quiz Detail
             <!-- <a id="deleteQuiz" href="{% url 'quiz:delete-quiz' quiz.id %}"><p>× Delete Quiz</p></a> -->
         </div>
         <div>
-            <a href="{% url 'quiz:new-question' quiz.id %}"><p>+ Add More Questions</p></a>
+            <a href="{% url 'quiz:new-question' quiz.id %}">+ Add More Questions</a>
         </div>
         {% endif %}
+        <div>
+            <a href="{% url 'quiz:random-quiz-picker' %}">Take Another Quiz</a>
+        </div>
 <div class="copy-link-container">
     <div class="label">
         Copy link
@@ -109,7 +116,7 @@ Quiz Detail
 </div>
 
 <div>
-    <a href="{% url 'quiz:quizzes' %}">Go back to home page</a>
+    <a href="{% url 'quiz:quizzes' %}">Go back to the home page</a>
 </div>
 
 
@@ -121,46 +128,94 @@ Quiz Detail
     {{postAd.description}}
 </div>
 
+
+
+
+
+
+
 <div>
     <a class="postAd" onclick="clickFunction()" data-url="{% url 'ads:post-click' postAd.id %}" href="{{postAd.link}}" target="_blank">Visit Site</a>
 </div>
-{% if quiz.user == user %}
+
+
+
+
+
+{% if quizLink %}
 <div>
-    {% for question in quiz.fourChoicesQuestions.all %}
+    <span>Link below: </span>
+        <div class="link-container">
+        <a onclick="QuizLinkClickFunction()" data-url="{% url 'quiz:quiz-link-click-counter' quizLink.id %}" class="profile-link" href="{{quizLink.link}}" target="_blank" rel="noopener noreferrer">{{quizLink.name}}</a>
+        </div>
+        <div style="font-size: 12px; color: #777;">
+            {{quizLink.description}} <br>
+            clicks: {{quizLink.clicks}} <br>
+            {% if quizLInk.ban %}
+                This link has been banned!
+            {% endif %}
+        </div>
+        
+</div>
+{% endif %}
+{% if attempters %}
+<div>
+    <ol class="answers">
+        <p>Highest Scores</p>
+    {% for attempter in attempters %}
+    <li>
+        <span>@{{attempter.user}}</span>
+        <span>{{attempter.score}}</span>
+        <span>{{attempter.get_percentage}}</span>
+        <div style="font-size: 11px; color: #999; font-style: italic; ">
+            {{attempter.get_timeTaken}}
+        </div>
+    </li>
+    {% endfor %}
+    </ol>
+</div>
+
+{% endif %}
+
+<div>
+    <div style="text-align: center;">Questions</div>
+    {% for index, question in questions %}
+    {% if question.form == 'fourChoicesQuestion' %}
+
     <div class="questions">
 
         <div class="quizItem">
-            {{question.question_text|truncatechars:20}}
+            {{question.question|truncatechars:80}}
         </div>
-
+        {% if quiz.user == user %}
         <div class="private-links">
             <a class="deleteButton" data-url="{% url 'quiz:delete-question' quiz.id 'fourChoices' question.id %}"  href="{% url 'quiz:delete-question' quiz.id 'fourChoices' question.id %}">Delete</a>
-            <a class="" data-url="{% url 'quiz:edit-fourChoicesQuestion' quiz.id question.id %}" href="{% url 'quiz:edit-fourChoiceQuestion' quiz.id question.id %}">Edit</a>
+            <a class="" data-url="{% url 'quiz:edit-fourChoicesQuestion' quiz.id question.id %}" href="{% url 'quiz:edit-fourChoicesQuestion' quiz.id question.id %}">Edit</a>
         </div>
+        {% endif %}
     </div>
-
-        {% endfor %}
-    {% for question in quiz.trueOrFalseQuestions.all %}
+    {% elif question.form == 'trueOrFalseQuestion' %}
     <div class="questions">
         <div class="quizItem">
-            {{question.question_text|truncatechars:20}}
+            {{question.question|truncatechars:80}}
         </div>
-
+        {% if quiz.user == user %}
         <div class="private-links">
             <a class="deleteButton" data-url="{% url 'quiz:delete-question' quiz.id 'trueOrFalse' question.id %}" href="{% url 'quiz:delete-question' quiz.id 'trueOrFalse' question.id %}">Delete</a>
             <a class="" data-url="{% url 'quiz:edit-trueOrFalseQuestion' quiz.id question.id %}" href="{% url 'quiz:edit-trueOrFalseQuestion' quiz.id question.id %}">Edit</a>
         </div>
+        {% endif %}
     </div>
+    {% endif %}
         
     {% endfor %}
 </div>
-{% endif %}
 </div>
 <script src="{% static 'js/jquery.js' %}"></script>
 <script>
-    $('.deleteButton').click(function(e){
+$('.deleteButton').click(function(e){
         e.preventDefault();
-const objectBx = $(this);
+        const objectBx = $(this);
         $.ajax({
             type: 'GET',
             url : $(this).data('url'),
@@ -168,8 +223,8 @@ const objectBx = $(this);
             },
             success : function(response){
                 objectBx.parent().parent().hide(500);
-                $('#questionLength').text('{{quiz.questionLength|add:-1}}')
-
+                // $('#questionLength').text('{{quiz.questionLength|add:-1}}')
+                document.getElementById('questionLength').innerText = parseInt(document.getElementById('questionLength').innerText) + 1
                 
 
             },
@@ -194,13 +249,11 @@ function copyFunction(){
 function clickFunction(){
         
         $.ajax({
-            // change this to post
             type: 'GET', 
             url : $('a.postAd').data('url'),
             data : {
             },
             success : function(response){
-                alert('link clicked!')
                 
 
             },
@@ -218,25 +271,17 @@ $('.likeForm').submit(function(e){
     e.preventDefault();
 const serializeData = $(this).serialize()
 const quiz_id = $(this).data('quiz')
-// alert('Still working!')
-// alert(serializeData)
+
 $.ajax({
     type: 'POST',
     url : $(this).data('url'),
     data : serializeData,
     success : function(response){
-        // alert('It works');
-        // document.querySelector('#deleteButton').parentNode.parentNode.style.display = 'none';
-        // console.log(id);
-        // console.log(response)
         
         if (response == 'liked'){
-            // console.log($(`#likeButton${id}`));
             $(`#likeButton${quiz_id}`).text('unlike');
             $('.likeCounter').text('{{quiz.likeCount|add:1}}')
-            // $('linkBx.like').text
         }else if (response == 'unliked'){
-            // console.log($(`#unlikeButton${id}`));
             $(`#likeButton${quiz_id}`).text('like');
             $('.likeCounter').text('{{quiz.likeCount|add:-1}}')
 
@@ -255,15 +300,13 @@ $.ajax({
 
 $('#deleteQuizForm').submit(function(e){
     e.preventDefault()
-    alert('working!')
     const serializeData = $(this).serialize()
-    alert(serializeData)
     $.ajax({
     type: 'POST',
     url : $(this).attr('action'),
     data : serializeData,
     success : function(response){
-        alert('deleted')
+        window.location.reload();
     },
     error : function(){
         alert('It falis silently!')

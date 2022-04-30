@@ -30,12 +30,16 @@ Categories
 
 <form action="" id="added-category-form" method="get">
     click on a category in this bucket to remove it<br>
-    <div id="categoryBucket">
+    <fieldset>
+        <legend>Bucket</legend>
+        <div id="categoryBucket">
 
-        {% for category in quizCategories %}
-        <input type='text' id="{{category.title}}"  class="addedCategories" onclick="removeCategory(this.id)" name="addedCategories" value={{category.title}} readonly>
-    {% endfor %}
-    </div>
+            {% for category in quizCategories %}
+            <input type='text' id="{{category.title}}"  class="addedCategories" onclick="removeCategory(this.id)" name="addedCategories" value={{category.title}} readonly>
+        {% endfor %}
+        </div>
+    </fieldset>
+    
 
     <input type="submit" value="add categories">
 </form>

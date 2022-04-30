@@ -20,11 +20,11 @@ Ads
     <div>
         {{postAd.description}}
     </div>
-
     <div>
+    <div class="link-container">
         <a class="postAd" onclick="clickFunction()" data-url="{% url 'ads:post-click' postAd.id %}" href="{{postAd.link}}" target="_blank">Visit Site</a>
     </div>
-
+    </div>
 
 <a id="nextButton" href="{% url 'question:answer-question' %}">Next</a>
 
@@ -37,20 +37,27 @@ Ads
     next.style.display = 'none'
 const countdownbox = document.getElementById('countdownbox');
 
-setInterval(()=>{
+const myInterval = setInterval(()=>{
     seconds -= 1;
 
-    if (seconds <= 0){
-        // console.log(seconds)
-        // next.style.display = 'block'
+    if (seconds == 0){
         next.click();
-
     }
+
+
+    if (seconds <= -1){
+        myStopFunction();
+    }
+
+
     countdownbox.innerHTML = `<b>${seconds}sec left</b>`;
+
 }, 1000)
 
 
-
+function myStopFunction() {
+  clearInterval(myInterval);
+}
 
 function clickFunction(){
         

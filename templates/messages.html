@@ -19,9 +19,29 @@
 
 <script src="{% static 'js/jquery.js' %}" ></script>
 <script>
-$('.messages').hide(5000)
+
+let sec = 5
+const interval = setInterval(()=>{
+        sec -= 1;
+        if (sec == 0){
+            $('.messages').hide(500)
+
+        }
+        if (sec <= -1){
+        StopFunction();
+        }
+
+    }, 1000)
+
+
+
+function StopFunction() {
+  clearInterval(interval);
+    }
+
 </script>
 {% endblock content %}
+
 
 
 

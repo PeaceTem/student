@@ -1,5 +1,6 @@
 {% extends 'quiz/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% load social_share %}
 {% block quizTitle %}
 Profile
@@ -99,11 +100,16 @@ Profile
         {% endif %}
      {% endif %}
     <div class="urlLink">
-        <span>Link: </span>
+     {% if link.link and link.name and link.description %}
+
+        <span>Link below: </span>
+        <div class="link-container">
         <a onclick="clickFunction()" data-url="{% url 'link-click' link.id %}" class="profile-link" href="{{link.link}}" target="_blank" rel="noopener noreferrer">{{link.name}}</a>
+        </div>
         <div style="font-size: 12px; color: #777;">
             {{link.description}}
         </div>
+    {% endif %}
         {% if request.user == profile.user %}
         <div>
             <span>Clicks: {{link.clicks}}</span>
@@ -194,6 +200,11 @@ Profile
         <div class="heading">Quizzes Created</div>
         <div class="content">{{profile.quizzes}}</div> 
     </div>
+    <form id="interestForm" action="{%  url 'interest' %}" method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="submit" value="submit">
+    </form>
     {% if profile.user == request.user %}
     <div class="copy-link-container">
         <div class="label">
@@ -205,21 +216,49 @@ Profile
         </div>
     </div>
     <div class="share-profile">
-        <div>Share Your Proflle</div>
+        <div>Share Your Face</div>
+        {% if profile.user.middle_name %}
         <div>
-{% post_to_facebook  object_or_url 'Facebook' %}
-{% post_to_twitter "{{profile.user.username}} invites you to view his/her profile." object_or_url "Twitter" %}
-{% post_to_linkedin  object_or_url "Post to Linkedin" %}
-{% send_email "{{profile.user.username|capfirst}} ToTheX User Proflle" "{{profile.user.username}} invites your to view his/her profile." object_or_url "Email" %}
-{% post_to_reddit "{{profile.user.username}} invites your to view his/her profile." object_or_url %}
-{% post_to_telegram "{{profile.user.username}} invites your to view his/her profile." object_or_url %}
-{% post_to_whatsapp object_or_url "WhatsApp" %}
-{% save_to_pinterest object_or_url %}
+        {% post_to_facebook  object_or_url 'Facebook' %}
+        {% post_to_twitter "View {{profile.user.middle_name}}'s profile on ToTheX." object_or_url "Twitter" %}
+        {% post_to_linkedin  object_or_url "Post to Linkedin" %}
+        {% send_email "{{profile.user.username|capfirst}}: ToTheX User Proflle" "View {{profile.user.middle_name}}'s profile on ToTheX." object_or_url "Email" %}
+        {% post_to_reddit "View {{profile.user.middle_name}}'s profile on ToTheX." object_or_url %}
+        {% post_to_telegram "View {{profile.user.middle_name}}'s profile on ToTheX." object_or_url %}
+        {% post_to_whatsapp object_or_url "WhatsApp" %}
+        {% save_to_pinterest object_or_url %}
         </div>
+        {% elif profile.user.first_name %}
+        {% post_to_facebook  object_or_url 'Facebook' %}
+        {% post_to_twitter "View {{profile.user.first_name}}'s profile on ToTheX." object_or_url "Twitter" %}
+        {% post_to_linkedin  object_or_url "Post to Linkedin" %}
+        {% send_email "{{profile.user.username|capfirst}}: ToTheX User Proflle" "View {{profile.user.first_name}}'s profile on ToTheX." object_or_url "Email" %}
+        {% post_to_reddit "View {{profile.user.first_name}}'s profile on ToTheX." object_or_url %}
+        {% post_to_telegram "View {{profile.user.first_name}}'s profile on ToTheX." object_or_url %}
+        {% post_to_whatsapp object_or_url "WhatsApp" %}
+        {% save_to_pinterest object_or_url %}
+
+
+        {% elif profile.user.username %}
+
+        {% post_to_facebook  object_or_url 'Facebook' %}
+        {% post_to_twitter "View {{profile.user.username}}'s profile on ToTheX." object_or_url "Twitter" %}
+        {% post_to_linkedin  object_or_url "Post to Linkedin" %}
+        {% send_email "{{profile.user.username|capfirst}}: ToTheX User Proflle" "View {{profile.user.username}}'s profile on ToTheX." object_or_url "Email" %}
+        {% post_to_reddit "View {{profile.user.username}}'s profile on ToTheX." object_or_url %}
+        {% post_to_telegram "View {{profile.user.username}}'s profile on ToTheX." object_or_url %}
+        {% post_to_whatsapp object_or_url "WhatsApp" %}
+        {% save_to_pinterest object_or_url %}
+
+        {% endif %}
     </div>
-    <div class="edit link userInfo">
-        <a class="profile"  href="{% url 'edit_profile' %}">Edit Profile</a>
-    </div>
+    <a class="profile"  href="{% url 'edit_profile' %}">
+        <div class="edit link userInfo">
+            Edit Face
+        </div>
+    </a>
+
+   
     {% endif %}
 </div>
 </div>
@@ -228,6 +267,8 @@ Profile
 </script>
 {% if request.user == profile.user %}
 <script>
+
+
     const website = window.location.hostname
     document.querySelector('#copy-link').value = `${website}/core/referral/{{profile.code}}`;
     function copyFunction(){
@@ -242,6 +283,30 @@ Profile
 </script>
 {% endif %}
 <script>
+
+
+$('#interestForm').submit(function(e){
+        e.preventDefault();
+        alert('Working!')
+        const serializedData = $(this).serialize();
+        alert(serializedData);
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: serializedData,
+            success: function(response){
+                console.log(response)
+                alert('Successful!')
+            },
+            error: function(response){
+                console.log(response)
+                alert('Failed!')
+
+            }
+        })
+    })
+
+
 
     function clickFunction(){
         
@@ -264,10 +329,6 @@ Profile
 
     }
 
-
-$(document).on('submit', '#followForm', function(e){
-    e.preventDefault();
-})  
 
 $('#followForm').submit(function(e){
 e.preventDefault();

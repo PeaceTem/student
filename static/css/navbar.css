@@ -37,7 +37,7 @@ header{
 }
 
 header .name h3{
-    color: var(--theme-color);
+    color: #f11919;
     font-weight: 600;
     font-size: 20px;
     display: absolute;

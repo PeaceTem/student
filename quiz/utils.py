@@ -28,6 +28,9 @@ def sortKey(e):
     return e[0]
 
 
+def sortQuiz(e):
+     return e.relevance
+
 
 
 def randomCoin():

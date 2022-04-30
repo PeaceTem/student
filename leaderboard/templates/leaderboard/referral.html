@@ -11,9 +11,6 @@ Referral
 {% block quizCss %}
 <link rel="stylesheet" href="{% static 'leaderboard/css/wealth.css' %}">
 {% endblock quizCss %}
-<div style="text-align:left;" class="top-link">
-    <a style="text-align:left;" href="{% url 'leaderboard:leaderboard' %}">Go back</a>
-</div>
 <div class="container">
     {% include 'messages.html' %}
 
@@ -21,13 +18,12 @@ Referral
     <a href="{% url 'leaderboard:leaderboard' %}">Go Back</a>
     {% for leader in leaders %}
         <div class="line">
-            <div class="name">@{{leader.user.username}}</div>
-            <div class="length">{{leader.refercount}}</div>
+            <div class="name">@{{leader}}</div>
+            <div class="length">refers: {{leader.refers}}</div>
+            <div>
+                <a href="{% url 'profile:profile' leader  %}">See Face</a>
+            </div>
         </div>
-        <a href="{% url 'profile:profile' leader.user.username  %}">See Profile</a>
-
-        <br>
-        <br>
     {% endfor %}
 
 

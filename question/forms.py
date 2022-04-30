@@ -1,23 +1,23 @@
 
 from django import forms
-from .models import QFourChoicesQuestion, QTrueOrFalseQuestion
-from quiz.models import Category
+from .models import FourChoicesQuestion, TrueOrFalseQuestion
+from category.models import Category
 
-class NewQFourChoicesQuestionForm(forms.ModelForm):
-
-    class Meta:
-        model = QFourChoicesQuestion
-        fields = '__all__'
-        exclude = ('user', 'form', 'categories', 'attempts', 'avgScore',  'solution_quality', 'solution_validators',)
-
-
-
-class NewQTrueOrFalseQuestionForm(forms.ModelForm):
+class NewFourChoicesQuestionForm(forms.ModelForm):
 
     class Meta:
-        model = QTrueOrFalseQuestion
+        model = FourChoicesQuestion
         fields = '__all__'
-        exclude = ('user', 'form','answer1', 'answer2', 'categories', 'attempts', 'avgScore',  'solution_quality', 'solution_validators',)
+        exclude = ('user', 'form', 'index', 'date_created', 'standalone', 'categories', 'attempts', 'avgScore',  'solution_quality', 'solution_validators', 'answer1NumberOfTimesTaken', 'answer2NumberOfTimesTaken', 'answer3NumberOfTimesTaken', 'answer4NumberOfTimesTaken',)
+
+
+
+class NewTrueOrFalseQuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = TrueOrFalseQuestion
+        fields = '__all__'
+        exclude = ('user', 'form', 'index', 'answer1', 'answer2', 'standalone', 'categories', 'solution_validators' , 'date_created', 'categories', 'attempts', 'avgScore',  'solution_quality', 'solution_validators', 'answer1NumberOfTimesTaken', 'answer2NumberOfTimesTaken',)
 
 
 

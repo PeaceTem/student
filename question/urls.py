@@ -7,7 +7,7 @@ from . import views
 
 app_name = 'question'
 
- 
+
 urlpatterns = [
     #question
     path('new-question/', views.QuestionCreate, name='new-question'),
@@ -29,6 +29,10 @@ urlpatterns = [
     path('take/', views.AnswerQuestion, name='answer-question'),
     path('submit/', views.SubmitQuestion, name='submit-question'),
     path('correction/<str:question_form>/<str:question_id>/<str:answer>', views.CorrectionView, name='correction'),
+    
+
+
+
 
     path('quiz-generator/', views.QuizGenerator, name='quiz-generator'),
     path('quiz-submit/<str:ref_code>/', views.SubmitQuizGenerator, name='quiz-submit'),
@@ -38,12 +42,16 @@ urlpatterns = [
 
 
     path('past-questions/', views.PastQuestions, name='past-questions'),
+
+
+    # test
+
+    path('test/', views.TestQuestion, name='test'),
 ]
 
 
 
 
 
-# from .views import (GeneratePDF, QuizList, QuizDetail, QuizCreate, QuizUpdate, DeleteQuiz, CategoryCreate, QuestionCreate,
-#  FourChoicesQuestionCreate, FourChoicesQuestionUpdate, TrueOrFalseQuestionCreate, TrueOrFalseQuestionUpdate, TakeQuiz, SubmitQuiz)
+
 

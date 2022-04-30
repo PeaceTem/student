@@ -2,8 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, datetime
 from django.utils import timezone
+import pytz
 from django.contrib.postgres.fields import ArrayField
+
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+
+
+from question.models import TrueOrFalseQuestion, FourChoicesQuestion
+
+from category.models import Category
+
 from PIL import Image
+
+from random import shuffle
+
 
 from .managers import QuizManager
 
@@ -27,115 +41,7 @@ The index field is just the for ordering the questions in quiz
 The duration is in sec
 
 Use Try except block thoroughly
-"""
-class FourChoicesQuestion(models.Model):
-    ANSWER_CHOICES = (
-        ('answer1', 'answer1'),
-        ('answer2', 'answer2'),
-        ('answer3', 'answer3'),
-        ('answer4', 'answer4'),
-    )
-
-    SCORE_CHOICES = zip( range(5,0, -1), range(5,0, -1) )
-    DURATION_CHOICES = zip( range(15,181, 5), range(15,181, 5) )
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    index = models.PositiveSmallIntegerField(default=1)
-    form = models.CharField(max_length=30, default='fourChoicesQuestion')
-    question_text = models.TextField(max_length=500)
-    answer1 = models.CharField(max_length=200)
-    answer2 = models.CharField(max_length=200)
-    answer3 = models.CharField(max_length=200)
-    answer4 = models.CharField(max_length=200)
-    correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
-    points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
-
-
-
-    def getAnswer(self, value, *args, **kwargs):
-        if value == 'answer1':
-            return self.answer1
-        elif value == 'answer2':
-            return self.answer2
-        elif value == 'answer3':
-            return self.answer3
-        elif value == 'answer4':
-            return self.answer4
-        else:
-            return None
-
-
-
-
-    def __str__(self):
-        return f"{self.question_text}"
-
-
-
-
-class TrueOrFalseQuestion(models.Model):
-    ANSWER_CHOICES = (
-        ('True', 'True'),
-        ('False', 'False'),
-    )
-
-
-    DURATION_CHOICES = zip( range(15,181, 5), range(15,181, 5) )
-    SCORE_CHOICES = zip( range(5,0, -1), range(5,0, -1) )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    index = models.PositiveSmallIntegerField(default=1)
-    form = models.CharField(max_length=20, default='trueOrFalseQuestion')
-    question_text = models.TextField(max_length=500)
-    answer1 = models.CharField(max_length=20, default='True')
-    answer2 = models.CharField(max_length=20, default='False')
-    correct = models.CharField(max_length=100, choices=ANSWER_CHOICES)
-    solution = models.TextField(max_length=500, default='The creator of this quiz did not provide any solution for this question!')
-    points = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, default=1)
-    duration = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=20)
-
-    def getAnswer(self, value, *args, **kwargs):
-        if value == 'answer1':
-            return self.answer1
-        elif value == 'answer2':
-            return self.answer2
-        else:
-            return None
-
-
-
-
-    def __str__(self):
-        return f"{self.question_text}"
-
-
-
-
-"""
-Perform some calculations on the number of times the category has being taken.
-and the relevance
-
-Add the number of questions with this category
-"""
-
-class Category(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    registered_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    relevance = models.IntegerField(default=0)
-    number_of_quizzes = models.PositiveIntegerField(default=0)
-    number_of_questions = models.PositiveIntegerField(default=0)
-    # this represent the number of times the quizzes affiliated with this category were taken
-    quiz_number_of_times_taken = models.PositiveIntegerField(default=0)
-    question_number_of_times_taken = models.PositiveIntegerField(default=0)
-    date_registered = models.DateTimeField(auto_now_add=True)
-    #add images to this Also
-
-    class Meta:
-        verbose_name_plural='Categories'
-
-    def __str__(self):
-        return f"category | {self.title}"
+# """
 
 
 
@@ -143,8 +49,8 @@ class Quiz(models.Model):
 
     DURATION_CHOICES = zip( range(1,61), range(1,61) )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    description = models.TextField(max_length=1000)
+    title = models.CharField(max_length=200, verbose_name=_('Title'))
+    description = models.TextField(max_length=1000, verbose_name=_('Description'))
     date = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
     fourChoicesQuestions = models.ManyToManyField(FourChoicesQuestion, related_name='fourChoicesQuestions',
@@ -155,38 +61,105 @@ class Quiz(models.Model):
     lastQuestionIndex = models.PositiveSmallIntegerField(default=0)
     questionLength = models.PositiveSmallIntegerField(default=0)
     totalScore = models.PositiveSmallIntegerField(default=0)
-    shuffleable = models.BooleanField(default=False)
+    shuffleQuestions = models.BooleanField(default=False)
     attempts = models.PositiveIntegerField(default=0)
-    gross_average_score = models.PositiveIntegerField(default=0)
     average_score = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     public = models.BooleanField(default=True)
     categories = models.ManyToManyField(Category, blank=True,
         related_name='categories', related_query_name='categories')
-    #duration and each quiz is in minutes, and it overrides the duration of all the questions
-    duration_in_minutes = models.PositiveSmallIntegerField(choices=DURATION_CHOICES, default=3)
+    duration = models.PositiveSmallIntegerField(default=30)
     solution_quality = models.IntegerField(default=0)
     likes = models.ManyToManyField(User, default=None, blank=True, related_name='likes')
     likeCount = models.PositiveIntegerField(default=0)
     solution_validators = models.ManyToManyField(User,  blank=True, related_name='quiz_solution_validators')
+    age_from = models.PositiveSmallIntegerField(null=True, verbose_name=_('Minimum Age Of Quiz Takers'))
+    age_to = models.PositiveSmallIntegerField(null=True, verbose_name=_('Maximum Age Of Quiz Takers'))
+    relevance = models.IntegerField(default=0)
 
     objects = QuizManager()
-    @property
-    def num_likes(self):
-        return self.likes.all().count()
 
 
 
 
+    class Meta:
+        ordering = ['-date']
+
+
+
+    def save(self, *args, **kwargs):
+        dt = (self.date)
+        dt_updated = (self.date_updated)
+
+        rel = (self.questionLength * 100) + self.attempts + self.duration + (self.solution_quality * 100) + self.likeCount - (round(self.average_score * 10) + (timezone.now() - dt).days + (timezone.now() - dt_updated).days)
+        self.relevance = rel
+
+
+        super().save(*args, **kwargs)
+
+
+    def clean(self):
+        a1 = self.age_from
+        a2 = self.age_to
+        if a1 is not None and a2 is not None and a1 > a2:
+            raise ValidationError(_('minimum age should be less than or equal too maximum age'))
+
+            if a2 > 65:
+                raise ValidationError(_("The maximum age can be less than  or equal to 65"))
+
+        if self.description is not None:
+            try:
+                string = self.description
+                length = len(string)
+                print("Start cleaning!")
+                for i in range(length):
+                    print("again")
+                    if (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "b") and (string[i+4] == ")"):
+                        print("First Phase!")
+
+                        string2 = str.replace(string, "(sub)", "<sub>")
+                        string = string2
+                        print("Finished")
+                    elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "b") and (string[i+5] == ")"):
+                        print("Second Phase!")
+                        string2 = str.replace(string, "(/sub)", "</sub>")
+                        string = string2
+                        print("Finished")
+                    elif (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "p") and (string[i+4] == ")"):
+
+                        print("Second Phase!")
+                        string2 = str.replace(string, "(sup)", "<sup>")
+                        string = string2
+                        print("Finished")
+                    elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "p") and (string[i+5] == ")"):
+                        print("Second Phase!")
+                        string2 = str.replace(string, "(/sup)", "</sup>")
+                        string = string2
+                        print("Finished")
+
+
+                self.description = string
+
+            except:
+                raise ValidationError(_('An error occurred!'))
+        super().clean()
     
-    # def save(self, *args, **kwargs):
-    #     #use the pre_save signal to handle this task.
-    #     super().save(*args, **kwargs)
-    #     if self.thumbnail:
-    #         img = Image.open(self.thumbnail)
-    #         if img.height > 300 or img.width > 300:
-    #             output_size = (100,100)
-    #             img.thumbnail(output_size)
-    #             img.save(self.thumbnail.path)
+
+    @property
+    def get_quiz_duration(self):
+        duration_in_sec = self.duration
+        sec = duration_in_sec % 60
+        minute = duration_in_sec // 60 
+        if minute > 1 and sec > 1:
+            return _(f"{minute}minutes:{sec}seconds")
+        elif minute > 1 and sec <= 1:
+            return _(f"{minute}minutes:{sec}second")
+        elif minute <= 1 and sec > 1:
+            return _(f"{minute}minute:{sec}seconds")
+        elif minute <= 1 and sec <= 1:
+            return _(f"{minute}minute:{sec}second")
+        else:
+            return None
+
 
 
     @property
@@ -198,38 +171,56 @@ class Quiz(models.Model):
 
     @property
     def when_created(self):
-        days_length = date.today() - self.date.date()
-        print(days_length)
-        
-        try:
-            days_length_shrink = str(days_length).split(',', 1)[0]
-            days_length_shrink = days_length_shrink[:len(days_length_shrink) - 4]
+        days_length = timezone.now() - self.date
+        print(timezone.now())
+        days = days_length.days
+        seconds = days_length.seconds
+        print(f"{days} days, {seconds} seconds")
+        # days_length = date.today() - self.date.date()
+        # print(days_length)
+        if days > 0:
+            try:
+                days_length_shrink = int(days)
 
-            days_length_shrink = int(days_length_shrink)
+                if days_length_shrink > 364:
+                    days_length_shrink = days_length_shrink // 365
+                    if days_length_shrink < 2:
+                        return f"{str(days_length_shrink)} year"
+                    return f"{str(days_length_shrink)} years"
+                elif days_length_shrink > 29:
+                    days_length_shrink = days_length_shrink // 30
+                    if days_length_shrink < 2:
+                        return f"{str(days_length_shrink)} month"
+                    return f"{str(days_length_shrink)} months"
+                elif days_length_shrink > 6:
+                    days_length_shrink = days_length_shrink // 7
+                    if days_length_shrink < 2:
+                        return f"{str(days_length_shrink)} week"
+                    return f"{str(days_length_shrink)} weeks"
+                if days_length_shrink < 2:
+                        return f"{str(days_length_shrink)} day"
+                return f"{str(days_length_shrink)} days"
+            except:
+                return f"0 days"
+        elif seconds > 0:
+            try:
+                hours = seconds // 3600
+                minutes = seconds // 60
+                if hours > 0:
+                    return f"{hours} hours"
+                elif minutes > 0:
+                    return f"{minutes} minutes"
 
-            if days_length_shrink > 364:
-                days_length_shrink = days_length_shrink // 365
-                if days_length_shrink < 2:
-                    return f"{str(days_length_shrink)} year"
-                return f"{str(days_length_shrink)} years"
-            elif days_length_shrink > 29:
-                days_length_shrink = days_length_shrink // 30
-                if days_length_shrink < 2:
-                    return f"{str(days_length_shrink)} month"
-                return f"{str(days_length_shrink)} months"
-            elif days_length_shrink > 6:
-                days_length_shrink = days_length_shrink // 7
-                if days_length_shrink < 2:
-                    return f"{str(days_length_shrink)} week"
-                return f"{str(days_length_shrink)} weeks"
-            if days_length_shrink < 2:
-                    return f"{str(days_length_shrink)} day"
-            return f"{str(days_length_shrink)} days"
-        except:
-            return f"0 days"
+                else:
+                    return f"{seconds} seconds"
+                    
+
+            except:
+                return f"0 seconds"
+
 
     class Meta:
-        ordering = ['-date', '-attempts']
+        ordering = ['-date']
         verbose_name_plural = 'Quizzes'
 
         
@@ -240,6 +231,106 @@ class Quiz(models.Model):
 
 
 
+class QuizLink(models.Model):
+    quiz = models.OneToOneField(Quiz, on_delete=models.CASCADE, related_name='quizlink', editable=False)
+    name = models.CharField(max_length=80, verbose_name=_('Name'))
+    link = models.URLField(verbose_name=_('Link/URL'))
+    description = models.TextField(max_length=200, verbose_name=_('Description'))
+    ban = models.BooleanField(default=False)
+    reportCount = models.PositiveSmallIntegerField(default=0)
+    clicks = models.PositiveIntegerField(default=0)
+    reporters = models.ManyToManyField(User, blank=True)
 
 
 
+
+
+class Attempter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    score = models.PositiveSmallIntegerField(default=0)
+    percentage = models.FloatField(default=0.0)
+    timeTaken = models.PositiveSmallIntegerField(default=0)
+
+
+    class Meta:
+        ordering = ['-percentage', '-score', 'timeTaken']
+
+    @property
+    def get_percentage(self):
+        return f"{self.percentage}%"
+
+
+    @property
+    def get_timetaken(self):
+        TimeTaken = self.timeTaken
+        minutesTaken = int(TimeTaken) // 60
+        secondsTaken = int(TimeTaken) % 60
+
+        timeTaken = f"Finished test in {minutesTaken} min, {secondsTaken} sec."
+        return timeTaken
+
+
+    def __str__(self):
+        return f"{self.user.username}"
+
+    # check if the attempter has not been created before creating another instance of attempter
+
+
+
+# class Person(models.Model):
+#     name = CharField(max_length=100)
+#     age = supply property
+
+
+
+
+# class Author(models.Model):
+#     person = supply the property
+
+
+# class Book(models.Model):
+#     name = CharField(max_length=100)
+
+#     published_date = supply the property
+#     # a book has many readers and may have many authors
+#     readers = supply the property
+#     authors = supply the property
+#     category = supply field
+
+# class Category(models.Model):
+#     name = models.CharField(max_length=100, unique=True, help_text="Each category is unique!")
+#     # register by a person
+#     registered_by = supply the field to this property of the object category.
+#     date_created = supply the field to this property of the object category.
+
+
+
+
+# class Library(models.Model):
+#     name = models.CharField(max_length=100)
+#     librarian = supply field
+#     books = supply field
+
+    # def save(self, *args, **kwargs):
+    #     #use the pre_save signal to handle this task.
+    #     # change this at property
+    #     print('printing')
+
+    #     if self.age_to is None and self.age_from is None:
+    #         age = None
+    #         try:
+    #             age = self.user.profile.date_of_birth
+    #             age = date.today() - age
+    #             age = age.days // 365
+    #             print(age)
+    #             if age < 65:
+    #                 print(age)
+    #                 self.age_from = age - 2
+                    
+    #                 self.age_to = age
+    #                 super().save(*args, **kwargs)
+    #                 print('saved')
+    #         except:
+    #             pass
+    #     super().save(*args, **kwargs)

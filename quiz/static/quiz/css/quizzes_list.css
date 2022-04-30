@@ -1,22 +1,38 @@
 *{
     font-family: sans-serif;
-
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 a{
     text-decoration: none;
 }
 
+div.contains{
+    position: ralative;
+    top: -20px;
+    left: 0;
+}
+
 .head-link{
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .head-link a{
-    margin-right: 10px;
+    margin-right: 5px;
     text-align: center;
-    padding: 3px 5px;
+    padding: 3px 3px;
+
+}
+div.fixed{
+    position: fixed;
+    top: 0;
+    left: 0;
 
 }
 
@@ -31,18 +47,22 @@ a{
     margin-top: 4px;
     margin: 0 auto;
     width: 900px;
-    max-width:95vw;
+    max-width: 100%;
 
 }
 
 .card{
-    margin-top: 10px;
     display: block;
     position: relative;
     border-top: 3px solid var(--theme-color);
     background: #fff;
-    box-shadow: 3px 3px 7px #999, -3px -3px 7px #999;
+    box-shadow: 3px 3px 3px #ccc, -3px -3px 3px #ccc;
     border-radius: 4px;
+    max-width: 95%;
+    margin: auto;
+    margin-top: 10px;
+    
+    
 }
 .username{
     position: absolute;
@@ -53,13 +73,18 @@ a{
 .categories{
     position: relative;
     top: 30px;
-    overflow-x: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 
 .category{
-    background: #ddd;
-    border-radius: 3px;
+    background: rgba(241, 25, 25, .1);
+    border-radius: 4px;
     padding: 2px 3px;
+    margin: 4px 4px;
+    
 }
 #outputDate{
     position: absolute;
@@ -79,7 +104,8 @@ a{
 }
 
 .card .contentBx > div{
-    margin: 0px 2px;
+    margin: 2px 2px;
+    overflow-x: hidden;
 }
 
 
@@ -87,8 +113,9 @@ a{
     width: 100%;
     margin-top: 30px;
 }
+
 .card .contentBx div.title-block{
-    border-bottom:1px solid#999;
+    border-bottom:1px solid#ccc;
     width: 100%;  
 
 }
@@ -118,11 +145,22 @@ a{
     
 }
 
+.card .contentBx .inline{
+    display: flex;
+    flex-wrap: wrap;
+    width : 100%;
+    height: 100%;
+    justify-content: center;
+    align-items:flex-start ;
+}
+
 .card .contentBx .inline > div{
     margin: 0px 5px;
+    text-align:left;
 }
-.card .contentBx .linkBx, .card .contentBx .inline{
+.card .contentBx .linkBx{
     display: flex;
+    flex-wrap: wrap;
     width : 100%;
     height: 100%;
     justify-content: center;
@@ -150,7 +188,7 @@ button{
 
 .card .contentBx .linkBx > div{
     width: 50%;
-    border:1px solid #000;
+    border:1px solid #ccc;
     border-bottom: none;
     height: 40px;
     display: flex;
@@ -161,14 +199,23 @@ button{
 
 .card .contentBx .linkBx #likes{
     border-left: none;
+    border-right: .5px solid #ccc;
 }
 
 .card .contentBx .linkBx #take-quiz{
     border-right: none;
+    border-left: .5px solid #ccc;
+
 }
 
 
 
+span.random{
+    background: rgb(43, 226, 19);
+    color: #fff;
+    padding: 4px;
+    border-radius: 4px;
+}
 
 @media(max-width:700px){
     *{

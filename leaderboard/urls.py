@@ -12,7 +12,7 @@ urlpatterns = [
     path('streak/', views.StreakLeaderBoard, name='streak'),
     path('wealth/', views.WealthLeaderBoard, name='wealth'),
     path('referral/', views.ReferralLeaderBoard, name='referral'),
-
+    path('creator/', views.CreatorsLeaderBoard, name='creator'),
 
 ]
 

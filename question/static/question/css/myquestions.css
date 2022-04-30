@@ -71,5 +71,34 @@ img{
 
 
 *{
-    font-size: 15px;
+    font-size: 16px;
 }
+
+.messageContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 10;
+    top: 20;
+    left: auto;
+    width: 100vw;
+    visibility: hidden;
+}
+
+.messageText{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:#f11919;
+    color: #fff;
+    width: 200px;
+    border-radius: 20px;
+    height: 40px;
+    font-size: 20px;
+
+}
+
+
+
+
