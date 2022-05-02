@@ -23,12 +23,21 @@ def PostAdView(request):
 
 
 
-def PostAdClick(request, post_id):
+def PostAdClick(request, post_id, location):
     # link_id = request.GET.get('link_id')
-
+    user = request.user
     postAd = PostAd.objects.get(id=post_id)
 
     postAd.clicks += 1
+    postAd.clickers.add(user)
+    if location == "detail":
+        postAd.detailpageclicks += 1
+    elif location == "submit":
+        postAd.submitpageclicks += 1
+    elif location == "banner":
+        postAd.bannerpageclicks += 1
+    elif location == "correction":
+        postAd.correctionpageclicks += 1
     postAd.save()
     print(postAd.clicks)
 

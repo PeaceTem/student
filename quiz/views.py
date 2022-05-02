@@ -1019,13 +1019,15 @@ def TakeQuiz(request, quiz_id):
         if quiz not in profile.quizTaken.all():
             if profile.coins < 5:
                 messages.error(request, "You don't have enough coins to take a quiz")
-                return redirect('question:questions')
+                messages.info(request, "Earn more coins by taking your quiz here!")
+                return redirect('question:quiz-generator')
             profile.coins -= 5
             messages.info(request, '5 coins have been removed \n it will be restored when you submit the test!')
             profile.save()
 
 
-            
+
+
 
 
     preQuestions = []

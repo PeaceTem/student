@@ -21,6 +21,9 @@ from random import shuffle
 
 from .managers import QuizManager
 
+
+from .services import stringCleaningService
+
 # Create your models here.
 
 """
@@ -81,17 +84,14 @@ class Quiz(models.Model):
 
 
 
-    class Meta:
-        ordering = ['-date']
-
-
 
     def save(self, *args, **kwargs):
+        
         dt = (self.date)
         dt_updated = (self.date_updated)
-
-        rel = (self.questionLength * 100) + self.attempts + self.duration + (self.solution_quality * 100) + self.likeCount - (round(self.average_score * 10) + (timezone.now() - dt).days + (timezone.now() - dt_updated).days)
-        self.relevance = rel
+        if dt and dt_updated:
+            rel = (self.questionLength * 100) + self.attempts + self.duration + (self.solution_quality * 100) + self.likeCount - (round(self.average_score * 10) + (timezone.now() - dt).days + (timezone.now() - dt_updated).days)
+            self.relevance = rel
 
 
         super().save(*args, **kwargs)
@@ -105,42 +105,55 @@ class Quiz(models.Model):
 
             if a2 > 65:
                 raise ValidationError(_("The maximum age can be less than  or equal to 65"))
+        
+        
+        self.description = stringCleaningService(self.description)
+        # if self.description is not None:
+        #     try:
+        #         string = self.description
+        #         length = len(string)
+        #         print("Start cleaning!")
+        #         for i in range(length):
+        #             print("again")
+        #             if (string[i] == "<"):
+        #                 for n in range(i,length):
+        #                     if string[n] == ">":
+        #                         raise ValidationError(_("Remove both '<' and '>'"))
+                                
+        #             if (string[i] == "<") and (string[i+1] == "/"):
+        #                 raise ValidationError(_("Remove the '</' from your description"))
 
-        if self.description is not None:
-            try:
-                string = self.description
-                length = len(string)
-                print("Start cleaning!")
-                for i in range(length):
-                    print("again")
-                    if (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "b") and (string[i+4] == ")"):
-                        print("First Phase!")
+                        
+        #             if (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "b") and (string[i+4] == ")"):
+        #                 print("First Phase!")
 
-                        string2 = str.replace(string, "(sub)", "<sub>")
-                        string = string2
-                        print("Finished")
-                    elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "b") and (string[i+5] == ")"):
-                        print("Second Phase!")
-                        string2 = str.replace(string, "(/sub)", "</sub>")
-                        string = string2
-                        print("Finished")
-                    elif (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "p") and (string[i+4] == ")"):
+        #                 string2 = str.replace(string, "(sub)", "<sub>")
+        #                 string = string2
+        #                 print("Finished")
+        #             elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "b") and (string[i+5] == ")"):
+        #                 print("Second Phase!")
+        #                 string2 = str.replace(string, "(/sub)", "</sub>")
+        #                 string = string2
+        #                 print("Finished")
+        #             elif (string[i] == "(") and (string[i+1] == "s") and (string[i+2] == "u") and (string[i+3] == "p") and (string[i+4] == ")"):
 
-                        print("Second Phase!")
-                        string2 = str.replace(string, "(sup)", "<sup>")
-                        string = string2
-                        print("Finished")
-                    elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "p") and (string[i+5] == ")"):
-                        print("Second Phase!")
-                        string2 = str.replace(string, "(/sup)", "</sup>")
-                        string = string2
-                        print("Finished")
+        #                 print("Second Phase!")
+        #                 string2 = str.replace(string, "(sup)", "<sup>")
+        #                 string = string2
+        #                 print("Finished")
+        #             elif (string[i] == "(") and (string[i+1] == "/") and (string[i+2] == "s") and (string[i+3] == "u") and (string[i+4] == "p") and (string[i+5] == ")"):
+        #                 print("Second Phase!")
+        #                 string2 = str.replace(string, "(/sup)", "</sup>")
+        #                 string = string2
+        #                 print("Finished")
 
 
-                self.description = string
+        #         self.description = string
 
-            except:
-                raise ValidationError(_('An error occurred!'))
+        #     except:
+        #         raise ValidationError(_('An error occurred!'))
+        
+
         super().clean()
     
 

@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = ["https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1", "localhost", "15.237.100.157"]
+ALLOWED_HOSTS = ["https://ecclewikitestquiz.herokuapp.com/", "127.0.0.1", "localhost", "15.237.100.157", "0.0.0.0"]
 
 
 # Application definition
@@ -49,13 +49,16 @@ INSTALLED_APPS = [
     # add twitter and linkedIn
     'django_social_share',
     # the main site apps
+    'category.apps.CategoryConfig',
+
+
+    'question.apps.QuestionConfig',
+
     'quiz.apps.QuizConfig',
     'core.apps.CoreConfig',
     'leaderboard.apps.LeaderboardConfig',
     'personalProfile.apps.PersonalprofileConfig',
-    'question.apps.QuestionConfig',
     'ads.apps.AdsConfig',
-    'category.apps.CategoryConfig',
     'diary.apps.DiaryConfig',
     'todo.apps.TodoConfig',
     'comment.apps.CommentConfig',

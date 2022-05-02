@@ -32,4 +32,4 @@ class NewLinkForm(forms.ModelForm):
 class NewInterestReportForm(forms.ModelForm):
     class Meta:
         model = Interest
-        fields = ['interest']
+        fields = ['interest', 'modifier', 'dislike']

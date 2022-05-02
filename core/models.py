@@ -76,9 +76,10 @@ class Profile(models.Model):
             # dob = pytz.utc.localize(self.date_of_birth)
 
             # dob_aware = tz.localize(dob)
-            days_length = timezone.now() - dob
+            days_length = timezone.now().date() - dob
             days = days_length.days
             years = days//365
+            print(years)
             return years
         return 15
 
@@ -379,8 +380,9 @@ Change this place and use def clean instead
 
 class Interest(models.Model):
     user= models.ForeignKey(User,on_delete=models.SET_NULL, null=True)
-    interest = models.TextField(max_length=1000)
-
+    interest = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_("What do you like most about this app?"))
+    dislike = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_("What don't you like about this app?"))
+    modifier = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_("What do you want us to add to this app?"))
 
     def __str__(self):
         return f"{self.user}"
